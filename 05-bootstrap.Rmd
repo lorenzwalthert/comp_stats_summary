@@ -13,14 +13,15 @@ $$ \hat{\theta} = g(Z_1, ..., Z_n) $$
 $g(\cdot)$ can be a point estimator for a regression coefficient, a 
 non-parametric curve estimator or a generalization error estimator based on 
 one new observation, e.g.
-$$ \hat{\theta}_{n+1} = g(Z_1, ..., Z_{new}) = (Y_{new} - m_{Z_1, ..., Z_{new}}(X_{new})^2 $$
+$$ \hat{\theta}_{n+1} = g(Z_1, ..., Z_{n}, Z_{new}) = (Y_{new} - m_{Z_1, ..., Z_{n}}(X_{new})^2 $$
 To make inference, we want to know the distribution of $\hat{\theta}$. For some
 cases, we can derive the distribution analytically if we know the distribution
 $P$. The central limit theorem states that the sum of random variables 
 approximates a normal distribution with $n \rightarrow \infty$. Therefore, we
-know
-$$ \hat{\theta}_{n \rightarrow \infty} = n^{-1}\sum x_i \sim N(\mu_x, \sigma_x^2 / n) $$ 
-for *any* $P$. However, if $\hat{\theta}$ is not a sum of random variables, 
+know that the an estimator for the mean of the random variables follows the
+normal distribution.
+$$ \hat{\theta}_{n} = n^{-1}\sum x_i \sim N(\mu_x, \sigma_x^2 / n) \; \; \; n \rightarrow \infty $$ 
+for *any* $P$. However, if $\hat{\theta}$ does not involve the sum of random variables, 
 and the CLT does not apply, it's not as straightforward to obtain the 
 distribution of $\hat{\theta}$. Also, if $P$ is not the normal distribution, 
 but some other distribution, we can't find the distribution of $\hat{\theta}$
@@ -30,7 +31,7 @@ Hence, deriving properties of estimators analytically, even the asymptotic
 ones only, is a pain.
 Therefore, if we knew $P$, we could simply simulate many times and get the 
 distribution of $\hat{\theta}$ this way. That is,
-draw many $(X_i, Y_i)$ from that distribution and compute $\hat{\theta}$ for 
+draw many $({X_i}^*, {Y_i}^*)$ from that distribution and compute $\hat{\theta}$ for 
 each draw. 
 
 The problem is that we don't know $P$. But we have a data sample
@@ -66,10 +67,10 @@ ggplot(out, aes(x = value, color = type)) +
 
 We can summarize the bootstrap procedure as follows.
 
-* draw a bootstrap sample ${Z_1}^{*}, ..., {Z_{new}}^{*}$
-* compute your estimator $\hat{\theta}$ based on that sample.
+* draw a bootstrap sample ${Z_1}^{*}, ..., {Z_{n}}^{*}$
+* compute your estimator ${\hat{\theta}}^*$ based on that sample.
 * repeat the first two steps $B$ times to get bootstrap estimators 
-$\hat{\theta}_1, ..., \hat{\theta}_B$ and therefore an estimate of the 
+${\hat{\theta}_1}^*, ..., {\hat{\theta}_B}^*$ and therefore an estimate of the 
   distribution of $\hat{\theta}$.
   
 Use the $B$ estimated bootstrap estimators as approximations for the bootstrap 
@@ -87,7 +88,7 @@ Conditioning on the data allows us to treat $\hat{P}$ as fixed.
 
 ## Bootstrap Consistency
 The bootstrap is is called consistent if 
-$$ \mathbb{P}[a_n(\hat{\theta} - \theta) \leq x ] - \mathbb{P}[a_n(\hat{\theta}^* - \hat{\theta}) \leq x ] \rightarrow 0$$
+$$ \mathbb{P}[a_n(\hat{\theta} - \theta) \leq x ] - \mathbb{P}[a_n(\hat{\theta}^* - \hat{\theta}) \leq x ] \rightarrow 0 \;\; (n \rightarrow \infty)$$
 Consistency of the bootstrap typically holds if the limiting distribution is
 normal and the samples $Z_1, .., Z_n$ are i.i.d. Consistency of the bootstrap
 implies consistent variance and bias estimation:
@@ -128,9 +129,9 @@ The above procedure accounts for that.
 We can also use the bootstrap to estimate the generalization error. 
 $$ \mathbb{E}[\rho(Y_{new}, m^*(X_{new}))] $$
 
-* We draw a sample $(Z_1, ..., Z_n, Z_{new})$ from $\hat{P}$
-* We compute the bootstrapped estimator $m(\cdot)$ based on the sample
-* We estimate $\mathbb{E}[\rho(Y_{new}, m^*(X_{new}))]$, which is with respect 
+* We draw a sample $({Z_1}^*, ..., {Z_n}^*, Z_{new})$ from $\hat{P}$
+* We compute the bootstrapped estimator ${m(\cdot)}^*$ based on the sample
+* We estimate $\mathbb{E}[\rho(Y_{new}, {m^*(X_{new})}^*)]$, which is with respect 
   to both training and test data.
 
 We can rewrite the generalization error as follows:
@@ -140,19 +141,19 @@ non-random / fixed. The only random component is ${Y_{new}}^*$. Since we draw
 from the empirical distribution and place a probability mass of $1/n$ on every
 data point. we can calculate the inner (discrete) expectation easily via 
 $\mathbb{E}(X) = \sum\limits_{j = 1}^n p_j * x_j = n^{-1} \sum\limits_{j = 1}^n x_j$.
-The expectation becomes. 
+The expectation becomes 
 $$ \mathbb{E}_{train}[n^{-1}\sum\rho(Y_{i}, m^*(X_{i}))] =  n^{-1}\sum\mathbb{E}[\rho(Y_{i}, m^*(X_{i}))]$$
 
 We can see that there is no need to draw $Z_{new}$ from the data. The final
 algorithm looks as follows:
 
-* Draw $Z_1, ..., Z_{N}$
-* compute bootstrap estimator $\hat{\theta}^*$
+* Draw $({Z_1}^*, ..., {Z_n}^*)$
+* compute bootstrap estimator ${\hat{\theta}}^*$
 * Evaluate this estimator on all data points and average over them, i.e 
   $err^* = n^{-1} \sum \rho(Y_i, m^*(X_i))$
 * Repeat steps above B times and average all error estimates to get the
   bootstrap GE estimate, i.e. 
-  $GE^* = B^{-1} \sum err_i$
+  $GE^* = B^{-1} \sum {err_i}^*$
 
 
 ## Out-of-Boostrap sample for estimating the GE
@@ -185,15 +186,15 @@ $\Delta' \lt {\Delta}$
 
 To implement a double bootstrap confidence interval, proceed as follows:
 
-1. Draw a bootstrap sample $Z_1, ..., Z_n$
+1. Draw a bootstrap sample $({Z_1}^*, ..., {Z_n}^*)$.
     a. From this sample, draw B second-level bootstrap samples and
        compute the estimator of interest and *one* confidence interval 
        $I^{**}(1-\alpha)$ based on B second-level bootstrap samples.
     c. evaluate whether $\hat{\theta}$ lays within the bootstrap confidence
        interval from a. $cover^*(1-\alpha) = 1_{[\hat{\theta} \in I^{**}(1-\alpha)]}$
 2. Repeat the above M times to get $cover^{* 1}, ..., cover^{* M}$ and hence
-   approximate $p^*(\alpha) = \mathbb{P}[\theta \in I^{**}(1-\alpha)]$ with 
-   $$ M^{-1} \sum\limits_{m = 1}^M cover^{* m}$$
+   approximate $\mathbb{P}[\theta \in I^{**}(1-\alpha)]$ with 
+   $$ p^*(\alpha) = M^{-1} \sum\limits_{m = 1}^M cover^{* m}$$
 3. Vary $\alpha$ in all of the steps above to find $\alpha'$ so that 
 $p^*(\alpha') = 1- \alpha$
 
@@ -207,20 +208,19 @@ from the empirical distribution.
 * The middle way is the model-based bootstrap
 
 ### Non-parametric Regression
-We draw a bootstrap sample $(Z_1, ..., Z_n) \sim \hat{P}$, i.e. we sample from
+We draw a bootstrap sample $({Z_1}^*, ..., {Z_n}^*) \sim \hat{P}$, i.e. we sample from
 the *empirical distribution* data with replacement.
 
 ### Parametric Boostrap
 Here, we assume the data are realizations from a *known* distribution $P$,
 which is is determined up to some unknown parameter (vector) $\theta$. That
 means we sample $(Z_1, ..., Z_n) \sim P_{\hat{\theta}}$.
-For example, take the following regression model $ y = X\beta + \epsilon $ where
+For example, take the following regression model $y = X\beta + \epsilon$ where
 we know the errors are Gaussian. 
 
 1. We can estimate our regression model, obtain residuals and compute the mean 
    (which is zero) and the standard deviation of them. 
-2. To generate a bootstrap sample 
-   $(Z_1^*, ..., Z_n^*), \;Z_i^* = (Y_i^*, X_i^*)$, we simulate residuals 
+2. To generate a bootstrap sample, we simulate residuals 
    $\epsilon^*$ from $N(0, \hat{\mu})$ and 
 3. Add them to our observed data, i.e. we obtain 
    $({Y_1}^*, ..., {Y_n}^*)$ from $X\beta + \epsilon^*$. Hence, the final bootstrap 
@@ -233,11 +233,11 @@ we know the errors are Gaussian.
    
 Similarly, for time series data, we may assume an AR(p) model. 
 
-1. Initializing $X_0, ..., X_{-p+1}$ with $0$.
-2. Generate random noise $\epsilon_1, ..., \epsilon_{n+m}$ according to 
+1. Initializing ${X_0}^*, ..., {X_{-p+1}}^*$ with $0$.
+2. Generate random noise ${\epsilon_1}^*, ..., {\epsilon_{n+m}}^*$ according to 
    $P_{\hat{\theta}}$.
 3. Construct our time series 
-   ${X_t}^* = \sum\limits_{j = 1}^p \theta*{X_{t-j}}^* + {\epsilon_t}^*$ 
+   ${X_t}^* = \sum\limits_{j = 1}^p \hat{\theta}{X_{t-j}}^* + {\epsilon_t}^*$ 
    $(X_1, ..., X_{n+m})$
 4. Throw away the first $M$ observations that were used as fade-in.
 5. Proceed with the B bootstrap samples $({X_1}^*, ..., {X_n}^*)$ as outlined
@@ -257,9 +257,9 @@ distribution. To sum it up, these are the steps necessary:
 1. Estimate $\hat{m(\cdot)}$ from all data.
 2. Simulate ${\epsilon_1}^*, ..., {\epsilon_n}^*$ by drawing from $\hat{P}$ with
    replacement.
-3. Obtain $({Y_1}^*, ..., {Y_n}^*)$ from $m(x) + \epsilon^*$. As for the 
+3. Obtain $({Y_1}^*, ..., {Y_n}^*)$ from $\hat{m}(x) + \epsilon^*$. As for the 
    parametric bootstrap, the final bootstrap sample we use is 
-   $(x_1, {Y_1}^*), ..., (x_1, {Y_n}^*))$ where the $x_i$ are just the observed 
+   $(x_1, {Y_1}^*), ..., (x_n, {Y_n}^*))$ where the $x_i$ are just the observed 
    data.
 4. Again, you can use the bootstrap samples as for the other two methods.
 
