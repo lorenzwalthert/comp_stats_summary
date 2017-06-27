@@ -1,0 +1,66 @@
+# Classification
+## Indirect Classification - The Bayes Classifier
+In classification, the goal is to assign observations to a group. Similar to 
+regression, where we have $m(x) = E[Y | X = x]$, we want to assign class 
+probabilities to the observations 
+$$\pi_j (x) = P[Y = j | X = x] \;\;\;  (j = 0,1, ..., J-1)  $$
+*Def*: A classifier maps A multidimensional input vector to a class label.
+Or mathematically: $C: \mathbb{R}^p \rightarrow \{0, ..., J-1\}$
+The quality of a classifier is measured via the zero-one test-error.
+$$\mathbb{P}[C(X_{new}) \neq Y_{new}] $$
+
+The optimal classifier with respect to the zero-one Error is the Bayes 
+Classifier. It classifies an observation to the group for which the predicted 
+probability was the highest.
+$$ C_{bayes}(x) = \arg\max_{0<j<J-1}\pi_j(x)$$
+Hence, the Bayes Classifier is a point-wise classifier.
+For the Bayes Classifier, the zero-one test error is known as the *Bayes Risk*.
+$$ \mathbb{P}[C_{Bayes}(X_{new}) \neq Y_{new}]$$
+
+In practice, $\pi_j(\cdot)$ is unknown (just as the MSE in regression is 
+unknown) and hence, the the Bayes Classifier and Risk is unknown too. However, 
+we can estimate $\pi_j(\cdot)$ from the data and plug it in the Bayes Classifier.
+$$\hat{C}(X) = \arg\max_{0<j<J-1}\hat{\pi}_j(x)$$
+This is an indirect estimator, since we first estimate the class probabilities
+$\pi_j(\cdot)$ for each observation $x$ and then assign the class to it for
+which the probability was the highest.
+Question how is that more indirect than Discriminant analysis? Don't we use
+the Bayes classifier in the end?
+
+## Direct Classification - The Discriminant View
+### LDA
+One example for a direct classification is discriminant analysis.
+Using Bayes Theorem
+$$ \mathbb{P}[Y = j | X] = \frac{\mathbb{P}[X = x | y = j]}{\mathbb{P}[X = x]}*\mathbb{P}[Y = j] $$
+And assuming 
+
+$$ (X| Y) \sim N_p(\mu_j, \Sigma); \;\; \sum\limits_{k = 0}^{J-1}p_k = 1$$ 
+
+We can write
+$$ \mathbb{P}[Y = j | X = x] = \frac{f_{ x | Y = j } * p_j}{\sum\limits_{k = 0}^{J-1} f_{x | Y = k} * p_k} $$
+Note that there is no distributional assumption on $Y$ so far. You can estimate 
+$$\mu_j = \sum\limits_{i = 1}^n{x_i*1_{Y_i = j}} / 1_{Y_i = j}$$
+and 
+$$\Sigma = \frac{1}{n-j}\sum\limits_{j = 0}^{J-1}\sum\limits_{i = 1}^n(x_i - \mu_j)(x_i - \mu_j)'\;1_{Y_i = j} $$
+Note that the means of the response of the groups are different, but the 
+covariance structure is the same for all of them.
+We now also need to estimate $p_j$. A straight-forward way is 
+$$ \hat{p}_j = n^{-1}\sum\limits_{i = 1}^n{1_{[Y_i = j]}} = \frac{n_j}{n} $$
+
+From here, you can easily compute the classifier (as done in the exercise) by
+maximizing the log-likelihood. Then, you can derive the decision boundary by 
+using $\delta_j - \delta_k = 0$. In a two dimensional predictor space with 
+two classes, the decision boundary is a line. Every combination of the two 
+predictors on one side of the line will result in a prediction of class one, 
+everything on the other side of the line of class two. Note that both the 
+decision function (and hence the decision boundary) are linear in x.
+
+### QDA
+Quadratic discriminant analysis loosens the assumption of shared covariance 
+matrices, namely each group has their own covariance matrix. This leads 
+to quadratic decisions functions $\delta$ and hence to non-linear decision
+boundaries.
+QDA is more flexible but for high $p$, the problem of over-fitting can occur,
+since the number of variables to estimate is $J*p(p+1)$ variable for the 
+covariance matrix only (instead of $p*(p+1)$ for LDA.
+
