@@ -75,16 +75,49 @@ Use the $B$ estimated boostrap estimators as approxmimations for the bootstrap
 expectation, quantiles and so on.
 $\mathbb{E}[\hat{\theta}^*_n] \approx B^{-1}\sum\limits_{j = 1}^n \hat{\theta}^{* j}_n$
 
-## The bootstrap distribution
+## The Bootstrap Distribution
 With $P^*$, we denote the boostrap distribution, which is the conditional 
 probability distribution introduced by sampling i.i.d. from the 
-empirical distribution $\hat{P}$. Hence, $P^*$ of $\hat{\theta}^*$ is the 
+empirical distribution $\hat{P}$. Hence, $P^*$ of ${\hat{\theta}}^*$ is the 
 distribution that arrises from sampling i.i.d. from $\hat{P}$ and applying the 
 transformation $g(\cdot)$ to the data. 
 Conditioning on the data allows us to treat $\hat{P}$ as fixed. 
 
+
 ## Bootstrap Consistency
 The bootstrap is is called consistent if 
-$$ \mathbb{P}[a_n(\hat{\theta} - \theta) \leq x ] - \mathbb{P}[a_n(\hat{\theta} - \theta) \leq x ] \rightarrow 0$$
+$$ \mathbb{P}[a_n(\hat{\theta} - \theta) \leq x ] - \mathbb{P}[a_n(\hat{\theta}^* - \hat{\theta}) \leq x ] \rightarrow 0$$
+Consistency of the boostrap typically holds if the limiting distribution is
+normal and the samples $Z_1, .., Z_n$ are i.i.d. Consistency of the bootstrap
+implies consistent variance and bias estimation:
 
+$$ \frac{Var^* (\hat{\theta}^*)}{Var(\hat{\theta})} \rightarrow 1$$
+$$ \frac{\mathbb{E}^* (\hat{\theta}^*) - \hat{\theta}}{\mathbb{E}(\hat{\theta}) - \theta} \rightarrow 1$$
+You can think of $\theta$ as the real parameter and $\hat{\theta}$ as the estimate
+based on a sample. Similarly, in the bootstrap world, $\hat{\theta}$ is the *real*
+parameter, and $\hat{\theta}^*_i$ as an estimator of the *real* parameter 
+$\hat{\theta}$. The boostrap world is an analogue of the real world. 
+So in our  boostrap simulation, we know the *true* parameter 
+$\hat{\theta}$. From our simlulation, we get many $\hat{\theta}^*_i$ and can 
+find the boostrap expectation
+$\mathbb{E}[\hat{\theta}^*_n] \approx B^{-1}\sum\limits_{j = 1}^n \hat{\theta}^{* j}_n$.
+The idea is now to generalize from the *boostrap* world to the *real* world, i.e.
+by saying that the relationship between $\hat{\theta}^*$ and $\hat{\theta}$ is
+similar to the one between $\hat{\theta}$ and $\theta$.
 
+A simple trick to remember all of this is:
+
+ * if there is no hat, add one
+ * if there is a hat, add a star.
+ 
+## Boostrap Confidence Intervals
+```{r, echo=FALSE}
+knitr::include_graphics("figures/pivot_ci.png")
+```
+
+Note that there confidence intervals are not simply taking the quantiles of
+the bootstrap distribution. The trick is really to make use of the anology 
+between the *real* world and the *boostrap* world. So when we see our boostrap
+exprectation $\mathbb{E}[\hat{\theta}^*_n]$ is way higher than $\hat{\theta}$, 
+then we also should believe that our $\hat{\theta}$ is higher than $\theta$. 
+The above procedure accounts for that.
