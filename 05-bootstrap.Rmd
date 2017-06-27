@@ -40,10 +40,10 @@ sample from this distribution (which is simply drawing uniformly from our
 sample with replacement) and compute our estimate of interest from this sample.
 $$ \hat{\theta}^{*} = g({Z_1}^{*}, ..., {Z_{new}}^{*})$$
 We can do that many times to get an approximate distribution for $\hat{\theta}$.
-A crucial assumption is that $\hat{P}$ ressembles $P$. If our data is not 
-i.i.d, this may not be the case and hence bootsrapping might be missleading.
-Below, we can see that i.i.d. sampling ressembles the true distribution quite 
-well, wherease biased sampling obviously does not. We produce a sample that 
+A crucial assumption is that $\hat{P}$ reassembles $P$. If our data is not 
+i.i.d, this may not be the case and hence bootstrapping might be misleading.
+Below, we can see that i.i.d. sampling reassembles the true distribution quite 
+well, whereas biased sampling obviously does not. We produce a sample that 
 places higher probability mass to the large (absolute) values.
 ```{r, echo=FALSE, message=FALSE}
 library("tidyverse")
@@ -71,15 +71,15 @@ We can summarize the bootstrap procedure as follows.
 $\hat{\theta}_1, ..., \hat{\theta}_B$ and therefore an estimate of the 
   distribution of $\hat{\theta}$.
   
-Use the $B$ estimated boostrap estimators as approxmimations for the bootstrap 
+Use the $B$ estimated bootstrap estimators as approximations for the bootstrap 
 expectation, quantiles and so on.
 $\mathbb{E}[\hat{\theta}^*_n] \approx B^{-1}\sum\limits_{j = 1}^n \hat{\theta}^{* j}_n$
 
 ## The Bootstrap Distribution
-With $P^*$, we denote the boostrap distribution, which is the conditional 
+With $P^*$, we denote the bootstrap distribution, which is the conditional 
 probability distribution introduced by sampling i.i.d. from the 
 empirical distribution $\hat{P}$. Hence, $P^*$ of ${\hat{\theta}}^*$ is the 
-distribution that arrises from sampling i.i.d. from $\hat{P}$ and applying the 
+distribution that arises from sampling i.i.d. from $\hat{P}$ and applying the 
 transformation $g(\cdot)$ to the data. 
 Conditioning on the data allows us to treat $\hat{P}$ as fixed. 
 
@@ -87,7 +87,7 @@ Conditioning on the data allows us to treat $\hat{P}$ as fixed.
 ## Bootstrap Consistency
 The bootstrap is is called consistent if 
 $$ \mathbb{P}[a_n(\hat{\theta} - \theta) \leq x ] - \mathbb{P}[a_n(\hat{\theta}^* - \hat{\theta}) \leq x ] \rightarrow 0$$
-Consistency of the boostrap typically holds if the limiting distribution is
+Consistency of the bootstrap typically holds if the limiting distribution is
 normal and the samples $Z_1, .., Z_n$ are i.i.d. Consistency of the bootstrap
 implies consistent variance and bias estimation:
 
@@ -96,10 +96,10 @@ $$ \frac{\mathbb{E}^* (\hat{\theta}^*) - \hat{\theta}}{\mathbb{E}(\hat{\theta}) 
 You can think of $\theta$ as the real parameter and $\hat{\theta}$ as the estimate
 based on a sample. Similarly, in the bootstrap world, $\hat{\theta}$ is the *real*
 parameter, and $\hat{\theta}^*_i$ as an estimator of the *real* parameter 
-$\hat{\theta}$. The boostrap world is an analogue of the real world. 
-So in our  boostrap simulation, we know the *true* parameter 
-$\hat{\theta}$. From our simlulation, we get many $\hat{\theta}^*_i$ and can 
-find the boostrap expectation
+$\hat{\theta}$. The bootstrap world is an analogue of the real world. 
+So in our  bootstrap simulation, we know the *true* parameter 
+$\hat{\theta}$. From our simulation, we get many $\hat{\theta}^*_i$ and can 
+find the bootstrap expectation
 $\mathbb{E}[\hat{\theta}^*_n] \approx B^{-1}\sum\limits_{j = 1}^n \hat{\theta}^{* j}_n$.
 The idea is now to generalize from the *boostrap* world to the *real* world, i.e.
 by saying that the relationship between $\hat{\theta}^*$ and $\hat{\theta}$ is
@@ -116,8 +116,43 @@ knitr::include_graphics("figures/pivot_ci.png")
 ```
 
 Note that there confidence intervals are not simply taking the quantiles of
-the bootstrap distribution. The trick is really to make use of the anology 
-between the *real* world and the *boostrap* world. So when we see our boostrap
-exprectation $\mathbb{E}[\hat{\theta}^*_n]$ is way higher than $\hat{\theta}$, 
+the bootstrap distribution. The trick is really to make use of the analogy 
+between the *real* world and the *boostrap* world. So when we see our bootstrap
+expectation $\mathbb{E}[\hat{\theta}^*_n]$ is way higher than $\hat{\theta}$, 
 then we also should believe that our $\hat{\theta}$ is higher than $\theta$. 
 The above procedure accounts for that.
+
+## Boostrap Estimator of the Generalization Error
+
+We can also use the bootstrap to estimate the generalization error. 
+$$ \mathbb{E}[\rho(Y_{new}, m^*(X_{new}))] $$
+
+* We draw a sample $(Z_1, ..., Z_n, Z_{new})$ from $\hat{P}$
+* We compute the bootstrapped estimator $m(\cdot)$ based on the sample
+* We estimate $\mathbb{E}[\rho(Y_{new}, m^*(X_{new}))]$, which is with respect 
+  to both training and test data.
+
+We can rewrite the generalization error as follows:
+$$ \mathbb{E}[\rho(Y_{new}, m^*({X_{new}}^*))] = \mathbb{E}_{train}[E_{test}[\rho({Y_{new}}^*, m^*({X_{new}}^*))| train]]$$
+Conditioning on the training data in the inner expectation, $m(\cdot)$ is 
+non-random / fixed. The only random component is ${Y_{new}}^*$. Since we draw 
+from the empirical distribution and place a probability mass of $1/n$ on every
+data point. we can calculate the inner (discrete) expectation easily via 
+$\mathbb{E}(X) = \sum\limits_{j = 1}^n p_j * x_j = n^{-1} \sum\limits_{j = 1}^n x_j$.
+The expectation becomes. 
+$$ \mathbb{E}_{train}[n^{-1}\sum\rho(Y_{i}, m^*(X_{i}))] =  n^{-1}\sum\mathbb{E}[\rho(Y_{i}, m^*(X_{i}))]$$
+
+We can see that there is no need to draw $Z_{new}$ from the data. The final
+algorithm looks as follows:
+
+* Draw $Z_1, ..., Z_{N}$
+* compute bootstrap estimator $\hat{\theta}^*$
+* Evaluate this estimator on all data points and average over them, i.e 
+  $err^* = n^{-1} \sum \rho(Y_i, m^*(X_i))$
+* Repeat steps above B times and average all error estimates to get the
+  bootstrap GE estimate, i.e. 
+  $GE^* = B^{-1} \sum err_i$
+
+
+## Out-of-Boostrap sample for estimating the GE
+One can crises 
