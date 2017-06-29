@@ -1,3 +1,3 @@
-This is a minimal example of a book based on R Markdown and **bookdown** (https://github.com/rstudio/bookdown). Please see the page "Get Started" at https://bookdown.org/ for how to compile this example.
-
-You can find the preview of this example at https://bookdown.org/yihui/bookdown-demo/
+This is a summary (or probably rather, a reformulation) of the 
+script from ETH Zurich's class *Computational Statistis* from the 
+seminar of statistics.
