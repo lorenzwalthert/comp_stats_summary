@@ -1,1 +1,134 @@
 # Cross Validation
+
+## Motivation and Core Idea
+Cross-validation is a tool for estimating the performance of an algorithm 
+on new data points, the so-called the generalization error. An estimate of the
+generalization allows us to do two important things:
+
+* Tuning the parameters of a statistical technique.
+* Comparing statistical techniques with regard to their accuracy.
+
+If we use the **training data** to evaluate the performance of an algorithm, 
+this estimate will be over-optimistic because an estimator is usually obtained
+by minimizing some sort of error in the training data. Therefore, we use a
+separate data pool, called the **test data** to evaluate the performance out of
+sample.
+Consider the regression function estimate $\hat{m}$ based on a sample 
+$(X_1, ..., X_n.)$. By increasing the number of parameters in the model and by 
+allowing for interactions between them, we can make the regression model fitting
+arbitrarily well to the data. However, such an extremely complex model will not
+perform as well with new data, that is, will not generalize well to other 
+situations, since we essentially modeled also a lot of noise. 
+We use the following
+notation:
+$$ l^{-1}\sum\limits_{i = 1}^l\rho(Y_{new, i}, \hat{g}(X_{new, i}))$$
+Where $\rho$ is a loss function to be evaluated on the new data points 
+$(Y_{new, 1}, ..., Y_{new, l})$ and the prediction made for 
+$(X_{new, 1}, ..., X_{new, l})$ with the function $\hat{g}$, which was estimated
+from the training data $(X_1, ..., X_n)$. When $l$ gets large, this approximates 
+the **test error** 
+$$\mathbb{E}_{(X_{new}, Y_{new})}[\rho(Y_{new}, \hat{m}(X_{new})]$$
+which is still a function of the training data (since it is conditional on the 
+training data). Note that the *test error* is not the same as the 
+**generalization error**. The latter is an expectation over both the training
+and the test data. The typical relationship between the test error and the 
+training error is depicted in the figure below.
+
+```{r,echo=FALSE, out.width = "650px"}
+knitr::include_graphics("figures/ge.jpg")
+```
+
+## Loss Function
+Depending on the application, 
+one can imagine different loss-functions. For example the squared deviance from
+the *true* value is often used, i.e. 
+$$n^{-1}\sum\limits_{i = 1}^n\rho(Y_i, \hat{m}(X_i)) = n^{-1}\sum\limits_{i = 1}^n(Y_i - \hat{m}(X_i))^2$$ Hence, larger deviance is penalized over-proportionally.
+For classification, one often uses the zero-one error, i.e. 
+$$n^{-1}\sum\limits_{i = 1}^n1_{\hat{m}(X_i) = Y_i}$$.
+However, it might also be appropriate to use asymmetric loss functions if
+false negatives are worse than false positives (i.e. for cancer tests).
+
+## Implementation
+
+There are different ways to do cross validation while adhering to the principles
+introduced above.
+
+### Leave-one-out
+
+* Use all but one data point to construct a model and predict on the remaining
+  data point.
+* Do that $n$ times until all $n$ points were used for prediction once.
+* Compute the test error as an average over all n errors measured, i.e
+
+
+$$n^{-1}\sum\limits_{i = 1}^n \rho{(Y_{i}, \hat{m}_{n-1}^{-i}(X_i)})$$
+And use that as an approximation of the *generalization error*.
+
+## K-fold Cross-Validation
+This method is best explained with a picture.
+```{r, out.width = "650px"}
+knitr::include_graphics("figures/k_fold_cv.png")
+```
+Here, one splits the data set into k equally sized fold. Then, we use all 
+$k-1$ folds to build a model and the remaining fold to evaluate the model. 
+Then, we average the $k$ estimates of the generalization error. Or in 
+mathematical notation:
+
+$$K^{-1} \sum\limits_{k = 1}^K |B_k|^{-1} \sum\limits_{i \in B_k}\rho({Y_{i}, \hat{m}^{-B_k}_{n-|B_k|}(X_i))}$$ 
+
+Note that leave-one out cv is the same as k-fold cross validation with $=n$.
+
+### Random Division into test and training data set
+The problem of K-fold cross-validation is that it depends on **one realization**
+of the split into k folds. Instead, we can generalize leave-one-out to 
+leave-d-out. That means, we remove $d$ observations from our initial data, 
+apply our estimation procedure and evaluate on the $d$ observations.
+$$\hat{\theta}^{-C_k}_{n-k} \;\;\; \text{for all possible subsets}\;\; C_k, \;\; k=1, ..., {\binom{n}{d}}$$ 
+The generalization error can be estimated with
+$${\binom{n}{d}}^{-1}\sum\limits_{k = 1}^{\binom{n}{d}} d^{-1}\sum\limits_{i \in C_k} \rho(Y_i, \hat{m}^{-C_k}_{n-d}(X_i))$$
+For $d > 3$, the computational burden becomes immense. For that reason, instead
+of considering all ${\binom{n}{d}}$ sets, we can uniformly draw $B$ sets 
+($C_1^*, ... C_B^*$) from $C_1, ..., C_{\binom{n}{d}}$ *without replacement*.
+For $B=\binom{n}{d}$, we obviously get the full leave-d-out solution. The
+**computational cost** for computing such an approximation to the leave-d-out
+is linear in $B$ (since evaluating is almost for free). For leave-one-out, the
+cost is linear in $n$ in the same way. Hence, the stochastic approximation for
+leave-d-out can be even smaller than for leave-one-out if $B < n$.
+
+## Properties of the different schemes
+
+* **leave-one-out** is an asymptotically **unbiased** estimator for the generalization 
+  error and the true prediction. However, we use a sample size $n-1$ instead of 
+  $n$, which causes a slight bias (meaning we have less data as we do in a real 
+  world scenario, which most likely makes the CV score a tiny little bit worse 
+  than it should be). Because the training sets are very similar to each other
+  the leave-one-out scheme has a **large variance**.
+* **leave-d-out** has a **higher bias** than leave-one-out because the sample size is
+  even smaller than $n-1$ (for $d>1$). However, since we aggregate over more
+  (\binom{n}{d} instead of $n$) cv scores, which can be shown to decrease the
+  variance of the final cv estimator.
+* **k-fold** cv has a **higher bias** than both leave one out.
+
+## Shortcuts for (some) linear fitting operators
+Leave-one-out cv score for some linear fitting procedures such as least squares
+or smoothing spline can be computed via a shortcut when our loss function is
+$\rho(y, \hat{y}) = |y-\hat{y}|^2$. In particular, we can compute the estimator
+for such a linear fitting procedure **once**, compute the linear fitting operator
+$S$, which satisfies $\mathbf{Y} = \mathbf{SY}$ and plug it in this formula:
+$$n^{-1}\sum\limits_{i = 1}^n \Bigg(\frac{Y_i - \hat{m}(X_i)}{1-S_{ii}}\Bigg)^2$$
+Computing $\mathbf{S}$ requires $O(n)$ operations (see exercises).
+
+Historically, it has been computationally easier to compute the trace of 
+$\mathbf{S}$ so there is also a quantity called generalized cross validation
+(which is a misleading terminology), 
+which coincides with the formula above in certain cases.
+
+## Parameter Tuning
+**Example** To use leave-one-out cross-validation for parameter tuning of a
+lasso. Calculate the test set error for *one* value of lamda. Then,
+change the value of lamda and recompute the model and then test set error, so
+that the test set error becomes a function of lamda, as depicted below.
+```{r, out.width="650px", echo=FALSE}
+knitr::include_graphics("figures/lasso_cv.png")
+```
+

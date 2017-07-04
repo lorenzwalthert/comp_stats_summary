@@ -99,11 +99,23 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
       <nav role="navigation">
 
 <ul class="summary">
-<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Hello World</a></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
 <li class="chapter" data-level="2" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html"><i class="fa fa-check"></i><b>2</b> Multiple Linear Regression</a></li>
 <li class="chapter" data-level="3" data-path="nonparametric-density-estimation.html"><a href="nonparametric-density-estimation.html"><i class="fa fa-check"></i><b>3</b> Nonparametric Density Estimation</a></li>
 <li class="chapter" data-level="4" data-path="nonparametric-regression.html"><a href="nonparametric-regression.html"><i class="fa fa-check"></i><b>4</b> Nonparametric Regression</a></li>
-<li class="chapter" data-level="5" data-path="cross-validation.html"><a href="cross-validation.html"><i class="fa fa-check"></i><b>5</b> Cross Validation</a></li>
+<li class="chapter" data-level="5" data-path="cross-validation.html"><a href="cross-validation.html"><i class="fa fa-check"></i><b>5</b> Cross Validation</a><ul>
+<li class="chapter" data-level="5.1" data-path="cross-validation.html"><a href="cross-validation.html#motivation-and-core-idea"><i class="fa fa-check"></i><b>5.1</b> Motivation and Core Idea</a></li>
+<li class="chapter" data-level="5.2" data-path="cross-validation.html"><a href="cross-validation.html#loss-function"><i class="fa fa-check"></i><b>5.2</b> Loss Function</a></li>
+<li class="chapter" data-level="5.3" data-path="cross-validation.html"><a href="cross-validation.html#implementation"><i class="fa fa-check"></i><b>5.3</b> Implementation</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="cross-validation.html"><a href="cross-validation.html#leave-one-out"><i class="fa fa-check"></i><b>5.3.1</b> Leave-one-out</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="cross-validation.html"><a href="cross-validation.html#k-fold-cross-validation"><i class="fa fa-check"></i><b>5.4</b> K-fold Cross-Validation</a><ul>
+<li class="chapter" data-level="5.4.1" data-path="cross-validation.html"><a href="cross-validation.html#random-division-into-test-and-training-data-set"><i class="fa fa-check"></i><b>5.4.1</b> Random Division into test and training data set</a></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="cross-validation.html"><a href="cross-validation.html#properties-of-the-different-schemes"><i class="fa fa-check"></i><b>5.5</b> Properties of the different schemes</a></li>
+<li class="chapter" data-level="5.6" data-path="cross-validation.html"><a href="cross-validation.html#shortcuts-for-some-linear-fitting-operators"><i class="fa fa-check"></i><b>5.6</b> Shortcuts for (some) linear fitting operators</a></li>
+<li class="chapter" data-level="5.7" data-path="cross-validation.html"><a href="cross-validation.html#parameter-tuning"><i class="fa fa-check"></i><b>5.7</b> Parameter Tuning</a></li>
+</ul></li>
 <li class="chapter" data-level="6" data-path="bootstrap.html"><a href="bootstrap.html"><i class="fa fa-check"></i><b>6</b> Bootstrap</a><ul>
 <li class="chapter" data-level="6.1" data-path="bootstrap.html"><a href="bootstrap.html#motivation"><i class="fa fa-check"></i><b>6.1</b> Motivation</a></li>
 <li class="chapter" data-level="6.2" data-path="bootstrap.html"><a href="bootstrap.html#the-bootstrap-distribution"><i class="fa fa-check"></i><b>6.2</b> The Bootstrap Distribution</a></li>
@@ -125,6 +137,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="7.2.1" data-path="classification.html"><a href="classification.html#lda"><i class="fa fa-check"></i><b>7.2.1</b> LDA</a></li>
 <li class="chapter" data-level="7.2.2" data-path="classification.html"><a href="classification.html#qda"><i class="fa fa-check"></i><b>7.2.2</b> QDA</a></li>
 </ul></li>
+<li class="chapter" data-level="7.3" data-path="classification.html"><a href="classification.html#indirect-classification---the-view-of-logistic-regression"><i class="fa fa-check"></i><b>7.3</b> Indirect Classification - The View of Logistic Regression</a></li>
 </ul></li>
 <li class="chapter" data-level="8" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html"><i class="fa fa-check"></i><b>8</b> Flexible regression and classification methods</a></li>
 <li class="chapter" data-level="9" data-path="bagging-and-boosting.html"><a href="bagging-and-boosting.html"><i class="fa fa-check"></i><b>9</b> Bagging and Boosting</a></li>
@@ -149,7 +162,63 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
             <section class="normal" id="section-">
 <div id="cross-validation" class="section level1">
 <h1><span class="header-section-number">Chapter 5</span> Cross Validation</h1>
+<div id="motivation-and-core-idea" class="section level2">
+<h2><span class="header-section-number">5.1</span> Motivation and Core Idea</h2>
+<p>Cross-validation is a tool for estimating the performance of an algorithm on new data points, the so-called the generalization error. An estimate of the generalization allows us to do two important things:</p>
+<ul>
+<li>Tuning the parameters of a statistical technique.</li>
+<li>Comparing statistical techniques with regard to their accuracy.</li>
+</ul>
+<p>If we use the <strong>training data</strong> to evaluate the performance of an algorithm, this estimate will be over-optimistic because an estimator is usually obtained by minimizing some sort of error in the training data. Therefore, we use a separate data pool, called the <strong>test data</strong> to evaluate the performance out of sample. Consider the regression function estimate <span class="math inline">\(\hat{m}\)</span> based on a sample <span class="math inline">\((X_1, ..., X_n.)\)</span>. By increasing the number of parameters in the model and by allowing for interactions between them, we can make the regression model fitting arbitrarily well to the data. However, such an extremely complex model will not perform as well with new data, that is, will not generalize well to other situations, since we essentially modeled also a lot of noise. We use the following notation: <span class="math display">\[ l^{-1}\sum\limits_{i = 1}^l\rho(Y_{new, i}, \hat{g}(X_{new, i}))\]</span> Where <span class="math inline">\(\rho\)</span> is a loss function to be evaluated on the new data points <span class="math inline">\((Y_{new, 1}, ..., Y_{new, l})\)</span> and the prediction made for <span class="math inline">\((X_{new, 1}, ..., X_{new, l})\)</span> with the function <span class="math inline">\(\hat{g}\)</span>, which was estimated from the training data <span class="math inline">\((X_1, ..., X_n)\)</span>. When <span class="math inline">\(l\)</span> gets large, this approximates the <strong>test error</strong> <span class="math display">\[\mathbb{E}_{(X_{new}, Y_{new})}[\rho(Y_{new}, \hat{m}(X_{new})]\]</span> which is still a function of the training data (since it is conditional on the training data). Note that the <em>test error</em> is not the same as the <strong>generalization error</strong>. The latter is an expectation over both the training and the test data. The typical relationship between the test error and the training error is depicted in the figure below.</p>
+<p><img src="figures/ge.jpg" width="650px" /></p>
+</div>
+<div id="loss-function" class="section level2">
+<h2><span class="header-section-number">5.2</span> Loss Function</h2>
+<p>Depending on the application, one can imagine different loss-functions. For example the squared deviance from the <em>true</em> value is often used, i.e. <span class="math display">\[n^{-1}\sum\limits_{i = 1}^n\rho(Y_i, \hat{m}(X_i)) = n^{-1}\sum\limits_{i = 1}^n(Y_i - \hat{m}(X_i))^2\]</span> Hence, larger deviance is penalized over-proportionally. For classification, one often uses the zero-one error, i.e. <span class="math display">\[n^{-1}\sum\limits_{i = 1}^n1_{\hat{m}(X_i) = Y_i}\]</span>. However, it might also be appropriate to use asymmetric loss functions if false negatives are worse than false positives (i.e. for cancer tests).</p>
+</div>
+<div id="implementation" class="section level2">
+<h2><span class="header-section-number">5.3</span> Implementation</h2>
+<p>There are different ways to do cross validation while adhering to the principles introduced above.</p>
+<div id="leave-one-out" class="section level3">
+<h3><span class="header-section-number">5.3.1</span> Leave-one-out</h3>
+<ul>
+<li>Use all but one data point to construct a model and predict on the remaining data point.</li>
+<li>Do that <span class="math inline">\(n\)</span> times until all <span class="math inline">\(n\)</span> points were used for prediction once.</li>
+<li>Compute the test error as an average over all n errors measured, i.e</li>
+</ul>
+<p><span class="math display">\[n^{-1}\sum\limits_{i = 1}^n \rho{(Y_{i}, \hat{m}_{n-1}^{-i}(X_i)})\]</span> And use that as an approximation of the <em>generalization error</em>.</p>
+</div>
+</div>
+<div id="k-fold-cross-validation" class="section level2">
+<h2><span class="header-section-number">5.4</span> K-fold Cross-Validation</h2>
+<p>This method is best explained with a picture.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">knitr::<span class="kw">include_graphics</span>(<span class="st">&quot;figures/k_fold_cv.png&quot;</span>)</code></pre></div>
+<p><img src="figures/k_fold_cv.png" width="650px" /> Here, one splits the data set into k equally sized fold. Then, we use all <span class="math inline">\(k-1\)</span> folds to build a model and the remaining fold to evaluate the model. Then, we average the <span class="math inline">\(k\)</span> estimates of the generalization error. Or in mathematical notation:</p>
+<p><span class="math display">\[K^{-1} \sum\limits_{k = 1}^K |B_k|^{-1} \sum\limits_{i \in B_k}\rho({Y_{i}, \hat{m}^{-B_k}_{n-|B_k|}(X_i))}\]</span></p>
+<p>Note that leave-one out cv is the same as k-fold cross validation with <span class="math inline">\(=n\)</span>.</p>
+<div id="random-division-into-test-and-training-data-set" class="section level3">
+<h3><span class="header-section-number">5.4.1</span> Random Division into test and training data set</h3>
+<p>The problem of K-fold cross-validation is that it depends on <strong>one realization</strong> of the split into k folds. Instead, we can generalize leave-one-out to leave-d-out. That means, we remove <span class="math inline">\(d\)</span> observations from our initial data, apply our estimation procedure and evaluate on the <span class="math inline">\(d\)</span> observations. <span class="math display">\[\hat{\theta}^{-C_k}_{n-k} \;\;\; \text{for all possible subsets}\;\; C_k, \;\; k=1, ..., {\binom{n}{d}}\]</span> The generalization error can be estimated with <span class="math display">\[{\binom{n}{d}}^{-1}\sum\limits_{k = 1}^{\binom{n}{d}} d^{-1}\sum\limits_{i \in C_k} \rho(Y_i, \hat{m}^{-C_k}_{n-d}(X_i))\]</span> For <span class="math inline">\(d &gt; 3\)</span>, the computational burden becomes immense. For that reason, instead of considering all <span class="math inline">\({\binom{n}{d}}\)</span> sets, we can uniformly draw <span class="math inline">\(B\)</span> sets (<span class="math inline">\(C_1^*, ... C_B^*\)</span>) from <span class="math inline">\(C_1, ..., C_{\binom{n}{d}}\)</span> <em>without replacement</em>. For <span class="math inline">\(B=\binom{n}{d}\)</span>, we obviously get the full leave-d-out solution. The <strong>computational cost</strong> for computing such an approximation to the leave-d-out is linear in <span class="math inline">\(B\)</span> (since evaluating is almost for free). For leave-one-out, the cost is linear in <span class="math inline">\(n\)</span> in the same way. Hence, the stochastic approximation for leave-d-out can be even smaller than for leave-one-out if <span class="math inline">\(B &lt; n\)</span>.</p>
+</div>
+</div>
+<div id="properties-of-the-different-schemes" class="section level2">
+<h2><span class="header-section-number">5.5</span> Properties of the different schemes</h2>
+<ul>
+<li><strong>leave-one-out</strong> is an asymptotically <strong>unbiased</strong> estimator for the generalization error and the true prediction. However, we use a sample size <span class="math inline">\(n-1\)</span> instead of <span class="math inline">\(n\)</span>, which causes a slight bias (meaning we have less data as we do in a real world scenario, which most likely makes the CV score a tiny little bit worse than it should be). Because the training sets are very similar to each other the leave-one-out scheme has a <strong>large variance</strong>.</li>
+<li><strong>leave-d-out</strong> has a <strong>higher bias</strong> than leave-one-out because the sample size is even smaller than <span class="math inline">\(n-1\)</span> (for <span class="math inline">\(d&gt;1\)</span>). However, since we aggregate over more ( instead of <span class="math inline">\(n\)</span>) cv scores, which can be shown to decrease the variance of the final cv estimator.</li>
+<li><strong>k-fold</strong> cv has a <strong>higher bias</strong> than both leave one out.</li>
+</ul>
+</div>
+<div id="shortcuts-for-some-linear-fitting-operators" class="section level2">
+<h2><span class="header-section-number">5.6</span> Shortcuts for (some) linear fitting operators</h2>
+<p>Leave-one-out cv score for some linear fitting procedures such as least squares or smoothing spline can be computed via a shortcut when our loss function is <span class="math inline">\(\rho(y, \hat{y}) = |y-\hat{y}|^2\)</span>. In particular, we can compute the estimator for such a linear fitting procedure <strong>once</strong>, compute the linear fitting operator <span class="math inline">\(S\)</span>, which satisfies <span class="math inline">\(\mathbf{Y} = \mathbf{SY}\)</span> and plug it in this formula: <span class="math display">\[n^{-1}\sum\limits_{i = 1}^n \Bigg(\frac{Y_i - \hat{m}(X_i)}{1-S_{ii}}\Bigg)^2\]</span> Computing <span class="math inline">\(\mathbf{S}\)</span> requires <span class="math inline">\(O(n)\)</span> operations (see exercises).</p>
+<p>Historically, it has been computationally easier to compute the trace of <span class="math inline">\(\mathbf{S}\)</span> so there is also a quantity called generalized cross validation (which is a misleading terminology), which coincides with the formula above in certain cases.</p>
+</div>
+<div id="parameter-tuning" class="section level2">
+<h2><span class="header-section-number">5.7</span> Parameter Tuning</h2>
+<p><strong>Example</strong> To use leave-one-out cross-validation for parameter tuning of a lasso. Calculate the test set error for <em>one</em> value of lamda. Then, change the value of lamda and recompute the model and then test set error, so that the test set error becomes a function of lamda, as depicted below. <img src="figures/lasso_cv.png" width="650px" /></p>
 
+</div>
 </div>
             </section>
 
@@ -188,7 +257,7 @@ gitbook.start({
 "link": null,
 "text": null
 },
-"download": ["comp_stats_summary.epub"],
+"download": null,
 "toc": {
 "collapse": "subsection"
 }

@@ -8,6 +8,6 @@ site: bookdown::bookdown_site
 documentclass: book
 ---
 
-# Hello World
+# Introduction
 
 This is a summary of the class computational statistics at ETH Zurich.

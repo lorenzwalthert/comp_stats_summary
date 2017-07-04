@@ -99,11 +99,23 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
       <nav role="navigation">
 
 <ul class="summary">
-<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Hello World</a></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
 <li class="chapter" data-level="2" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html"><i class="fa fa-check"></i><b>2</b> Multiple Linear Regression</a></li>
 <li class="chapter" data-level="3" data-path="nonparametric-density-estimation.html"><a href="nonparametric-density-estimation.html"><i class="fa fa-check"></i><b>3</b> Nonparametric Density Estimation</a></li>
 <li class="chapter" data-level="4" data-path="nonparametric-regression.html"><a href="nonparametric-regression.html"><i class="fa fa-check"></i><b>4</b> Nonparametric Regression</a></li>
-<li class="chapter" data-level="5" data-path="cross-validation.html"><a href="cross-validation.html"><i class="fa fa-check"></i><b>5</b> Cross Validation</a></li>
+<li class="chapter" data-level="5" data-path="cross-validation.html"><a href="cross-validation.html"><i class="fa fa-check"></i><b>5</b> Cross Validation</a><ul>
+<li class="chapter" data-level="5.1" data-path="cross-validation.html"><a href="cross-validation.html#motivation-and-core-idea"><i class="fa fa-check"></i><b>5.1</b> Motivation and Core Idea</a></li>
+<li class="chapter" data-level="5.2" data-path="cross-validation.html"><a href="cross-validation.html#loss-function"><i class="fa fa-check"></i><b>5.2</b> Loss Function</a></li>
+<li class="chapter" data-level="5.3" data-path="cross-validation.html"><a href="cross-validation.html#implementation"><i class="fa fa-check"></i><b>5.3</b> Implementation</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="cross-validation.html"><a href="cross-validation.html#leave-one-out"><i class="fa fa-check"></i><b>5.3.1</b> Leave-one-out</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="cross-validation.html"><a href="cross-validation.html#k-fold-cross-validation"><i class="fa fa-check"></i><b>5.4</b> K-fold Cross-Validation</a><ul>
+<li class="chapter" data-level="5.4.1" data-path="cross-validation.html"><a href="cross-validation.html#random-division-into-test-and-training-data-set"><i class="fa fa-check"></i><b>5.4.1</b> Random Division into test and training data set</a></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="cross-validation.html"><a href="cross-validation.html#properties-of-the-different-schemes"><i class="fa fa-check"></i><b>5.5</b> Properties of the different schemes</a></li>
+<li class="chapter" data-level="5.6" data-path="cross-validation.html"><a href="cross-validation.html#shortcuts-for-some-linear-fitting-operators"><i class="fa fa-check"></i><b>5.6</b> Shortcuts for (some) linear fitting operators</a></li>
+<li class="chapter" data-level="5.7" data-path="cross-validation.html"><a href="cross-validation.html#parameter-tuning"><i class="fa fa-check"></i><b>5.7</b> Parameter Tuning</a></li>
+</ul></li>
 <li class="chapter" data-level="6" data-path="bootstrap.html"><a href="bootstrap.html"><i class="fa fa-check"></i><b>6</b> Bootstrap</a><ul>
 <li class="chapter" data-level="6.1" data-path="bootstrap.html"><a href="bootstrap.html#motivation"><i class="fa fa-check"></i><b>6.1</b> Motivation</a></li>
 <li class="chapter" data-level="6.2" data-path="bootstrap.html"><a href="bootstrap.html#the-bootstrap-distribution"><i class="fa fa-check"></i><b>6.2</b> The Bootstrap Distribution</a></li>
@@ -125,6 +137,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="7.2.1" data-path="classification.html"><a href="classification.html#lda"><i class="fa fa-check"></i><b>7.2.1</b> LDA</a></li>
 <li class="chapter" data-level="7.2.2" data-path="classification.html"><a href="classification.html#qda"><i class="fa fa-check"></i><b>7.2.2</b> QDA</a></li>
 </ul></li>
+<li class="chapter" data-level="7.3" data-path="classification.html"><a href="classification.html#indirect-classification---the-view-of-logistic-regression"><i class="fa fa-check"></i><b>7.3</b> Indirect Classification - The View of Logistic Regression</a></li>
 </ul></li>
 <li class="chapter" data-level="8" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html"><i class="fa fa-check"></i><b>8</b> Flexible regression and classification methods</a></li>
 <li class="chapter" data-level="9" data-path="bagging-and-boosting.html"><a href="bagging-and-boosting.html"><i class="fa fa-check"></i><b>9</b> Bagging and Boosting</a></li>
@@ -172,7 +185,7 @@ out &lt;-<span class="st"> </span><span class="kw">data_frame</span>(<span class
 <span class="kw">ggplot</span>(out, <span class="kw">aes</span>(<span class="dt">x =</span> value, <span class="dt">color =</span> type)) +<span class="st"> </span>
 <span class="st">  </span><span class="kw">geom_density</span>() +<span class="st"> </span>
 <span class="st">  </span><span class="kw">geom_density</span>(<span class="kw">aes</span>(<span class="dt">x =</span> pop, <span class="dt">color =</span> <span class="ot">NULL</span>), <span class="dt">data =</span> pop)</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <p>We can summarize the bootstrap procedure as follows.</p>
 <ul>
 <li>draw a bootstrap sample <span class="math inline">\({Z_1}^{*}, ..., {Z_{n}}^{*}\)</span></li>
@@ -320,7 +333,7 @@ gitbook.start({
 "link": null,
 "text": null
 },
-"download": ["comp_stats_summary.epub"],
+"download": null,
 "toc": {
 "collapse": "subsection"
 }

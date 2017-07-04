@@ -99,11 +99,23 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
       <nav role="navigation">
 
 <ul class="summary">
-<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Hello World</a></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
 <li class="chapter" data-level="2" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html"><i class="fa fa-check"></i><b>2</b> Multiple Linear Regression</a></li>
 <li class="chapter" data-level="3" data-path="nonparametric-density-estimation.html"><a href="nonparametric-density-estimation.html"><i class="fa fa-check"></i><b>3</b> Nonparametric Density Estimation</a></li>
 <li class="chapter" data-level="4" data-path="nonparametric-regression.html"><a href="nonparametric-regression.html"><i class="fa fa-check"></i><b>4</b> Nonparametric Regression</a></li>
-<li class="chapter" data-level="5" data-path="cross-validation.html"><a href="cross-validation.html"><i class="fa fa-check"></i><b>5</b> Cross Validation</a></li>
+<li class="chapter" data-level="5" data-path="cross-validation.html"><a href="cross-validation.html"><i class="fa fa-check"></i><b>5</b> Cross Validation</a><ul>
+<li class="chapter" data-level="5.1" data-path="cross-validation.html"><a href="cross-validation.html#motivation-and-core-idea"><i class="fa fa-check"></i><b>5.1</b> Motivation and Core Idea</a></li>
+<li class="chapter" data-level="5.2" data-path="cross-validation.html"><a href="cross-validation.html#loss-function"><i class="fa fa-check"></i><b>5.2</b> Loss Function</a></li>
+<li class="chapter" data-level="5.3" data-path="cross-validation.html"><a href="cross-validation.html#implementation"><i class="fa fa-check"></i><b>5.3</b> Implementation</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="cross-validation.html"><a href="cross-validation.html#leave-one-out"><i class="fa fa-check"></i><b>5.3.1</b> Leave-one-out</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="cross-validation.html"><a href="cross-validation.html#k-fold-cross-validation"><i class="fa fa-check"></i><b>5.4</b> K-fold Cross-Validation</a><ul>
+<li class="chapter" data-level="5.4.1" data-path="cross-validation.html"><a href="cross-validation.html#random-division-into-test-and-training-data-set"><i class="fa fa-check"></i><b>5.4.1</b> Random Division into test and training data set</a></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="cross-validation.html"><a href="cross-validation.html#properties-of-the-different-schemes"><i class="fa fa-check"></i><b>5.5</b> Properties of the different schemes</a></li>
+<li class="chapter" data-level="5.6" data-path="cross-validation.html"><a href="cross-validation.html#shortcuts-for-some-linear-fitting-operators"><i class="fa fa-check"></i><b>5.6</b> Shortcuts for (some) linear fitting operators</a></li>
+<li class="chapter" data-level="5.7" data-path="cross-validation.html"><a href="cross-validation.html#parameter-tuning"><i class="fa fa-check"></i><b>5.7</b> Parameter Tuning</a></li>
+</ul></li>
 <li class="chapter" data-level="6" data-path="bootstrap.html"><a href="bootstrap.html"><i class="fa fa-check"></i><b>6</b> Bootstrap</a><ul>
 <li class="chapter" data-level="6.1" data-path="bootstrap.html"><a href="bootstrap.html#motivation"><i class="fa fa-check"></i><b>6.1</b> Motivation</a></li>
 <li class="chapter" data-level="6.2" data-path="bootstrap.html"><a href="bootstrap.html#the-bootstrap-distribution"><i class="fa fa-check"></i><b>6.2</b> The Bootstrap Distribution</a></li>
@@ -125,6 +137,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="7.2.1" data-path="classification.html"><a href="classification.html#lda"><i class="fa fa-check"></i><b>7.2.1</b> LDA</a></li>
 <li class="chapter" data-level="7.2.2" data-path="classification.html"><a href="classification.html#qda"><i class="fa fa-check"></i><b>7.2.2</b> QDA</a></li>
 </ul></li>
+<li class="chapter" data-level="7.3" data-path="classification.html"><a href="classification.html#indirect-classification---the-view-of-logistic-regression"><i class="fa fa-check"></i><b>7.3</b> Indirect Classification - The View of Logistic Regression</a></li>
 </ul></li>
 <li class="chapter" data-level="8" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html"><i class="fa fa-check"></i><b>8</b> Flexible regression and classification methods</a></li>
 <li class="chapter" data-level="9" data-path="bagging-and-boosting.html"><a href="bagging-and-boosting.html"><i class="fa fa-check"></i><b>9</b> Bagging and Boosting</a></li>
@@ -151,7 +164,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h1><span class="header-section-number">Chapter 7</span> Classification</h1>
 <div id="indirect-classification---the-bayes-classifier" class="section level2">
 <h2><span class="header-section-number">7.1</span> Indirect Classification - The Bayes Classifier</h2>
-<p>In classification, the goal is to assign observations to a group. Similar to regression, where we have <span class="math inline">\(m(x) = E[Y | X = x]\)</span>, we want to assign class probabilities to the observations <span class="math display">\[\pi_j (x) = P[Y = j | X = x] \;\;\;  (j = 0,1, ..., J-1)  \]</span> <em>Def</em>: A classifier maps A multidimensional input vector to a class label. Or mathematically: <span class="math inline">\(C: \mathbb{R}^p \rightarrow \{0, ..., J-1\}\)</span> The quality of a classifier is measured via the zero-one test-error. <span class="math display">\[\mathbb{P}[C(X_{new}) \neq Y_{new}] \]</span></p>
+<p>In classification, the goal is to assign observations to a group. Similar to regression, where we have <span class="math inline">\(m(x) = E[Y | X = x]\)</span>, we want to assign class abc probabilities to the observations <span class="math display">\[\pi_j (x) = P[Y = j | X = x] \;\;\;  (j = 0,1, ..., J-1)  \]</span> <em>Def</em>: A classifier maps A multidimensional input vector to a class label. Or mathematically: <span class="math inline">\(C: \mathbb{R}^p \rightarrow \{0, ..., J-1\}\)</span> The quality of a classifier is measured via the zero-one test-error. <span class="math display">\[\mathbb{P}[C(X_{new}) \neq Y_{new}] \]</span></p>
 <p>The optimal classifier with respect to the zero-one Error is the Bayes Classifier. It classifies an observation to the group for which the predicted probability was the highest. <span class="math display">\[ C_{bayes}(x) = \arg\max_{0&lt;j&lt;J-1}\pi_j(x)\]</span> Hence, the Bayes Classifier is a point-wise classifier. For the Bayes Classifier, the zero-one test error is known as the <em>Bayes Risk</em>. <span class="math display">\[ \mathbb{P}[C_{Bayes}(X_{new}) \neq Y_{new}]\]</span></p>
 <p>In practice, <span class="math inline">\(\pi_j(\cdot)\)</span> is unknown (just as the MSE in regression is unknown) and hence, the the Bayes Classifier and Risk is unknown too. However, we can estimate <span class="math inline">\(\pi_j(\cdot)\)</span> from the data and plug it in the Bayes Classifier. <span class="math display">\[\hat{C}(X) = \arg\max_{0&lt;j&lt;J-1}\hat{\pi}_j(x)\]</span> This is an indirect estimator, since we first estimate the class probabilities <span class="math inline">\(\pi_j(\cdot)\)</span> for each observation <span class="math inline">\(x\)</span> and then assign the class to it for which the probability was the highest. Question how is that more indirect than Discriminant analysis? Don’t we use the Bayes classifier in the end?</p>
 </div>
@@ -167,8 +180,26 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="qda" class="section level3">
 <h3><span class="header-section-number">7.2.2</span> QDA</h3>
 <p>Quadratic discriminant analysis loosens the assumption of shared covariance matrices, namely each group has their own covariance matrix. This leads to quadratic decisions functions <span class="math inline">\(\delta\)</span> and hence to non-linear decision boundaries. QDA is more flexible but for high <span class="math inline">\(p\)</span>, the problem of over-fitting can occur, since the number of variables to estimate is <span class="math inline">\(J*p(p+1)\)</span> variable for the covariance matrix only (instead of <span class="math inline">\(p*(p+1)\)</span> for LDA.</p>
-
 </div>
+</div>
+<div id="indirect-classification---the-view-of-logistic-regression" class="section level2">
+<h2><span class="header-section-number">7.3</span> Indirect Classification - The View of Logistic Regression</h2>
+<p>There are also ways to come up with indirect assignment of the class label, namely via the Bayes classifier <span class="math inline">\(\hat{C}(X) = \arg\max_{0&lt;j&lt;J-1}\hat{\pi}_j(x)\)</span>. The logistic model for <span class="math inline">\(\pi_j(x) = \mathbb{P}(Y = j | X = x)\)</span> is <span class="math inline">\(\log(\frac{\pi_j(x)}{1-\pi_j(x)}) = g(\cdot)\)</span> or <span class="math inline">\(\pi_j(x) = \frac{e^{g(\cdot)}}{1+ e^{g(\cdot)}}\)</span> equivalently. That model maps the real value <span class="math inline">\(g(\cdot)\)</span> can take to the interval <span class="math inline">\((0, 1)\)</span>, which gives a natural interpretation of the reponse as a probability. The response variable <span class="math inline">\(Y_1, ..., Y_n\)</span> are distributed according to a Bernulli distribution, ie. <span class="math inline">\(Y_1, ..., Y_n \sim \textrm{Bernulli}(\pi(x_i))\)</span>. The logistic model belongs to the class of generalized linear models. These models have three characteristics:</p>
+<ul>
+<li>A link function (in our case the logit function <span class="math inline">\(\log(\frac{\pi_j(x)}{1-\pi_j(x)}) = g(x)\)</span>).</li>
+<li>A response distribution (i.e. Bernulli)</li>
+<li>The concrete form of <span class="math inline">\(g(\cdot)\)</span> (in logistic regression most often just a linear model <span class="math inline">\(g(x) = \sum\limits_{j = 1}^p \beta_j x_j\)</span>).</li>
+</ul>
+This allows us to write down the likelihood of the logistic model
+<span class="math display" id="eq:var-beta">\[\begin{equation} 
+\begin{split}
+L(\beta, (x_1, Y_1), ..., (x_n, Y_n))&amp;  = \prod\limits_{i = 1}^n \mathbb{P}(Y_i = y_i)\\
+ &amp; =\prod\limits_{i = 1}^n \pi(x_i)^{Y_i-1}(1-\pi(x_i))^{Y_i-1}\\
+\log(L(\cdot) &amp; = \sum\limits_{i = 1}^n Y_i \pi(x_i) + (1 - Y_i) (1 - \pi(x_i))
+\end{split}
+\tag{7.1}
+\end{equation}\]</span>
+
 </div>
 </div>
             </section>
@@ -208,7 +239,7 @@ gitbook.start({
 "link": null,
 "text": null
 },
-"download": ["comp_stats_summary.epub"],
+"download": null,
 "toc": {
 "collapse": "subsection"
 }

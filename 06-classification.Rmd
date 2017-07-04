@@ -1,7 +1,7 @@
 # Classification
 ## Indirect Classification - The Bayes Classifier
 In classification, the goal is to assign observations to a group. Similar to 
-regression, where we have $m(x) = E[Y | X = x]$, we want to assign class 
+regression, where we have $m(x) = E[Y | X = x]$, we want to assign class abc
 probabilities to the observations 
 $$\pi_j (x) = P[Y = j | X = x] \;\;\;  (j = 0,1, ..., J-1)  $$
 *Def*: A classifier maps A multidimensional input vector to a class label.
@@ -63,4 +63,34 @@ boundaries.
 QDA is more flexible but for high $p$, the problem of over-fitting can occur,
 since the number of variables to estimate is $J*p(p+1)$ variable for the 
 covariance matrix only (instead of $p*(p+1)$ for LDA.
+
+## Indirect Classification - The View of Logistic Regression
+There are also ways to come up with indirect assignment of the class label, 
+namely via the Bayes classifier $\hat{C}(X) = \arg\max_{0<j<J-1}\hat{\pi}_j(x)$. 
+The logistic model for $\pi_j(x) = \mathbb{P}(Y = j | X = x)$ is 
+$\log(\frac{\pi_j(x)}{1-\pi_j(x)}) = g(\cdot)$ or 
+$\pi_j(x) = \frac{e^{g(\cdot)}}{1+ e^{g(\cdot)}}$ equivalently. That model
+maps the real value $g(\cdot)$ can take to the interval $(0, 1)$, which gives 
+a natural interpretation of the reponse as a probability.
+The response variable $Y_1, ..., Y_n$ are distributed according to a 
+Bernulli distribution, ie. $Y_1, ..., Y_n \sim \textrm{Bernulli}(\pi(x_i))$. 
+The logistic model belongs to the class of generalized linear models. 
+These models have three characteristics:
+
+* A link function (in our case the logit function 
+  $\log(\frac{\pi_j(x)}{1-\pi_j(x)}) = g(x)$).
+* A response distribution (i.e. Bernulli)
+* The concrete form of $g(\cdot)$ (in logistic regression most often just 
+  a linear model $g(x) = \sum\limits_{j = 1}^p \beta_j x_j$).
+
+This allows us to write down the likelihood of the logistic model
+\begin{equation} 
+\begin{split}
+L(\beta, (x_1, Y_1), ..., (x_n, Y_n))&  = \prod\limits_{i = 1}^n \mathbb{P}(Y_i = y_i)\\
+ & =\prod\limits_{i = 1}^n \pi(x_i)^{Y_i-1}(1-\pi(x_i))^{Y_i-1}\\
+\log(L(\cdot) & = \sum\limits_{i = 1}^n Y_i \pi(x_i) + (1 - Y_i) (1 - \pi(x_i))
+\end{split}
+(\#eq:var-beta)
+\end{equation} 
+
 
