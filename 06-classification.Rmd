@@ -71,7 +71,8 @@ The logistic model for $\pi_j(x) = \mathbb{P}(Y = j | X = x)$ is
 $\log(\frac{\pi_j(x)}{1-\pi_j(x)}) = g(\cdot)$ or 
 $\pi_j(x) = \frac{e^{g(\cdot)}}{1+ e^{g(\cdot)}}$ equivalently. That model
 maps the real value $g(\cdot)$ can take to the interval $(0, 1)$, which gives 
-a natural interpretation of the reponse as a probability.
+a natural interpretation of the reponse as a probability. Note that we want
+the transformation to be monotone so the mapping is invertible.
 The response variable $Y_1, ..., Y_n$ are distributed according to a 
 Bernulli distribution, ie. $Y_1, ..., Y_n \sim \textrm{Bernulli}(\pi(x_i))$. 
 The logistic model belongs to the class of generalized linear models. 
@@ -93,4 +94,69 @@ L(\beta, (x_1, Y_1), ..., (x_n, Y_n))&  = \prod\limits_{i = 1}^n \mathbb{P}(Y_i 
 (\#eq:var-beta)
 \end{equation} 
 
+There is no closed-form solution for the above problem, hence we need to rely
+on gradient descent to find the maximum likelihood solution.
+You can fit a logistic regression model in R as follows:
+```{r, eval=FALSE}
+# fit the model
+fit <- glm(response~predictors, data = my_data, family = "binomial")
+# predict
+prediction <- predict(fit, newdata = my_data, type = "response") > 0.5
+# evaluate in-sample
+mean(prediction == my_data$response)
+```
 
+## Discriminant Analysis or Logistic Regression?
+
+* The logistic regression assumes the log-odds to be *linear* in the predictors, 
+  ie. $\log\Big(\frac{\pi}{1-\pi}\Big) = \sum\limits_{i = 1}^p \beta_i x_i$.
+* The discriminant analysis assumes $X|Y \sim N(\mu_j, \Sigma$, which leads to
+  linear model in the decision variables. Hence, the methods are 
+  **quite similar**.
+* It is quite natural to use factors with logistic regression, while for 
+  discriminant analysis, it is not very natural (?even not reasonable?).
+* Empirically, the two methods yield similar results even under a violation of
+  the normality assumption.
+  
+**TODO** multinomial likelihood (see footnote.)
+
+## Multiclass case (J > 2)
+With logisitc regression, you can not model multiclass cases directly, but 
+indirectly using one of the following mehtods:
+
+* Encode a J-case problem as J binary problems (one class against the rest), 
+  that is
+  
+   \begin{equation}
+  Y_i^{(j)} = \begin{cases}
+        1 \text{if} Y_i = j
+        \\
+        0 \text{else}.
+        \end{cases}
+ \end{equation}
+
+For each case you want to label, you will obtain $J-1$ probability estimates,
+i.e. 
+$\pi_j(x) = \frac{\exp\big(\sum\beta^{(j)}_jx_j\big)}{1  + \exp\big(\sum\beta^{(j)}_jx_j\big)}$. 
+They don't sum up to one necessarily, 
+but you can normalize to obtain normed probabilities. Then, use the Bayes 
+classifier to choose the class label ($\arg\max_{0 < j < J-1} \pi_j$)
+
+* Similarly, you can also model *all against the reference*, 
+  $\log(\frac{\pi_1}{\pi_0})$. This might be helpful when we want to compare
+  different group memeberships with a reference group. 
+  For example in clinical trials, 
+  we want to compare how many times more likely someone belongs to group 
+  *ill with disease A* than *healthy* (the reference).
+* You can also look at pair-wise comparisons. Choose two groups you want to 
+  compare, drop all observations that don't belong to one of the two groups
+  and estimate the model. There are $\binom{J}{2}$ possible models with all
+  models potentially having different number of observations.
+* In the special case of **ordered groups**, the correct model is often 
+  proportional odds model that models
+  
+$$\text{logit}(\mathbb{P}(Y < k |X) = \alpha_k + g(\cdot))$$
+
+with $\alpha_1 \lt \alpha_2 \lt \text{...} \lt \alpha_{J-1}$. 
+The log odds are proportional, which becomes obvious if we take $e$ to the power
+of the above equation.

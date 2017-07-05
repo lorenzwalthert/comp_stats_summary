@@ -114,7 +114,10 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul></li>
 <li class="chapter" data-level="5.5" data-path="cross-validation.html"><a href="cross-validation.html#properties-of-the-different-schemes"><i class="fa fa-check"></i><b>5.5</b> Properties of the different schemes</a></li>
 <li class="chapter" data-level="5.6" data-path="cross-validation.html"><a href="cross-validation.html#shortcuts-for-some-linear-fitting-operators"><i class="fa fa-check"></i><b>5.6</b> Shortcuts for (some) linear fitting operators</a></li>
-<li class="chapter" data-level="5.7" data-path="cross-validation.html"><a href="cross-validation.html#parameter-tuning"><i class="fa fa-check"></i><b>5.7</b> Parameter Tuning</a></li>
+<li class="chapter" data-level="5.7" data-path="cross-validation.html"><a href="cross-validation.html#examples"><i class="fa fa-check"></i><b>5.7</b> Examples</a><ul>
+<li class="chapter" data-level="5.7.1" data-path="cross-validation.html"><a href="cross-validation.html#practical-cv-in-r"><i class="fa fa-check"></i><b>5.7.1</b> Practical CV in R</a></li>
+<li class="chapter" data-level="5.7.2" data-path="cross-validation.html"><a href="cross-validation.html#parameter-tuning"><i class="fa fa-check"></i><b>5.7.2</b> Parameter Tuning</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="6" data-path="bootstrap.html"><a href="bootstrap.html"><i class="fa fa-check"></i><b>6</b> Bootstrap</a><ul>
 <li class="chapter" data-level="6.1" data-path="bootstrap.html"><a href="bootstrap.html#motivation"><i class="fa fa-check"></i><b>6.1</b> Motivation</a></li>
@@ -138,6 +141,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="7.2.2" data-path="classification.html"><a href="classification.html#qda"><i class="fa fa-check"></i><b>7.2.2</b> QDA</a></li>
 </ul></li>
 <li class="chapter" data-level="7.3" data-path="classification.html"><a href="classification.html#indirect-classification---the-view-of-logistic-regression"><i class="fa fa-check"></i><b>7.3</b> Indirect Classification - The View of Logistic Regression</a></li>
+<li class="chapter" data-level="7.4" data-path="classification.html"><a href="classification.html#discriminant-analysis-or-logistic-regression"><i class="fa fa-check"></i><b>7.4</b> Discriminant Analysis or Logistic Regression?</a></li>
+<li class="chapter" data-level="7.5" data-path="classification.html"><a href="classification.html#multiclass-case-j-2"><i class="fa fa-check"></i><b>7.5</b> Multiclass case (J &gt; 2)</a></li>
 </ul></li>
 <li class="chapter" data-level="8" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html"><i class="fa fa-check"></i><b>8</b> Flexible regression and classification methods</a></li>
 <li class="chapter" data-level="9" data-path="bagging-and-boosting.html"><a href="bagging-and-boosting.html"><i class="fa fa-check"></i><b>9</b> Bagging and Boosting</a></li>
@@ -184,7 +189,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </div>
 <div id="indirect-classification---the-view-of-logistic-regression" class="section level2">
 <h2><span class="header-section-number">7.3</span> Indirect Classification - The View of Logistic Regression</h2>
-<p>There are also ways to come up with indirect assignment of the class label, namely via the Bayes classifier <span class="math inline">\(\hat{C}(X) = \arg\max_{0&lt;j&lt;J-1}\hat{\pi}_j(x)\)</span>. The logistic model for <span class="math inline">\(\pi_j(x) = \mathbb{P}(Y = j | X = x)\)</span> is <span class="math inline">\(\log(\frac{\pi_j(x)}{1-\pi_j(x)}) = g(\cdot)\)</span> or <span class="math inline">\(\pi_j(x) = \frac{e^{g(\cdot)}}{1+ e^{g(\cdot)}}\)</span> equivalently. That model maps the real value <span class="math inline">\(g(\cdot)\)</span> can take to the interval <span class="math inline">\((0, 1)\)</span>, which gives a natural interpretation of the reponse as a probability. The response variable <span class="math inline">\(Y_1, ..., Y_n\)</span> are distributed according to a Bernulli distribution, ie. <span class="math inline">\(Y_1, ..., Y_n \sim \textrm{Bernulli}(\pi(x_i))\)</span>. The logistic model belongs to the class of generalized linear models. These models have three characteristics:</p>
+<p>There are also ways to come up with indirect assignment of the class label, namely via the Bayes classifier <span class="math inline">\(\hat{C}(X) = \arg\max_{0&lt;j&lt;J-1}\hat{\pi}_j(x)\)</span>. The logistic model for <span class="math inline">\(\pi_j(x) = \mathbb{P}(Y = j | X = x)\)</span> is <span class="math inline">\(\log(\frac{\pi_j(x)}{1-\pi_j(x)}) = g(\cdot)\)</span> or <span class="math inline">\(\pi_j(x) = \frac{e^{g(\cdot)}}{1+ e^{g(\cdot)}}\)</span> equivalently. That model maps the real value <span class="math inline">\(g(\cdot)\)</span> can take to the interval <span class="math inline">\((0, 1)\)</span>, which gives a natural interpretation of the reponse as a probability. Note that we want the transformation to be monotone so the mapping is invertible. The response variable <span class="math inline">\(Y_1, ..., Y_n\)</span> are distributed according to a Bernulli distribution, ie. <span class="math inline">\(Y_1, ..., Y_n \sim \textrm{Bernulli}(\pi(x_i))\)</span>. The logistic model belongs to the class of generalized linear models. These models have three characteristics:</p>
 <ul>
 <li>A link function (in our case the logit function <span class="math inline">\(\log(\frac{\pi_j(x)}{1-\pi_j(x)}) = g(x)\)</span>).</li>
 <li>A response distribution (i.e. Bernulli)</li>
@@ -199,6 +204,45 @@ L(\beta, (x_1, Y_1), ..., (x_n, Y_n))&amp;  = \prod\limits_{i = 1}^n \mathbb{P}(
 \end{split}
 \tag{7.1}
 \end{equation}\]</span>
+<p>There is no closed-form solution for the above problem, hence we need to rely on gradient descent to find the maximum likelihood solution. You can fit a logistic regression model in R as follows:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># fit the model</span>
+fit &lt;-<span class="st"> </span><span class="kw">glm</span>(response~predictors, <span class="dt">data =</span> my_data, <span class="dt">family =</span> <span class="st">&quot;binomial&quot;</span>)
+<span class="co"># predict</span>
+prediction &lt;-<span class="st"> </span><span class="kw">predict</span>(fit, <span class="dt">newdata =</span> my_data, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>) &gt;<span class="st"> </span><span class="fl">0.5</span>
+<span class="co"># evaluate in-sample</span>
+<span class="kw">mean</span>(prediction ==<span class="st"> </span>my_data$response)</code></pre></div>
+</div>
+<div id="discriminant-analysis-or-logistic-regression" class="section level2">
+<h2><span class="header-section-number">7.4</span> Discriminant Analysis or Logistic Regression?</h2>
+<ul>
+<li>The logistic regression assumes the log-odds to be <em>linear</em> in the predictors, ie. <span class="math inline">\(\log\Big(\frac{\pi}{1-\pi}\Big) = \sum\limits_{i = 1}^p \beta_i x_i\)</span>.</li>
+<li>The discriminant analysis assumes <span class="math inline">\(X|Y \sim N(\mu_j, \Sigma\)</span>, which leads to linear model in the decision variables. Hence, the methods are <strong>quite similar</strong>.</li>
+<li>It is quite natural to use factors with logistic regression, while for discriminant analysis, it is not very natural (?even not reasonable?).</li>
+<li>Empirically, the two methods yield similar results even under a violation of the normality assumption.</li>
+</ul>
+<p><strong>TODO</strong> multinomial likelihood (see footnote.)</p>
+</div>
+<div id="multiclass-case-j-2" class="section level2">
+<h2><span class="header-section-number">7.5</span> Multiclass case (J &gt; 2)</h2>
+<p>With logisitc regression, you can not model multiclass cases directly, but indirectly using one of the following mehtods:</p>
+<ul>
+<li>Encode a J-case problem as J binary problems (one class against the rest), that is</li>
+</ul>
+<span class="math display">\[\begin{equation}
+  Y_i^{(j)} = \begin{cases}
+        1 \text{if} Y_i = j
+        \\
+        0 \text{else}.
+        \end{cases}
+ \end{equation}\]</span>
+<p>For each case you want to label, you will obtain <span class="math inline">\(J-1\)</span> probability estimates, i.e. <span class="math inline">\(\pi_j(x) = \frac{\exp\big(\sum\beta^{(j)}_jx_j\big)}{1 + \exp\big(\sum\beta^{(j)}_jx_j\big)}\)</span>. They don’t sum up to one necessarily, but you can normalize to obtain normed probabilities. Then, use the Bayes classifier to choose the class label (<span class="math inline">\(\arg\max_{0 &lt; j &lt; J-1} \pi_j\)</span>)</p>
+<ul>
+<li>Similarly, you can also model <em>all against the reference</em>, <span class="math inline">\(\log(\frac{\pi_1}{\pi_0})\)</span>. This might be helpful when we want to compare different group memeberships with a reference group. For example in clinical trials, we want to compare how many times more likely someone belongs to group <em>ill with disease A</em> than <em>healthy</em> (the reference).</li>
+<li>You can also look at pair-wise comparisons. Choose two groups you want to compare, drop all observations that don’t belong to one of the two groups and estimate the model. There are <span class="math inline">\(\binom{J}{2}\)</span> possible models with all models potentially having different number of observations.</li>
+<li>In the special case of <strong>ordered groups</strong>, the correct model is often proportional odds model that models</li>
+</ul>
+<p><span class="math display">\[\text{logit}(\mathbb{P}(Y &lt; k |X) = \alpha_k + g(\cdot))\]</span></p>
+<p>with <span class="math inline">\(\alpha_1 \lt \alpha_2 \lt \text{...} \lt \alpha_{J-1}\)</span>. The log odds are proportional, which becomes obvious if we take <span class="math inline">\(e\)</span> to the power of the above equation.</p>
 
 </div>
 </div>
@@ -239,7 +283,7 @@ gitbook.start({
 "link": null,
 "text": null
 },
-"download": null,
+"download": ["comp_stats_summary.epub"],
 "toc": {
 "collapse": "subsection"
 }

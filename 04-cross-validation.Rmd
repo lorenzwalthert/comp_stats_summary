@@ -123,12 +123,26 @@ $\mathbf{S}$ so there is also a quantity called generalized cross validation
 (which is a misleading terminology), 
 which coincides with the formula above in certain cases.
 
-## Parameter Tuning
-**Example** To use leave-one-out cross-validation for parameter tuning of a
+## Examples
+
+### Practical CV in R
+
+Key concepts to do CV in base R are 
+
+* Do not split the data, split the indices of the data and work with them if 
+  ever possible and subset the data. `sample()` is your friend.
+* use `lapply()`, `apply()` and friends. to "loop" over data. Work with 
+  matrices when possible, not with lists or data frames.
+* use helper function to solve "the small problems in the big problem".
+
+### Parameter Tuning
+To use leave-one-out cross-validation for parameter tuning of a
 lasso. Calculate the test set error for *one* value of lamda. Then,
 change the value of lamda and recompute the model and then test set error, so
 that the test set error becomes a function of lamda, as depicted below.
 ```{r, out.width="650px", echo=FALSE}
 knitr::include_graphics("figures/lasso_cv.png")
 ```
-
+Then pick an optimal lamda, e.g. the one with the lowest test error (a bit
+arbitrary) or one according to some other rule (e.g. pick the least complex
+model that is within one standard error of the best model).

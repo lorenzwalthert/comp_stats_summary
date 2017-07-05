@@ -114,7 +114,10 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul></li>
 <li class="chapter" data-level="5.5" data-path="cross-validation.html"><a href="cross-validation.html#properties-of-the-different-schemes"><i class="fa fa-check"></i><b>5.5</b> Properties of the different schemes</a></li>
 <li class="chapter" data-level="5.6" data-path="cross-validation.html"><a href="cross-validation.html#shortcuts-for-some-linear-fitting-operators"><i class="fa fa-check"></i><b>5.6</b> Shortcuts for (some) linear fitting operators</a></li>
-<li class="chapter" data-level="5.7" data-path="cross-validation.html"><a href="cross-validation.html#parameter-tuning"><i class="fa fa-check"></i><b>5.7</b> Parameter Tuning</a></li>
+<li class="chapter" data-level="5.7" data-path="cross-validation.html"><a href="cross-validation.html#examples"><i class="fa fa-check"></i><b>5.7</b> Examples</a><ul>
+<li class="chapter" data-level="5.7.1" data-path="cross-validation.html"><a href="cross-validation.html#practical-cv-in-r"><i class="fa fa-check"></i><b>5.7.1</b> Practical CV in R</a></li>
+<li class="chapter" data-level="5.7.2" data-path="cross-validation.html"><a href="cross-validation.html#parameter-tuning"><i class="fa fa-check"></i><b>5.7.2</b> Parameter Tuning</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="6" data-path="bootstrap.html"><a href="bootstrap.html"><i class="fa fa-check"></i><b>6</b> Bootstrap</a><ul>
 <li class="chapter" data-level="6.1" data-path="bootstrap.html"><a href="bootstrap.html#motivation"><i class="fa fa-check"></i><b>6.1</b> Motivation</a></li>
@@ -138,6 +141,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="7.2.2" data-path="classification.html"><a href="classification.html#qda"><i class="fa fa-check"></i><b>7.2.2</b> QDA</a></li>
 </ul></li>
 <li class="chapter" data-level="7.3" data-path="classification.html"><a href="classification.html#indirect-classification---the-view-of-logistic-regression"><i class="fa fa-check"></i><b>7.3</b> Indirect Classification - The View of Logistic Regression</a></li>
+<li class="chapter" data-level="7.4" data-path="classification.html"><a href="classification.html#discriminant-analysis-or-logistic-regression"><i class="fa fa-check"></i><b>7.4</b> Discriminant Analysis or Logistic Regression?</a></li>
+<li class="chapter" data-level="7.5" data-path="classification.html"><a href="classification.html#multiclass-case-j-2"><i class="fa fa-check"></i><b>7.5</b> Multiclass case (J &gt; 2)</a></li>
 </ul></li>
 <li class="chapter" data-level="8" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html"><i class="fa fa-check"></i><b>8</b> Flexible regression and classification methods</a></li>
 <li class="chapter" data-level="9" data-path="bagging-and-boosting.html"><a href="bagging-and-boosting.html"><i class="fa fa-check"></i><b>9</b> Bagging and Boosting</a></li>
@@ -214,10 +219,22 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>Leave-one-out cv score for some linear fitting procedures such as least squares or smoothing spline can be computed via a shortcut when our loss function is <span class="math inline">\(\rho(y, \hat{y}) = |y-\hat{y}|^2\)</span>. In particular, we can compute the estimator for such a linear fitting procedure <strong>once</strong>, compute the linear fitting operator <span class="math inline">\(S\)</span>, which satisfies <span class="math inline">\(\mathbf{Y} = \mathbf{SY}\)</span> and plug it in this formula: <span class="math display">\[n^{-1}\sum\limits_{i = 1}^n \Bigg(\frac{Y_i - \hat{m}(X_i)}{1-S_{ii}}\Bigg)^2\]</span> Computing <span class="math inline">\(\mathbf{S}\)</span> requires <span class="math inline">\(O(n)\)</span> operations (see exercises).</p>
 <p>Historically, it has been computationally easier to compute the trace of <span class="math inline">\(\mathbf{S}\)</span> so there is also a quantity called generalized cross validation (which is a misleading terminology), which coincides with the formula above in certain cases.</p>
 </div>
-<div id="parameter-tuning" class="section level2">
-<h2><span class="header-section-number">5.7</span> Parameter Tuning</h2>
-<p><strong>Example</strong> To use leave-one-out cross-validation for parameter tuning of a lasso. Calculate the test set error for <em>one</em> value of lamda. Then, change the value of lamda and recompute the model and then test set error, so that the test set error becomes a function of lamda, as depicted below. <img src="figures/lasso_cv.png" width="650px" /></p>
+<div id="examples" class="section level2">
+<h2><span class="header-section-number">5.7</span> Examples</h2>
+<div id="practical-cv-in-r" class="section level3">
+<h3><span class="header-section-number">5.7.1</span> Practical CV in R</h3>
+<p>Key concepts to do CV in base R are</p>
+<ul>
+<li>Do not split the data, split the indices of the data and work with them if ever possible and subset the data. <code>sample()</code> is your friend.</li>
+<li>use <code>lapply()</code>, <code>apply()</code> and friends. to “loop” over data. Work with matrices when possible, not with lists or data frames.</li>
+<li>use helper function to solve “the small problems in the big problem”.</li>
+</ul>
+</div>
+<div id="parameter-tuning" class="section level3">
+<h3><span class="header-section-number">5.7.2</span> Parameter Tuning</h3>
+<p>To use leave-one-out cross-validation for parameter tuning of a lasso. Calculate the test set error for <em>one</em> value of lamda. Then, change the value of lamda and recompute the model and then test set error, so that the test set error becomes a function of lamda, as depicted below. <img src="figures/lasso_cv.png" width="650px" /> Then pick an optimal lamda, e.g. the one with the lowest test error (a bit arbitrary) or one according to some other rule (e.g. pick the least complex model that is within one standard error of the best model).</p>
 
+</div>
 </div>
 </div>
             </section>
@@ -257,7 +274,7 @@ gitbook.start({
 "link": null,
 "text": null
 },
-"download": null,
+"download": ["comp_stats_summary.epub"],
 "toc": {
 "collapse": "subsection"
 }
