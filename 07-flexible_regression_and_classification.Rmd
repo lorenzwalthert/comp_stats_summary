@@ -41,7 +41,7 @@ one-dimensional smoothing. Here is the receipt:
   $$\tilde{g}_j = \hat{g}_j - n^{-1} \sum\limits_{i = 1}^n \hat{g}_j(x_{ij})$$
 
 Back-fitting is a **coordinate-wise** optimization method that optimizes one 
-coordinate at the time (one $g(\cdot), but can be more than one parameter), which
+coordinate at the time (one $g(\cdot)$, but can be more than one parameter), which
 may be slower in convergence than a general gradient descent that optimizes all
 directions simultaneously but also more robust.
 
@@ -175,7 +175,8 @@ $g_0, ..., g_{J-1}$ and then use the Bayes classifier $\mathcal{\hat{C}(x)} =
 \arg\max\limits_{0<j<J-1} g_j(x)$ (is that correct?), which is called the
 softmax in the neural network literature.
 
-### Fitting Neural Networks (in R) The `nnet` function from the package with the
+### Fitting Neural Networks (in R) 
+The `nnet` function from the package with the
 same name basically uses gradient descent to maximize the likelihood. It is
 important to first scale the data so the gradient descent does not get stuck in
 flat regions of the sigmoid function. 
@@ -246,7 +247,7 @@ is $X_1 + X_2 \;\text{and}\;X_1 - X_2$.
 With the restriction $|\alpha| = 1$, it turns out we can preceded as follows:
 We project the first predictor onto $(\alpha_{11}, \alpha_{12}) = (0.7, 0.7)$
 and the second predictor onto $(\alpha_{11}, \alpha_{12}) = (0.7, -0.7)$. This
-yields $0.7(X_1 + X_2) - 0.7(X_1 - X_2)$.
+yields $0.7(X_1 + X_2)$ and $0.7(X_1 - X_2)$.
 
 Let's implement that with R
 ```{r}

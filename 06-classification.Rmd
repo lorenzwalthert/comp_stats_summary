@@ -155,7 +155,7 @@ classifier to choose the class label ($\arg\max_{0 < j < J-1} \pi_j$)
 * In the special case of **ordered groups**, the correct model is often 
   proportional odds model that models
   $$\text{logit}(\mathbb{P}(Y < k |X) = \alpha_k + g(\cdot))$$
-  with $\alpha_1 \lt \alpha_2 \lt \text{...} \lt \alpha_{J-1}$. 
+  with $\alpha_1 < \alpha_2 < \text{...} < \alpha_{J-1}$. 
   The log odds are proportional, which becomes obvious if we take $e$ to the power
   of the above equation. Check [this](http://data.library.virginia.edu/fitting-and-interpreting-a-proportional-odds-model/)
   webpage for more information. Note that proportionality in the log odds

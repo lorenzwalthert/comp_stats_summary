@@ -181,8 +181,8 @@ $$ \mathbb{P}[\theta \in I^{**}(1-\alpha')] = 1-\alpha$$
 The problem is that $\alpha'$ is unknown. But another level of bootstrap can 
 be used to **estimate** $\alpha$, denoted by $\hat{\alpha}$, which typically
 achieves
-$$\mathbb{P}[\theta \in I^{**}(1-\hat{\alpha}')] = 1-\alpha + \Delta'$$ with
-$\Delta' \lt {\Delta}$
+$$\mathbb{P}[\theta \in I^{**}(1-\hat{\alpha}')] = 1- \alpha + \Delta'$$ with
+$\Delta' < \Delta$
 
 To implement a double bootstrap confidence interval, proceed as follows:
 

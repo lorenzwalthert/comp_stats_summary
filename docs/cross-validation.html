@@ -155,7 +155,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul></li>
 <li class="chapter" data-level="8.3" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#example"><i class="fa fa-check"></i><b>8.3</b> Example</a></li>
 <li class="chapter" data-level="8.4" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#neural-networks"><i class="fa fa-check"></i><b>8.4</b> Neural Networks</a><ul>
-<li class="chapter" data-level="8.4.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#fitting-neural-networks-in-r-the-nnet-function-from-the-package-with-the"><i class="fa fa-check"></i><b>8.4.1</b> Fitting Neural Networks (in R) The <code>nnet</code> function from the package with the</a></li>
+<li class="chapter" data-level="8.4.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#fitting-neural-networks-in-r"><i class="fa fa-check"></i><b>8.4.1</b> Fitting Neural Networks (in R)</a></li>
 </ul></li>
 <li class="chapter" data-level="8.5" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#projection-pursuit-regression"><i class="fa fa-check"></i><b>8.5</b> Projection Pursuit Regression</a><ul>
 <li class="chapter" data-level="8.5.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#proejction-pursuit-example"><i class="fa fa-check"></i><b>8.5.1</b> Proejction Pursuit Example</a></li>
@@ -226,7 +226,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h2><span class="header-section-number">5.5</span> Properties of the different schemes</h2>
 <ul>
 <li><strong>leave-one-out</strong> is an asymptotically <strong>unbiased</strong> estimator for the generalization error and the true prediction. However, we use a sample size <span class="math inline">\(n-1\)</span> instead of <span class="math inline">\(n\)</span>, which causes a slight bias (meaning we have less data as we do in a real world scenario, which most likely makes the CV score a tiny little bit worse than it should be). Because the training sets are very similar to each other the leave-one-out scheme has a <strong>large variance</strong>.</li>
-<li><strong>leave-d-out</strong> has a <strong>higher bias</strong> than leave-one-out because the sample size is even smaller than <span class="math inline">\(n-1\)</span> (for <span class="math inline">\(d&gt;1\)</span>). However, since we aggregate over more ( instead of <span class="math inline">\(n\)</span>) cv scores, which can be shown to decrease the variance of the final cv estimator.</li>
+<li><strong>leave-d-out</strong> has a <strong>higher bias</strong> than leave-one-out because the sample size is even smaller than <span class="math inline">\(n-1\)</span> (for <span class="math inline">\(d&gt;1\)</span>). However, since we aggregate over more (<span class="math inline">\(\binom{n}{d}\)</span> instead of <span class="math inline">\(n\)</span>) cv scores, which can be shown to decrease the variance of the final cv estimator.</li>
 <li><strong>k-fold</strong> cv has a <strong>higher bias</strong> than both leave one out.</li>
 </ul>
 </div>
@@ -391,7 +391,7 @@ gitbook.start({
 "link": null,
 "text": null
 },
-"download": null,
+"download": ["comp_stats_summary.pdf"],
 "toc": {
 "collapse": "subsection"
 }

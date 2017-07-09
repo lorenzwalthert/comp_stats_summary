@@ -155,7 +155,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul></li>
 <li class="chapter" data-level="8.3" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#example"><i class="fa fa-check"></i><b>8.3</b> Example</a></li>
 <li class="chapter" data-level="8.4" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#neural-networks"><i class="fa fa-check"></i><b>8.4</b> Neural Networks</a><ul>
-<li class="chapter" data-level="8.4.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#fitting-neural-networks-in-r-the-nnet-function-from-the-package-with-the"><i class="fa fa-check"></i><b>8.4.1</b> Fitting Neural Networks (in R) The <code>nnet</code> function from the package with the</a></li>
+<li class="chapter" data-level="8.4.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#fitting-neural-networks-in-r"><i class="fa fa-check"></i><b>8.4.1</b> Fitting Neural Networks (in R)</a></li>
 </ul></li>
 <li class="chapter" data-level="8.5" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#projection-pursuit-regression"><i class="fa fa-check"></i><b>8.5</b> Projection Pursuit Regression</a><ul>
 <li class="chapter" data-level="8.5.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#proejction-pursuit-example"><i class="fa fa-check"></i><b>8.5.1</b> Proejction Pursuit Example</a></li>
@@ -198,7 +198,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li>Stop iterating when functions don’t change much anymore, that is, when the following quantity is less than a certain tolerance. <span class="math display">\[\frac{|\hat{g}_{i, new} - \hat{g}_{i, old}|}{|\hat{g}_{i, old}|}\]</span></li>
 <li>Normalize the functions by subtracting the mean from them: <span class="math display">\[\tilde{g}_j = \hat{g}_j - n^{-1} \sum\limits_{i = 1}^n \hat{g}_j(x_{ij})\]</span></li>
 </ul>
-<p>Back-fitting is a <strong>coordinate-wise</strong> optimization method that optimizes one coordinate at the time (one $g(), but can be more than one parameter), which may be slower in convergence than a general gradient descent that optimizes all directions simultaneously but also more robust.</p>
+<p>Back-fitting is a <strong>coordinate-wise</strong> optimization method that optimizes one coordinate at the time (one <span class="math inline">\(g(\cdot)\)</span>, but can be more than one parameter), which may be slower in convergence than a general gradient descent that optimizes all directions simultaneously but also more robust.</p>
 <p><img src="figures/coordinate_wise.png" width="244" /></p>
 </div>
 <div id="additive-models-in-r" class="section level3">
@@ -281,9 +281,9 @@ sim2 &lt;-<span class="st"> </span>fitted %&gt;%<span class="st"> </span>
 <p>This is a neural network with one hidden layer, <span class="math inline">\(p\)</span> input layers and <span class="math inline">\(q\)</span> output layers. Mathematically speaking, the model is: <span class="math display">\[ g_k(x) = f_0\Big(\alpha_k +
 \sum\limits_{h = 1}^q w_{ij} \phi(\tilde{\alpha}_h + \sum\limits_{j = 1}^p
 w_{jh}x_j)\Big)\]</span> Where <span class="math inline">\(\phi(x)\)</span> is the sigmoid function <span class="math inline">\(\frac{exp(x)}{1 + exp(x)}\)</span>, <span class="math inline">\(f_0\)</span> is the sigmoid function for classification and the identity for regression. In the case of regression <span class="math inline">\(k = 1\)</span> is used, for classification we use <span class="math inline">\(g_0, ..., g_{J-1}\)</span> and then use the Bayes classifier <span class="math inline">\(\mathcal{\hat{C}(x)} = \arg\max\limits_{0&lt;j&lt;J-1} g_j(x)\)</span> (is that correct?), which is called the softmax in the neural network literature.</p>
-<div id="fitting-neural-networks-in-r-the-nnet-function-from-the-package-with-the" class="section level3">
-<h3><span class="header-section-number">8.4.1</span> Fitting Neural Networks (in R) The <code>nnet</code> function from the package with the</h3>
-<p>same name basically uses gradient descent to maximize the likelihood. It is important to first scale the data so the gradient descent does not get stuck in flat regions of the sigmoid function.</p>
+<div id="fitting-neural-networks-in-r" class="section level3">
+<h3><span class="header-section-number">8.4.1</span> Fitting Neural Networks (in R)</h3>
+<p>The <code>nnet</code> function from the package with the same name basically uses gradient descent to maximize the likelihood. It is important to first scale the data so the gradient descent does not get stuck in flat regions of the sigmoid function.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">set.seed</span>(<span class="dv">22</span>) 
 <span class="kw">data</span>(<span class="st">&quot;ozone&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;gss&quot;</span>) 
 <span class="kw">unloadNamespace</span>(<span class="st">&quot;MASS&quot;</span>)
@@ -327,7 +327,7 @@ fit &lt;-<span class="st"> </span>nnet::<span class="kw">nnet</span>( log_upo3 ~
 <div id="proejction-pursuit-example" class="section level3">
 <h3><span class="header-section-number">8.5.1</span> Proejction Pursuit Example</h3>
 <p>In the following, we illustrate how optimal projections of the initial predictor space can allow us to use an additive functional form to deal with interaction terms. Let us consider the following data-generating model <span class="math display">\[ Y = X_1 \times X_2 + \epsilon \; \text{with} \;\epsilon \sim N(0, 1) \; \text{and}\; X_1, X_2 \sim \text{Unif}(-1,1)\]</span></p>
-<p>Where <span class="math inline">\(X \in \mathbb{R}^2\)</span>, i.e. a two-dimensional predictor space with the predictors <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span>. Using elementary calculus, this can be rewritten as <span class="math display">\[ Y = \frac{1}{4} (X_1 + X_2)^2  - \frac{1}{4}(X_1 - X_2)^2\]</span> Hence, we rewrote a multiplicative model as an additive model. As we are using arbitrary <em>smooth</em> functions <span class="math inline">\(f_k\)</span>, we can easily fit the quadratic terms in the equation above, so the problem to solve becomes <span class="math display">\[Y = \mu + f_1(X_1 + X_2) - f_2(X_1 - X_2)\]</span> Therefore, the remaining question is how can we choose the two vectors <span class="math inline">\(\mathbf{\alpha}_1\)</span> and <span class="math inline">\(\mathbf{\alpha}_1\)</span> such that the result of the projection is <span class="math inline">\(X_1 + X_2 \;\text{and}\;X_1 - X_2\)</span>. With the restriction <span class="math inline">\(|\alpha| = 1\)</span>, it turns out we can preceded as follows: We project the first predictor onto <span class="math inline">\((\alpha_{11}, \alpha_{12}) = (0.7, 0.7)\)</span> and the second predictor onto <span class="math inline">\((\alpha_{11}, \alpha_{12}) = (0.7, -0.7)\)</span>. This yields <span class="math inline">\(0.7(X_1 + X_2) - 0.7(X_1 - X_2)\)</span>.</p>
+<p>Where <span class="math inline">\(X \in \mathbb{R}^2\)</span>, i.e. a two-dimensional predictor space with the predictors <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span>. Using elementary calculus, this can be rewritten as <span class="math display">\[ Y = \frac{1}{4} (X_1 + X_2)^2  - \frac{1}{4}(X_1 - X_2)^2\]</span> Hence, we rewrote a multiplicative model as an additive model. As we are using arbitrary <em>smooth</em> functions <span class="math inline">\(f_k\)</span>, we can easily fit the quadratic terms in the equation above, so the problem to solve becomes <span class="math display">\[Y = \mu + f_1(X_1 + X_2) - f_2(X_1 - X_2)\]</span> Therefore, the remaining question is how can we choose the two vectors <span class="math inline">\(\mathbf{\alpha}_1\)</span> and <span class="math inline">\(\mathbf{\alpha}_1\)</span> such that the result of the projection is <span class="math inline">\(X_1 + X_2 \;\text{and}\;X_1 - X_2\)</span>. With the restriction <span class="math inline">\(|\alpha| = 1\)</span>, it turns out we can preceded as follows: We project the first predictor onto <span class="math inline">\((\alpha_{11}, \alpha_{12}) = (0.7, 0.7)\)</span> and the second predictor onto <span class="math inline">\((\alpha_{11}, \alpha_{12}) = (0.7, -0.7)\)</span>. This yields <span class="math inline">\(0.7(X_1 + X_2)\)</span> and <span class="math inline">\(0.7(X_1 - X_2)\)</span>.</p>
 <p>Let’s implement that with R</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data &lt;-<span class="st"> </span><span class="kw">data_frame</span>(
   <span class="dt">x1 =</span> <span class="kw">runif</span>(<span class="dv">500</span>, -<span class="dv">1</span>, <span class="dv">1</span>),
@@ -420,7 +420,7 @@ gitbook.start({
 "link": null,
 "text": null
 },
-"download": null,
+"download": ["comp_stats_summary.pdf"],
 "toc": {
 "collapse": "subsection"
 }

@@ -155,7 +155,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul></li>
 <li class="chapter" data-level="8.3" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#example"><i class="fa fa-check"></i><b>8.3</b> Example</a></li>
 <li class="chapter" data-level="8.4" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#neural-networks"><i class="fa fa-check"></i><b>8.4</b> Neural Networks</a><ul>
-<li class="chapter" data-level="8.4.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#fitting-neural-networks-in-r-the-nnet-function-from-the-package-with-the"><i class="fa fa-check"></i><b>8.4.1</b> Fitting Neural Networks (in R) The <code>nnet</code> function from the package with the</a></li>
+<li class="chapter" data-level="8.4.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#fitting-neural-networks-in-r"><i class="fa fa-check"></i><b>8.4.1</b> Fitting Neural Networks (in R)</a></li>
 </ul></li>
 <li class="chapter" data-level="8.5" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#projection-pursuit-regression"><i class="fa fa-check"></i><b>8.5</b> Projection Pursuit Regression</a><ul>
 <li class="chapter" data-level="8.5.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#proejction-pursuit-example"><i class="fa fa-check"></i><b>8.5.1</b> Proejction Pursuit Example</a></li>
@@ -255,7 +255,7 @@ prediction &lt;-<span class="st"> </span><span class="kw">predict</span>(fit, <s
 <ul>
 <li>Similarly, you can also model <em>all against the reference</em>, <span class="math inline">\(\log(\frac{\pi_1}{\pi_0})\)</span>. This might be helpful when we want to compare different group memberships with a reference group. For example in clinical trials, we want to compare how many times more likely someone belongs to group <em>ill with disease A</em> than <em>healthy</em> (the reference).</li>
 <li>You can also look at pair-wise comparisons. Choose two groups you want to compare, drop all observations that don’t belong to one of the two groups and estimate the model. There are <span class="math inline">\(\binom{J}{2}\)</span> possible models with all models potentially having different number of observations.</li>
-<li>In the special case of <strong>ordered groups</strong>, the correct model is often proportional odds model that models <span class="math display">\[\text{logit}(\mathbb{P}(Y &lt; k |X) = \alpha_k + g(\cdot))\]</span> with <span class="math inline">\(\alpha_1 \lt \alpha_2 \lt \text{...} \lt \alpha_{J-1}\)</span>. The log odds are proportional, which becomes obvious if we take <span class="math inline">\(e\)</span> to the power of the above equation. Check <a href="http://data.library.virginia.edu/fitting-and-interpreting-a-proportional-odds-model/">this</a> webpage for more information. Note that proportionality in the log odds does <em>not</em> mean proportionality in the probabilities, since they are only linked through a non-linear mapping (the logistic transformation).</li>
+<li>In the special case of <strong>ordered groups</strong>, the correct model is often proportional odds model that models <span class="math display">\[\text{logit}(\mathbb{P}(Y &lt; k |X) = \alpha_k + g(\cdot))\]</span> with <span class="math inline">\(\alpha_1 &lt; \alpha_2 &lt; \text{...} &lt; \alpha_{J-1}\)</span>. The log odds are proportional, which becomes obvious if we take <span class="math inline">\(e\)</span> to the power of the above equation. Check <a href="http://data.library.virginia.edu/fitting-and-interpreting-a-proportional-odds-model/">this</a> webpage for more information. Note that proportionality in the log odds does <em>not</em> mean proportionality in the probabilities, since they are only linked through a non-linear mapping (the logistic transformation).</li>
 </ul>
 
 </div>
@@ -297,7 +297,7 @@ gitbook.start({
 "link": null,
 "text": null
 },
-"download": null,
+"download": ["comp_stats_summary.pdf"],
 "toc": {
 "collapse": "subsection"
 }

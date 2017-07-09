@@ -11,6 +11,7 @@ documentclass: book
 # Introduction
 ```{r, include=FALSE}
 knitr::opts_chunk$set(cache = TRUE, message = FALSE)
+library("tidyverse")
 ```
 
 This is a summary of the class computational statistics at ETH Zurich.

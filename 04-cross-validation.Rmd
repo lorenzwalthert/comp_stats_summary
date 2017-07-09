@@ -105,7 +105,7 @@ leave-d-out can be even smaller than for leave-one-out if $B < n$.
   the leave-one-out scheme has a **large variance**.
 * **leave-d-out** has a **higher bias** than leave-one-out because the sample size is
   even smaller than $n-1$ (for $d>1$). However, since we aggregate over more
-  (\binom{n}{d} instead of $n$) cv scores, which can be shown to decrease the
+  ($\binom{n}{d}$ instead of $n$) cv scores, which can be shown to decrease the
   variance of the final cv estimator.
 * **k-fold** cv has a **higher bias** than both leave one out.
 

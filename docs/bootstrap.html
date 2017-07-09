@@ -155,7 +155,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul></li>
 <li class="chapter" data-level="8.3" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#example"><i class="fa fa-check"></i><b>8.3</b> Example</a></li>
 <li class="chapter" data-level="8.4" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#neural-networks"><i class="fa fa-check"></i><b>8.4</b> Neural Networks</a><ul>
-<li class="chapter" data-level="8.4.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#fitting-neural-networks-in-r-the-nnet-function-from-the-package-with-the"><i class="fa fa-check"></i><b>8.4.1</b> Fitting Neural Networks (in R) The <code>nnet</code> function from the package with the</a></li>
+<li class="chapter" data-level="8.4.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#fitting-neural-networks-in-r"><i class="fa fa-check"></i><b>8.4.1</b> Fitting Neural Networks (in R)</a></li>
 </ul></li>
 <li class="chapter" data-level="8.5" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#projection-pursuit-regression"><i class="fa fa-check"></i><b>8.5</b> Projection Pursuit Regression</a><ul>
 <li class="chapter" data-level="8.5.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#proejction-pursuit-example"><i class="fa fa-check"></i><b>8.5.1</b> Proejction Pursuit Example</a></li>
@@ -258,7 +258,7 @@ out &lt;-<span class="st"> </span><span class="kw">data_frame</span>(<span class
 <div id="double-boostrap-confidence-intervals" class="section level2">
 <h2><span class="header-section-number">6.7</span> Double Boostrap Confidence Intervals</h2>
 <p>Confidence intervals are almost never exact, meaning that <span class="math display">\[\mathbb{P}[\theta \in I^{**}(1-\alpha)] = 1-\alpha + \Delta\]</span> Where <span class="math inline">\(I^{**}(1-\alpha)\)</span> is a <span class="math inline">\(\alpha\)</span>-confidence interval. However, by changing the <em>nominal</em> coverage of the confidence interval, it is possible to make the actual coverage equal to an arbitrary value, i.e</p>
-<p><span class="math display">\[ \mathbb{P}[\theta \in I^{**}(1-\alpha&#39;)] = 1-\alpha\]</span> The problem is that <span class="math inline">\(\alpha&#39;\)</span> is unknown. But another level of bootstrap can be used to <strong>estimate</strong> <span class="math inline">\(\alpha\)</span>, denoted by <span class="math inline">\(\hat{\alpha}\)</span>, which typically achieves <span class="math display">\[\mathbb{P}[\theta \in I^{**}(1-\hat{\alpha}&#39;)] = 1-\alpha + \Delta&#39;\]</span> with <span class="math inline">\(\Delta&#39; \lt {\Delta}\)</span></p>
+<p><span class="math display">\[ \mathbb{P}[\theta \in I^{**}(1-\alpha&#39;)] = 1-\alpha\]</span> The problem is that <span class="math inline">\(\alpha&#39;\)</span> is unknown. But another level of bootstrap can be used to <strong>estimate</strong> <span class="math inline">\(\alpha\)</span>, denoted by <span class="math inline">\(\hat{\alpha}\)</span>, which typically achieves <span class="math display">\[\mathbb{P}[\theta \in I^{**}(1-\hat{\alpha}&#39;)] = 1- \alpha + \Delta&#39;\]</span> with <span class="math inline">\(\Delta&#39; &lt; \Delta\)</span></p>
 <p>To implement a double bootstrap confidence interval, proceed as follows:</p>
 <ol style="list-style-type: decimal">
 <li>Draw a bootstrap sample <span class="math inline">\(({Z_1}^*, ..., {Z_n}^*)\)</span>.
@@ -354,7 +354,7 @@ gitbook.start({
 "link": null,
 "text": null
 },
-"download": null,
+"download": ["comp_stats_summary.pdf"],
 "toc": {
 "collapse": "subsection"
 }
