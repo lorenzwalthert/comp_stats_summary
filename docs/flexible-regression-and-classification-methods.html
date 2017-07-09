@@ -144,7 +144,22 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="7.4" data-path="classification.html"><a href="classification.html#discriminant-analysis-or-logistic-regression"><i class="fa fa-check"></i><b>7.4</b> Discriminant Analysis or Logistic Regression?</a></li>
 <li class="chapter" data-level="7.5" data-path="classification.html"><a href="classification.html#multiclass-case-j-2"><i class="fa fa-check"></i><b>7.5</b> Multiclass case (J &gt; 2)</a></li>
 </ul></li>
-<li class="chapter" data-level="8" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html"><i class="fa fa-check"></i><b>8</b> Flexible regression and classification methods</a></li>
+<li class="chapter" data-level="8" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html"><i class="fa fa-check"></i><b>8</b> Flexible regression and classification methods</a><ul>
+<li class="chapter" data-level="8.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#additive-models-structure-one-assumption-we-can-make-is-to-assume-a"><i class="fa fa-check"></i><b>8.1</b> Additive Models ### Structure One assumption we can make is to assume a</a><ul>
+<li class="chapter" data-level="8.1.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#fitting-procedure"><i class="fa fa-check"></i><b>8.1.1</b> Fitting Procedure</a></li>
+<li class="chapter" data-level="8.1.2" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#additive-models-in-r-you-can-use-the-package-mgcv"><i class="fa fa-check"></i><b>8.1.2</b> Additive Models in R You can use the package <strong>mgcv</strong></a></li>
+</ul></li>
+<li class="chapter" data-level="8.2" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#mars"><i class="fa fa-check"></i><b>8.2</b> MARS</a><ul>
+<li class="chapter" data-level="8.2.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#details-for-dummies-note-that-by-using-reflective-pairs-bigx_j---d_-d---x_j_-we-construct-a-piece-wise-linear-function-with-one"><i class="fa fa-check"></i><b>8.2.1</b> Details for Dummies Note that by using reflective pairs <span class="math inline">\(\big\{(x_j - d)_+ \;\;\; (d - x_j)_{+}\; \}\)</span>, we construct a piece-wise linear function with one</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#example-let-us-consider-the-simple-case-of-a-one-dimensional-predictor-space."><i class="fa fa-check"></i><b>8.3</b> Example Let us consider the simple case of a one dimensional predictor space.</a></li>
+<li class="chapter" data-level="8.4" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#neural-networks-neural-networks-are-high-dimensional-non-linear-regression"><i class="fa fa-check"></i><b>8.4</b> Neural Networks Neural networks are high-dimensional non-linear regression</a><ul>
+<li class="chapter" data-level="8.4.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#fitting-neural-networks-in-r-the-nnet-function-from-the-package-with-the"><i class="fa fa-check"></i><b>8.4.1</b> Fitting Neural Networks (in R) The <code>nnet</code> function from the package with the</a></li>
+</ul></li>
+<li class="chapter" data-level="8.5" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#projection-pursuit-regression"><i class="fa fa-check"></i><b>8.5</b> Projection Pursuit Regression</a><ul>
+<li class="chapter" data-level="8.5.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#proejction-pursuit-example"><i class="fa fa-check"></i><b>8.5.1</b> Proejction Pursuit Example</a></li>
+</ul></li>
+</ul></li>
 <li class="chapter" data-level="9" data-path="bagging-and-boosting.html"><a href="bagging-and-boosting.html"><i class="fa fa-check"></i><b>9</b> Bagging and Boosting</a></li>
 <li class="chapter" data-level="10" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>10</b> Introduction</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
@@ -167,7 +182,201 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
             <section class="normal" id="section-">
 <div id="flexible-regression-and-classification-methods" class="section level1">
 <h1><span class="header-section-number">Chapter 8</span> Flexible regression and classification methods</h1>
+<p>The curse of dimensionality makes it very hard to estimate fully nonparametric regression function <span class="math inline">\(\hat{m} = \mathbb{E}[Y|X = x]\)</span> or classification function <span class="math inline">\(\hat{\pi}_j = \mathbb{P}[Y = j | X = x]\)</span>. Hence, by making some (reasonable) structural assumptions, we can improve our models significantly. Generally, we consider the mapping <span class="math inline">\(\mathbb{R}^p \rightarrow \mathbb{P}\)</span> via the function <span class="math inline">\(g(\cdot)\)</span> for both the regression and the classification problem.</p>
+<div id="additive-models-structure-one-assumption-we-can-make-is-to-assume-a" class="section level2">
+<h2><span class="header-section-number">8.1</span> Additive Models ### Structure One assumption we can make is to assume a</h2>
+<p>particular functional form of <span class="math inline">\(g(\cdot)\)</span>, namely an <em>additive</em>. That is <span class="math display">\[g_{add} = \mu + \sum\limits_{j = 1}^pg(x_j) \]</span> <span class="math inline">\(E[g(x_j)] = 0\)</span> is required to make the model identifiable only. Note that we have not placed any assumption on <span class="math inline">\(g(x_j)\)</span> yet, that is, <span class="math inline">\(g(x_j)\)</span> can be fully non-parametric, but each dimension is mapped separately. In other words every <span class="math inline">\(g(x_j) \;\; j = 1, ..., p\)</span> models one input dimension and mapping of input to output is obtained by summing the transformed inputs up. This eliminates the possibility of interaction effects.</p>
+<div id="fitting-procedure" class="section level3">
+<h3><span class="header-section-number">8.1.1</span> Fitting Procedure</h3>
+<p>Additive models can be estimated with a technique called back-fitting. However, the model can be estimated with any nonparametric method for one-dimensional smoothing. Here is the receipt:</p>
+<ul>
+<li>since we assume an additive model, we need to initialize all <span class="math inline">\(p\)</span> components of it with zero, that is setting <span class="math inline">\(g_j(\cdot) = 0 \;\; j = 1,..., p\)</span> plus setting <span class="math inline">\(\mu = n^{-1}\sum Y_i\)</span>. * Then we fit one-dimensional smoother repeatedly, that is solving the one-dimensional smoothing problem <span class="math inline">\(Y - \mu - \sum\limits_{j \neq k}\hat{g}_j = \hat{g}_j(x_j)\)</span>, or put differently <span class="math inline">\(\hat{g}_j = S_j(Y - \mu1 - \sum\limits_{j \neq k}g_j)\)</span>. This has to be done repeatedly for <span class="math inline">\(j = 1, ..., p, 1, ..., p \text{etc.}\)</span>.</li>
+<li>Stop iterating when functions don’t change much anymore, that is, when the following quantity is less than a certain tolerance. <span class="math display">\[\frac{|\hat{g}_{i, new} - \hat{g}_{i, old}|}{|\hat{g}_{i, old}|}\]</span></li>
+<li>Normalize the functions by subtracting the mean from them: <span class="math display">\[\tilde{g}_j = \hat{g}_j - n^{-1} \sum\limits_{i = 1}^n \hat{g}_j(x_{ij})\]</span></li>
+</ul>
+<p>Back-fitting is a <strong>coordinate-wise</strong> optimization method that optimizes one coordinate at the time (one $g(), but can be more than one parameter), which may be slower in convergence than a general gradient descent that optimizes all directions simultaneously but also more robust.</p>
+<p><img src="figures/coordinate_wise.png" width="244" /></p>
+</div>
+<div id="additive-models-in-r-you-can-use-the-package-mgcv" class="section level3">
+<h3><span class="header-section-number">8.1.2</span> Additive Models in R You can use the package <strong>mgcv</strong></h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;ozone&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;gss&quot;</span>) 
+fit &lt;-<span class="st"> </span>mgcv::<span class="kw">gam</span>(upo3 ~<span class="st"> </span><span class="kw">s</span>(vdht) +<span class="st"> </span><span class="kw">s</span>(wdsp) +<span class="st"> </span><span class="kw">s</span>(hmdt) +<span class="st"> </span><span class="kw">s</span>(sbtp), 
+           <span class="dt">data =</span> ozone) 
 
+<span class="kw">plot</span>(fit, <span class="dt">pages =</span> <span class="dv">1</span>) </code></pre></div>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-16-1.png" width="672" /> You can see that vdht enters the model almost linearly. That is, with an increase of one unit of vdht, the predicted 03 value increases linearly. sbtp is different. Depending on the value of sbtp, the increase in the predicted value is different. Low sbtp values hardly have an impact on the response, higher values do.</p>
+</div>
+</div>
+<div id="mars" class="section level2">
+<h2><span class="header-section-number">8.2</span> MARS</h2>
+<p>MARS stands for multivariate adaptive regression splines and allows pice-wise linear curve fitting. In contrast to GAMs, they allow for interactions between the variables. MARS is very similar to regression trees, but it has a continuous response. It uses reflected pairs of basis functions</p>
+<span class="math display">\[\begin{equation} 
+  (x_j -d)_{+} = \begin{cases} x_j - d \;\;\ \text{if} \;\;\ x_j - d &gt; 0 \\ 
+  0 \;\;\ \text{else}. 
+  \end{cases} 
+\end{equation}\]</span>
+<p>and it counterpart <span class="math inline">\((d - x_j)_{+}\)</span>. The index <span class="math inline">\(j\)</span> refers to the j-th predictor variable, d is a knot at one of the <span class="math inline">\(x_js\)</span>. The pool of basis functions to consider is called <span class="math inline">\(\mathbf{B}\)</span> and contains all variables with all potential knots, that is <span class="math display">\[
+\mathcal{B} = \{(x_j - d)_+ \;\;\; (d - x_j)_+ \;\;\;j = \{1, ..., p\} \;\; d =
+\{x_{1j}, ..., x_{nj}\}\}\]</span> The model then is <span class="math display">\[ g(x)  = \mu + \sum\limits_{m =
+1}^M\beta_m h_m(x) = \sum\limits_{m = 0}^M\beta_m h_m(x)\]</span> The model uses forward selection and backward deletion and optimizes some (generalized) cross-validation criterion. Here is the receipt:</p>
+<ol style="list-style-type: decimal">
+<li>initialize <span class="math inline">\(\mathcal{M} = \{h_0(\cdot) = 1\}\)</span> and estimate <span class="math inline">\(\beta_0\)</span> as the data average of the response <span class="math inline">\(n^{-1}\sum\limits_{i = 1}^n Y_i\)</span>. 2. for <span class="math inline">\(r = 1, 2, ...\)</span> search for a new pair of function <span class="math inline">\((h_{2 r-1} \;\; h_{2 r})\)</span> which are of the form <span class="math display">\[h_{2 r-1} = (x_j -d)_+ \times h_l\]</span> <span class="math display">\[h_{2 r} = (d - x_j)_+ \times
+h_l\]</span> that reduce the residual sum of squares the most with some <span class="math inline">\(h_l\)</span> from <span class="math inline">\(\mathcal{M}\)</span> that some basis functions from <span class="math inline">\(\mathcal{B}\)</span> does <em>not</em> contain<br />
+<span class="math inline">\(x_j\)</span>. The model becomes <span class="math display">\[\hat{g}(x) = \sum\limits_{m = 0}^{2r}\hat{\beta}_m
+h_m(x)\]</span> which can be estimated by least squares. Update the set <span class="math inline">\(\mathcal{M}\)</span> to be <span class="math inline">\(\mathcal{M} = \mathcal{M}_{old} \cup \{h_{2r-1}, h_{2r}\}\)</span> 3. Iterate the above step until the set <span class="math inline">\(\mathcal{M}\)</span> becomes <em>large enough</em>. 4. Do backward deletion (<em>pruning</em>) by removing the <em>one</em> function from a reflected pair that increases the residual sum of squares the least. 5. Stop the pruning when some GCV score reaches its minimum.</li>
+</ol>
+<div id="details-for-dummies-note-that-by-using-reflective-pairs-bigx_j---d_-d---x_j_-we-construct-a-piece-wise-linear-function-with-one" class="section level3">
+<h3><span class="header-section-number">8.2.1</span> Details for Dummies Note that by using reflective pairs <span class="math inline">\(\big\{(x_j - d)_+ \;\;\; (d - x_j)_{+}\; \}\)</span>, we construct a piece-wise linear function with one</h3>
+<p>knot at <span class="math inline">\(d\)</span>, since we sum the functions (which both a have a zero part that does not overlap) up. This hinge function (or better the two parts of individually) <span class="math inline">\(\beta\)</span> will be multiplied with a respective <span class="math inline">\(\beta\)</span>, so the slope is adaptive. Also, since each of the functions have its own <span class="math inline">\(d\)</span>, the kink of the function must not occur at <span class="math inline">\(y = 0\)</span>.</p>
+<p>From the receipt above, we can see that <span class="math inline">\(d\)</span>-way interactions are only possible if a <span class="math inline">\(d-1\)</span>-way interaction with a subset of the <span class="math inline">\(d\)</span>-way interaction is already in the model. For interpretability and other reasons, restricting the number of interactions to three or two is beneficial. Restricting the degree of interaction to one (which is actually no interaction) will yield an additive model.</p>
+</div>
+</div>
+<div id="example-let-us-consider-the-simple-case-of-a-one-dimensional-predictor-space." class="section level2">
+<h2><span class="header-section-number">8.3</span> Example Let us consider the simple case of a one dimensional predictor space.</h2>
+<p>We add noise to data that is piece-wise linear up to <span class="math inline">\(x= 100\)</span> and then follows a sine-wave. We then fit three mars models with different number of maximal knots.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;earth&quot;</span>) 
+sim &lt;-<span class="st"> </span><span class="kw">data_frame</span>( <span class="dt">x =</span> -<span class="dv">25</span>:<span class="dv">75</span>, 
+                   <span class="dt">y =</span> <span class="kw">pmax</span>(<span class="dv">0</span>, x -<span class="st"> </span><span class="dv">40</span>) +<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">100</span>, <span class="dv">0</span>, <span class="dv">3</span>)) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">bind_rows</span>(<span class="kw">data_frame</span>( <span class="dt">x =</span> <span class="dv">75</span>:<span class="dv">100</span>, <span class="dt">y =</span> -<span class="dv">1</span>*<span class="kw">sqrt</span>(x)*<span class="st"> </span><span class="kw">sin</span>(x/<span class="dv">3</span>) +<span class="st"> </span><span class="dv">30</span>))
+
+fitted &lt;-<span class="st"> </span><span class="kw">data_frame</span>( 
+  <span class="dt">nk3  =</span> <span class="kw">earth</span>(y~x, <span class="dt">data =</span> sim, <span class="dt">nk =</span> <span class="dv">3</span>), 
+  <span class="dt">nk5  =</span> <span class="kw">earth</span>(y~x, <span class="dt">data =</span> sim, <span class="dt">nk =</span> <span class="dv">5</span>), 
+  <span class="dt">nk100 =</span> <span class="kw">earth</span>(y~x, <span class="dt">data =</span> sim, <span class="dt">nk =</span> <span class="dv">100</span>)
+)
+
+
+sim2 &lt;-<span class="st"> </span>fitted %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">map_df</span>(~<span class="kw">predict</span>(.x)) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">bind_cols</span>(sim) %&gt;%<span class="st"> </span><span class="kw">gather</span>(key, value, -x, -y)
+
+
+<span class="kw">ggplot</span>(sim2) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y)) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> value, <span class="dt">color =</span> key)) </code></pre></div>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(fitted$nk3) </code></pre></div>
+<pre><code>## Call: earth(formula=y~x, data=sim, nk=3)
+## 
+##             coefficients
+## (Intercept)    1.1007390
+## h(x-34)        0.5496082
+## 
+## Selected 2 of 3 terms, and 1 of 1 predictors
+## Termination condition: Reached nk 3
+## Importance: x
+## Number of terms at each degree of interaction: 1 1 (additive model)
+## GCV 29.6829    RSS 3593.734    GRSq 0.8285947    RSq 0.8339929</code></pre>
+<p>The example shows what we expected. The green line with a maximum of three knots uses just one knot around 30, and only the right part of the reflected pair is used. It cannot distinguish between the linear segment between 40 and 75 and the sine-wave afterwards. By allowing more knots, we can see that the red line fits the data quite well. Note that the default of <code>degree</code> is just <span class="math inline">\(1\)</span>, so we don’t have interaction terms in the model. This does not matter for a one-dimensional example anyways.</p>
+</div>
+<div id="neural-networks-neural-networks-are-high-dimensional-non-linear-regression" class="section level2">
+<h2><span class="header-section-number">8.4</span> Neural Networks Neural networks are high-dimensional non-linear regression</h2>
+<p>models. The way it works is best illustrated with a picture.</p>
+<p><img src="figures/nn.png" width="605" /></p>
+<p>This is a neural network with one hidden layer, <span class="math inline">\(p\)</span> input layers and <span class="math inline">\(q\)</span> output layers. Mathematically speaking, the model is: <span class="math display">\[ g_k(x) = f_0\Big(\alpha_k +
+\sum\limits_{h = 1}^q w_{ij} \phi(\tilde{\alpha}_h + \sum\limits_{j = 1}^p
+w_{jh}x_j)\Big)\]</span> Where <span class="math inline">\(\phi(x)\)</span> is the sigmoid function <span class="math inline">\(\frac{exp(x)}{1 + exp(x)}\)</span>, <span class="math inline">\(f_0\)</span> is the sigmoid function for classification and the identity for regression. In the case of regression <span class="math inline">\(k = 1\)</span> is used, for classification we use <span class="math inline">\(g_0, ..., g_{J-1}\)</span> and then use the Bayes classifier <span class="math inline">\(\mathcal{\hat{C}(x)} = \arg\max\limits_{0&lt;j&lt;J-1} g_j(x)\)</span> (is that correct?), which is called the softmax in the neural network literature.</p>
+<div id="fitting-neural-networks-in-r-the-nnet-function-from-the-package-with-the" class="section level3">
+<h3><span class="header-section-number">8.4.1</span> Fitting Neural Networks (in R) The <code>nnet</code> function from the package with the</h3>
+<p>same name basically uses gradient descent to maximize the likelihood. It is important to first scale the data so the gradient descent does not get stuck in flat regions of the sigmoid function.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">set.seed</span>(<span class="dv">22</span>) 
+<span class="kw">data</span>(<span class="st">&quot;ozone&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;gss&quot;</span>) 
+<span class="kw">unloadNamespace</span>(<span class="st">&quot;MASS&quot;</span>)
+scaled &lt;-<span class="st"> </span>ozone %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">select</span>(-upo3) %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">scale</span>() %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">as_data_frame</span>() %&gt;%<span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">log_upo3 =</span> <span class="kw">log</span>(ozone$upo3))
+
+fit &lt;-<span class="st"> </span>nnet::<span class="kw">nnet</span>( log_upo3 ~., <span class="dt">data =</span> scaled, 
+                   <span class="dt">size =</span> <span class="dv">3</span>, <span class="co"># how many nodes in the *one* hidden layer. </span>
+                   <span class="dt">decay =</span> <span class="fl">4e-4</span>, <span class="co"># regularization. Multiply weights by 1 - decay after </span>
+                   <span class="co"># gradient step. </span>
+                   <span class="dt">linout =</span> <span class="ot">TRUE</span>, <span class="co"># linear output units (refers to f0?). </span>
+                   <span class="dt">skip =</span> <span class="ot">TRUE</span>, <span class="co"># add skip-layer connections between output and input. </span>
+                   <span class="dt">maxit =</span> <span class="dv">500</span> ) </code></pre></div>
+<p>The weights between the nodes are:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(fit) </code></pre></div>
+<pre><code>## a 9-3-1 network with 43 weights
+## options were - skip-layer connections  linear output units  decay=4e-04
+##  b-&gt;h1 i1-&gt;h1 i2-&gt;h1 i3-&gt;h1 i4-&gt;h1 i5-&gt;h1 i6-&gt;h1 i7-&gt;h1 i8-&gt;h1 i9-&gt;h1 
+##  -2.28   1.27  -0.34  -2.57   1.46   0.03   0.10  -1.02  -0.39  -0.33 
+##  b-&gt;h2 i1-&gt;h2 i2-&gt;h2 i3-&gt;h2 i4-&gt;h2 i5-&gt;h2 i6-&gt;h2 i7-&gt;h2 i8-&gt;h2 i9-&gt;h2 
+## -12.43   5.09   2.04   8.19  -7.66  -7.01   2.40  -0.31   3.59  -1.19 
+##  b-&gt;h3 i1-&gt;h3 i2-&gt;h3 i3-&gt;h3 i4-&gt;h3 i5-&gt;h3 i6-&gt;h3 i7-&gt;h3 i8-&gt;h3 i9-&gt;h3 
+## -19.77  -6.64   1.49  -4.53  -3.95   2.28   6.05   5.19  10.05  -0.20 
+##   b-&gt;o  h1-&gt;o  h2-&gt;o  h3-&gt;o  i1-&gt;o  i2-&gt;o  i3-&gt;o  i4-&gt;o  i5-&gt;o  i6-&gt;o 
+##   2.50  -1.81   0.68   0.71   0.11  -0.09  -0.49   0.72   0.01  -0.03 
+##  i7-&gt;o  i8-&gt;o  i9-&gt;o 
+##   0.04  -0.29  -0.15</code></pre>
+<p>The in-sample MSE for the regression case is</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mean</span>(<span class="kw">residuals</span>(fit)^<span class="dv">2</span>) </code></pre></div>
+<pre><code>## [1] 0.1036706</code></pre>
+</div>
+</div>
+<div id="projection-pursuit-regression" class="section level2">
+<h2><span class="header-section-number">8.5</span> Projection Pursuit Regression</h2>
+<p>Projection pursuit regression is similar to both neural nets and additive models. It can be seen as an additive model whereas the predictors were first projected into the optimal direction. The model takes the form <span class="math display">\[g_{PPR} = \mu + \sum\limits_{k = 1}^q f_k(\sum \limits_{j = 1}^p
+\alpha_{jk}x_j) \]</span> With <span class="math inline">\(\sum \limits_{j = 1}^p \alpha_j = 1\)</span> and <span class="math inline">\(E[f_k(\sum \limits_{j = 1}^p \alpha_{jk}x_j)] = 0 \;\; \text{for all k}\)</span>.</p>
+<p><span class="math inline">\(\mathbf{\alpha}_k x_j\)</span> is the projection of the j-th column in the design matrix onto <span class="math inline">\(\alpha_k\)</span>. The functions <span class="math inline">\(f_k\)</span> only vary along one direction and are hence called ridge functions. The model requires much smaller <span class="math inline">\(q\)</span> than a neural net requires hidden units, at the expense of estimating the ridge functions (which is not necessary for neural nets, as it is already fully specified by the sigmoid function).</p>
+<div id="proejction-pursuit-example" class="section level3">
+<h3><span class="header-section-number">8.5.1</span> Proejction Pursuit Example</h3>
+<p>In the following, we illustrate how optimal projections of the initial predictor space can allow us to use an additive functional form to deal with interaction terms. Let us consider the following data-generating model <span class="math display">\[ Y = X_1 \times X_2 + \epsilon \; \text{with} \;\epsilon \sim N(0, 1) \; \text{and}\; X_1, X_2 \sim \text{Unif}(-1,1)\]</span></p>
+<p>Where <span class="math inline">\(X \in \mathbb{R}^2\)</span>, i.e. a two-dimensional predictor space with the predictors <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span>. Using elementary calculus, this can be rewritten as <span class="math display">\[ Y = \frac{1}{4} (X_1 + X_2)^2  - \frac{1}{4}(X_1 - X_2)^2\]</span> Hence, we rewrote a multiplicative model as an additive model. As we are using arbitrary <em>smooth</em> functions <span class="math inline">\(f_k\)</span>, we can easily fit the quadratic terms in the equation above, so the problem to solve becomes <span class="math display">\[Y = \mu + f_1(X_1 + X_2) - f_2(X_1 - X_2)\]</span> Therefore, the remaining question is how can we choose the two vectors <span class="math inline">\(\mathbf{\alpha}_1\)</span> and <span class="math inline">\(\mathbf{\alpha}_1\)</span> such that the result of the projection is <span class="math inline">\(X_1 + X_2 \;\text{and}\;X_1 - X_2\)</span>. With the restriction <span class="math inline">\(|\alpha| = 1\)</span>, it turns out we can preceded as follows: We project the first predictor onto <span class="math inline">\((\alpha_{11}, \alpha_{12}) = (0.7, 0.7)\)</span> and the second predictor onto <span class="math inline">\((\alpha_{11}, \alpha_{12}) = (0.7, -0.7)\)</span>. This yields <span class="math inline">\(0.7(X_1 + X_2) - 0.7(X_1 - X_2)\)</span>.</p>
+<p>Let’s implement that with R</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data &lt;-<span class="st"> </span><span class="kw">data_frame</span>(
+  <span class="dt">x1 =</span> <span class="kw">runif</span>(<span class="dv">500</span>, -<span class="dv">1</span>, <span class="dv">1</span>),
+  <span class="dt">x2 =</span> <span class="kw">runif</span>(<span class="dv">500</span>, -<span class="dv">1</span>, <span class="dv">1</span>),
+  <span class="dt">y =</span> x1*x2 +<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">500</span>, <span class="dv">0</span>, <span class="fl">0.005</span>)
+)
+all &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x =</span> x1, <span class="dt">y =</span> x2)) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color =</span> y), <span class="dt">size =</span> <span class="dv">3</span>) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">scale_color_gradient2</span>()</code></pre></div>
+<p>We can see the obvious pattern, but we can also see that an additive model would not do well on that.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x1y &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x =</span> x1, <span class="dt">y =</span> y)) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color =</span> y), <span class="dt">size =</span> <span class="dv">3</span>) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_smooth</span>() +<span class="st"> </span>
+<span class="st">  </span><span class="kw">scale_color_gradient2</span>()
+
+
+<span class="kw">grid.arrange</span>(all, x1y)</code></pre></div>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<p>How about using the aforementioned projection?</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data &lt;-<span class="st"> </span>data %&gt;%
+<span class="st">  </span><span class="kw">mutate</span>(
+    <span class="dt">projected_x1 =</span> <span class="fl">0.7</span>*(x1 +<span class="st"> </span>x2),
+    <span class="dt">projected_x2 =</span> -<span class="fl">0.7</span>*(x1 -<span class="st"> </span>x2)
+  )
+
+projected_all &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x =</span> projected_x1, <span class="dt">y =</span> projected_x2)) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color =</span> y), <span class="dt">size =</span> <span class="dv">3</span>) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">scale_color_gradient2</span>()
+
+projected_x1 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x =</span> projected_x1, <span class="dt">y =</span> y)) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color =</span> y), <span class="dt">size =</span> <span class="dv">3</span>) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_smooth</span>() +<span class="st"> </span>
+<span class="st">  </span><span class="kw">scale_color_gradient2</span>()
+
+projected_x2 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x =</span> projected_x2, <span class="dt">y =</span> y)) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color =</span> y), <span class="dt">size =</span> <span class="dv">3</span>) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_smooth</span>() +<span class="st"> </span>
+<span class="st">  </span><span class="kw">scale_color_gradient2</span>()
+
+fitted_x1 &lt;-<span class="st"> </span>mgcv::<span class="kw">gam</span>(y~<span class="kw">s</span>(projected_x1), <span class="dt">data =</span> data)
+fitted_x2 &lt;-<span class="st"> </span>mgcv::<span class="kw">gam</span>(y~<span class="kw">s</span>(projected_x2), <span class="dt">data =</span> data)
+
+data &lt;-<span class="st"> </span>data %&gt;%
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">fitted =</span> <span class="kw">predict</span>(fitted_x1) +<span class="st"> </span><span class="kw">predict</span>(fitted_x2))
+
+fitted &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x =</span> x1, <span class="dt">y =</span> x2)) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color =</span> fitted), <span class="dt">size =</span> <span class="dv">3</span>) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">scale_color_gradient2</span>()
+<span class="kw">grid.arrange</span>(projected_all, projected_x1, projected_x2, fitted, <span class="dt">nrow =</span> <span class="dv">2</span>)</code></pre></div>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<p>The bottom right picture shows the fit with the projection pursuit approach, which resemble the original data pretty well. Again, the idea is to use a linear model to model interactions properly by first projecting the predictors optimally.</p>
+
+</div>
+</div>
 </div>
             </section>
 
@@ -206,7 +415,7 @@ gitbook.start({
 "link": null,
 "text": null
 },
-"download": ["comp_stats_summary.epub"],
+"download": null,
 "toc": {
 "collapse": "subsection"
 }

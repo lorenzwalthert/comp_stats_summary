@@ -144,7 +144,22 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="7.4" data-path="classification.html"><a href="classification.html#discriminant-analysis-or-logistic-regression"><i class="fa fa-check"></i><b>7.4</b> Discriminant Analysis or Logistic Regression?</a></li>
 <li class="chapter" data-level="7.5" data-path="classification.html"><a href="classification.html#multiclass-case-j-2"><i class="fa fa-check"></i><b>7.5</b> Multiclass case (J &gt; 2)</a></li>
 </ul></li>
-<li class="chapter" data-level="8" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html"><i class="fa fa-check"></i><b>8</b> Flexible regression and classification methods</a></li>
+<li class="chapter" data-level="8" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html"><i class="fa fa-check"></i><b>8</b> Flexible regression and classification methods</a><ul>
+<li class="chapter" data-level="8.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#additive-models-structure-one-assumption-we-can-make-is-to-assume-a"><i class="fa fa-check"></i><b>8.1</b> Additive Models ### Structure One assumption we can make is to assume a</a><ul>
+<li class="chapter" data-level="8.1.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#fitting-procedure"><i class="fa fa-check"></i><b>8.1.1</b> Fitting Procedure</a></li>
+<li class="chapter" data-level="8.1.2" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#additive-models-in-r-you-can-use-the-package-mgcv"><i class="fa fa-check"></i><b>8.1.2</b> Additive Models in R You can use the package <strong>mgcv</strong></a></li>
+</ul></li>
+<li class="chapter" data-level="8.2" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#mars"><i class="fa fa-check"></i><b>8.2</b> MARS</a><ul>
+<li class="chapter" data-level="8.2.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#details-for-dummies-note-that-by-using-reflective-pairs-bigx_j---d_-d---x_j_-we-construct-a-piece-wise-linear-function-with-one"><i class="fa fa-check"></i><b>8.2.1</b> Details for Dummies Note that by using reflective pairs <span class="math inline">\(\big\{(x_j - d)_+ \;\;\; (d - x_j)_{+}\; \}\)</span>, we construct a piece-wise linear function with one</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#example-let-us-consider-the-simple-case-of-a-one-dimensional-predictor-space."><i class="fa fa-check"></i><b>8.3</b> Example Let us consider the simple case of a one dimensional predictor space.</a></li>
+<li class="chapter" data-level="8.4" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#neural-networks-neural-networks-are-high-dimensional-non-linear-regression"><i class="fa fa-check"></i><b>8.4</b> Neural Networks Neural networks are high-dimensional non-linear regression</a><ul>
+<li class="chapter" data-level="8.4.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#fitting-neural-networks-in-r-the-nnet-function-from-the-package-with-the"><i class="fa fa-check"></i><b>8.4.1</b> Fitting Neural Networks (in R) The <code>nnet</code> function from the package with the</a></li>
+</ul></li>
+<li class="chapter" data-level="8.5" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#projection-pursuit-regression"><i class="fa fa-check"></i><b>8.5</b> Projection Pursuit Regression</a><ul>
+<li class="chapter" data-level="8.5.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#proejction-pursuit-example"><i class="fa fa-check"></i><b>8.5.1</b> Proejction Pursuit Example</a></li>
+</ul></li>
+</ul></li>
 <li class="chapter" data-level="9" data-path="bagging-and-boosting.html"><a href="bagging-and-boosting.html"><i class="fa fa-check"></i><b>9</b> Bagging and Boosting</a></li>
 <li class="chapter" data-level="10" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>10</b> Introduction</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
@@ -190,7 +205,7 @@ out &lt;-<span class="st"> </span><span class="kw">data_frame</span>(<span class
 <span class="kw">ggplot</span>(out, <span class="kw">aes</span>(<span class="dt">x =</span> value, <span class="dt">color =</span> type)) +<span class="st"> </span>
 <span class="st">  </span><span class="kw">geom_density</span>() +<span class="st"> </span>
 <span class="st">  </span><span class="kw">geom_density</span>(<span class="kw">aes</span>(<span class="dt">x =</span> pop, <span class="dt">color =</span> <span class="ot">NULL</span>), <span class="dt">data =</span> pop)</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <p>We can summarize the bootstrap procedure as follows.</p>
 <ul>
 <li>draw a bootstrap sample <span class="math inline">\({Z_1}^{*}, ..., {Z_{n}}^{*}\)</span></li>
@@ -338,7 +353,7 @@ gitbook.start({
 "link": null,
 "text": null
 },
-"download": ["comp_stats_summary.epub"],
+"download": null,
 "toc": {
 "collapse": "subsection"
 }

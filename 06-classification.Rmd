@@ -1,7 +1,7 @@
 # Classification
 ## Indirect Classification - The Bayes Classifier
 In classification, the goal is to assign observations to a group. Similar to 
-regression, where we have $m(x) = E[Y | X = x]$, we want to assign class abc
+regression, where we have $m(x) = E[Y | X = x]$, we want to assign class
 probabilities to the observations 
 $$\pi_j (x) = P[Y = j | X = x] \;\;\;  (j = 0,1, ..., J-1)  $$
 *Def*: A classifier maps A multidimensional input vector to a class label.
@@ -71,16 +71,16 @@ The logistic model for $\pi_j(x) = \mathbb{P}(Y = j | X = x)$ is
 $\log(\frac{\pi_j(x)}{1-\pi_j(x)}) = g(\cdot)$ or 
 $\pi_j(x) = \frac{e^{g(\cdot)}}{1+ e^{g(\cdot)}}$ equivalently. That model
 maps the real value $g(\cdot)$ can take to the interval $(0, 1)$, which gives 
-a natural interpretation of the reponse as a probability. Note that we want
+a natural interpretation of the response as a probability. Note that we want
 the transformation to be monotone so the mapping is invertible.
 The response variable $Y_1, ..., Y_n$ are distributed according to a 
-Bernulli distribution, ie. $Y_1, ..., Y_n \sim \textrm{Bernulli}(\pi(x_i))$. 
+Bernoulli distribution, i.e.. $Y_1, ..., Y_n \sim \textrm{Bernulli}(\pi(x_i))$. 
 The logistic model belongs to the class of generalized linear models. 
 These models have three characteristics:
 
 * A link function (in our case the logit function 
   $\log(\frac{\pi_j(x)}{1-\pi_j(x)}) = g(x)$).
-* A response distribution (i.e. Bernulli)
+* A response distribution (i.e. Bernoulli)
 * The concrete form of $g(\cdot)$ (in logistic regression most often just 
   a linear model $g(x) = \sum\limits_{j = 1}^p \beta_j x_j$).
 
@@ -109,7 +109,7 @@ mean(prediction == my_data$response)
 ## Discriminant Analysis or Logistic Regression?
 
 * The logistic regression assumes the log-odds to be *linear* in the predictors, 
-  ie. $\log\Big(\frac{\pi}{1-\pi}\Big) = \sum\limits_{i = 1}^p \beta_i x_i$.
+  i.e. $\log\Big(\frac{\pi}{1-\pi}\Big) = \sum\limits_{i = 1}^p \beta_i x_i$.
 * The discriminant analysis assumes $X|Y \sim N(\mu_j, \Sigma$, which leads to
   linear model in the decision variables. Hence, the methods are 
   **quite similar**.
@@ -121,17 +121,17 @@ mean(prediction == my_data$response)
 **TODO** multinomial likelihood (see footnote.)
 
 ## Multiclass case (J > 2)
-With logisitc regression, you can not model multiclass cases directly, but 
-indirectly using one of the following mehtods:
+With logistic regression, you can not model multiclass cases directly, but 
+indirectly using one of the following methods:
 
 * Encode a J-case problem as J binary problems (one class against the rest), 
   that is
   
    \begin{equation}
   Y_i^{(j)} = \begin{cases}
-        1 \text{if} Y_i = j
+        1 \;\;\ \text{if} \;\;\ Y_i = j
         \\
-        0 \text{else}.
+        0 \;\;\ \text{else}.
         \end{cases}
  \end{equation}
 
@@ -144,7 +144,7 @@ classifier to choose the class label ($\arg\max_{0 < j < J-1} \pi_j$)
 
 * Similarly, you can also model *all against the reference*, 
   $\log(\frac{\pi_1}{\pi_0})$. This might be helpful when we want to compare
-  different group memeberships with a reference group. 
+  different group memberships with a reference group. 
   For example in clinical trials, 
   we want to compare how many times more likely someone belongs to group 
   *ill with disease A* than *healthy* (the reference).
@@ -154,9 +154,10 @@ classifier to choose the class label ($\arg\max_{0 < j < J-1} \pi_j$)
   models potentially having different number of observations.
 * In the special case of **ordered groups**, the correct model is often 
   proportional odds model that models
-  
-$$\text{logit}(\mathbb{P}(Y < k |X) = \alpha_k + g(\cdot))$$
-
-with $\alpha_1 \lt \alpha_2 \lt \text{...} \lt \alpha_{J-1}$. 
-The log odds are proportional, which becomes obvious if we take $e$ to the power
-of the above equation.
+  $$\text{logit}(\mathbb{P}(Y < k |X) = \alpha_k + g(\cdot))$$
+  with $\alpha_1 \lt \alpha_2 \lt \text{...} \lt \alpha_{J-1}$. 
+  The log odds are proportional, which becomes obvious if we take $e$ to the power
+  of the above equation. Check [this](http://data.library.virginia.edu/fitting-and-interpreting-a-proportional-odds-model/)
+  webpage for more information. Note that proportionality in the log odds
+  does *not* mean proportionality in the probabilities, since they are only
+  linked through a non-linear mapping (the logistic transformation).

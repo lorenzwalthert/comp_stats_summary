@@ -144,7 +144,22 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="7.4" data-path="classification.html"><a href="classification.html#discriminant-analysis-or-logistic-regression"><i class="fa fa-check"></i><b>7.4</b> Discriminant Analysis or Logistic Regression?</a></li>
 <li class="chapter" data-level="7.5" data-path="classification.html"><a href="classification.html#multiclass-case-j-2"><i class="fa fa-check"></i><b>7.5</b> Multiclass case (J &gt; 2)</a></li>
 </ul></li>
-<li class="chapter" data-level="8" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html"><i class="fa fa-check"></i><b>8</b> Flexible regression and classification methods</a></li>
+<li class="chapter" data-level="8" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html"><i class="fa fa-check"></i><b>8</b> Flexible regression and classification methods</a><ul>
+<li class="chapter" data-level="8.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#additive-models-structure-one-assumption-we-can-make-is-to-assume-a"><i class="fa fa-check"></i><b>8.1</b> Additive Models ### Structure One assumption we can make is to assume a</a><ul>
+<li class="chapter" data-level="8.1.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#fitting-procedure"><i class="fa fa-check"></i><b>8.1.1</b> Fitting Procedure</a></li>
+<li class="chapter" data-level="8.1.2" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#additive-models-in-r-you-can-use-the-package-mgcv"><i class="fa fa-check"></i><b>8.1.2</b> Additive Models in R You can use the package <strong>mgcv</strong></a></li>
+</ul></li>
+<li class="chapter" data-level="8.2" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#mars"><i class="fa fa-check"></i><b>8.2</b> MARS</a><ul>
+<li class="chapter" data-level="8.2.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#details-for-dummies-note-that-by-using-reflective-pairs-bigx_j---d_-d---x_j_-we-construct-a-piece-wise-linear-function-with-one"><i class="fa fa-check"></i><b>8.2.1</b> Details for Dummies Note that by using reflective pairs <span class="math inline">\(\big\{(x_j - d)_+ \;\;\; (d - x_j)_{+}\; \}\)</span>, we construct a piece-wise linear function with one</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#example-let-us-consider-the-simple-case-of-a-one-dimensional-predictor-space."><i class="fa fa-check"></i><b>8.3</b> Example Let us consider the simple case of a one dimensional predictor space.</a></li>
+<li class="chapter" data-level="8.4" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#neural-networks-neural-networks-are-high-dimensional-non-linear-regression"><i class="fa fa-check"></i><b>8.4</b> Neural Networks Neural networks are high-dimensional non-linear regression</a><ul>
+<li class="chapter" data-level="8.4.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#fitting-neural-networks-in-r-the-nnet-function-from-the-package-with-the"><i class="fa fa-check"></i><b>8.4.1</b> Fitting Neural Networks (in R) The <code>nnet</code> function from the package with the</a></li>
+</ul></li>
+<li class="chapter" data-level="8.5" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#projection-pursuit-regression"><i class="fa fa-check"></i><b>8.5</b> Projection Pursuit Regression</a><ul>
+<li class="chapter" data-level="8.5.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#proejction-pursuit-example"><i class="fa fa-check"></i><b>8.5.1</b> Proejction Pursuit Example</a></li>
+</ul></li>
+</ul></li>
 <li class="chapter" data-level="9" data-path="bagging-and-boosting.html"><a href="bagging-and-boosting.html"><i class="fa fa-check"></i><b>9</b> Bagging and Boosting</a></li>
 <li class="chapter" data-level="10" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>10</b> Introduction</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
@@ -223,16 +238,117 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h2><span class="header-section-number">5.7</span> Examples</h2>
 <div id="practical-cv-in-r" class="section level3">
 <h3><span class="header-section-number">5.7.1</span> Practical CV in R</h3>
-<p>Key concepts to do CV in base R are</p>
+<p>Key concepts to do CV are</p>
 <ul>
 <li>Do not split the data, split the indices of the data and work with them if ever possible and subset the data. <code>sample()</code> is your friend.</li>
-<li>use <code>lapply()</code>, <code>apply()</code> and friends. to “loop” over data. Work with matrices when possible, not with lists or data frames.</li>
+<li>use <code>purrr::map()</code> and friends to “loop” over data.</li>
+<li>Always work with lists, never work with data frames of indices. The reason is that data frames have structural constrains (all columns must have same number of elements) that are not natural in some situations. For example, out-of-bootstrap cv <em>does</em> have the same number of observations in the training set, but not in the test set.</li>
+<li>In conjunction with <code>sample()</code>, you can use <code>purrr::rerun</code> or <code>replicate</code> to create lists of indices.</li>
 <li>use helper function to solve “the small problems in the big problem”.</li>
 </ul>
+<p>Let’s first declare our functions.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;purrr&quot;</span>)
+<span class="kw">data</span>(ozone, <span class="dt">package =</span> <span class="st">&quot;gss&quot;</span>)
+
+<span class="co">#&#39; Estimate the generalization error of a ridge regression</span>
+<span class="co">#&#39; @param test Test indices.</span>
+<span class="co">#&#39; @param train Train indices.</span>
+<span class="co">#&#39; @param .data The data.</span>
+<span class="co">#&#39; @param lamda The lamda parameter for the ridge regression.</span>
+ge_ridge &lt;-<span class="st"> </span>function(test, train, .data, lambda) {
+  fit &lt;-<span class="st"> </span>MASS::<span class="kw">lm.ridge</span>(upo3~., 
+                  <span class="dt">lambda =</span> lambda,
+                  <span class="dt">data =</span> .data[train,])
+  pred &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(<span class="kw">cbind</span>(<span class="dv">1</span>, .data[test, -<span class="dv">1</span>])) %*%<span class="st"> </span><span class="kw">coef</span>(fit)
+  <span class="kw">mean</span>((pred -<span class="st"> </span>.data[test,]$upo3)^<span class="dv">2</span>)
+}
+
+
+##  ............................................................................
+##  functions to return list with indices                                   ####
+
+
+get_boostrap_mat &lt;-<span class="st"> </span>function(B, n) {
+  <span class="kw">rerun</span>(B, <span class="kw">sample</span>(n, n, <span class="dt">replace =</span> <span class="ot">TRUE</span>))
+  
+}
+
+get_all_mat &lt;-<span class="st"> </span>function(B, n) {
+  <span class="kw">rerun</span>(B, <span class="dv">1</span>:n)
+}
+
+get_complement &lt;-<span class="st"> </span>function(mat, n){
+  <span class="kw">map</span>(mat, ~<span class="kw">setdiff</span>(<span class="dv">1</span>:n, .x))
+}
+
+get_k_fold &lt;-<span class="st"> </span>function(k, n) {
+  step &lt;-<span class="st"> </span><span class="kw">trunc</span>(n/k)
+  current &lt;-<span class="st"> </span><span class="kw">list</span>()
+  for (i in (<span class="dv">0</span>:(k<span class="dv">-1</span>) *<span class="st"> </span>step +<span class="st"> </span><span class="dv">1</span>))  {
+    current &lt;-<span class="st"> </span><span class="kw">append</span>(current, <span class="kw">list</span>(
+      (i:(i+step<span class="dv">-1</span>))
+    )
+    )
+  }
+  current
+}</code></pre></div>
+<p>Now, let us apply the functions for three cv schemes to estimate the generalization error.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">##  ............................................................................
+##  boostrap                                                                ####
+<span class="co"># use boostrap sample to train, use all to test</span>
+n &lt;-<span class="st"> </span><span class="kw">nrow</span>(ozone)
+train &lt;-<span class="st"> </span><span class="kw">get_boostrap_mat</span>(<span class="dv">10</span>, n)
+test &lt;-<span class="st"> </span><span class="kw">get_all_mat</span>(<span class="dv">10</span>, n)
+bs &lt;-<span class="st"> </span><span class="kw">map2_dbl</span>(test, train, ge_ridge, <span class="dt">.data =</span> ozone, <span class="dt">lambda =</span> <span class="dv">5</span>)
+
+
+
+##  ............................................................................
+##  10-fold                                                                 ####
+test &lt;-<span class="st"> </span><span class="kw">get_k_fold</span>(<span class="dv">10</span>, n)
+train &lt;-<span class="st"> </span><span class="kw">map</span>(test, ~<span class="kw">setdiff</span>(<span class="dv">1</span>:n, .x))
+kfold &lt;-<span class="st"> </span><span class="kw">map2_dbl</span>(test, train, ge_ridge, <span class="dt">.data =</span> ozone, <span class="dt">lambda =</span> <span class="dv">5</span>)
+
+##  ............................................................................
+##  out-of-boostrap                                                         ####
+train &lt;-<span class="st"> </span><span class="kw">get_boostrap_mat</span>(<span class="dv">10</span>, n)
+test &lt;-<span class="st"> </span><span class="kw">map</span>(test, ~<span class="kw">setdiff</span>(<span class="dv">1</span>:n, .x))
+oob &lt;-<span class="st"> </span><span class="kw">map2_dbl</span>(test, train, ge_ridge, <span class="dt">.data =</span> ozone, <span class="dt">lambda =</span> <span class="dv">5</span>)</code></pre></div>
+<p>The results are as follows:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">out &lt;-<span class="st"> </span><span class="kw">cbind</span>(bs, kfold, oob) %&gt;%
+<span class="st">  </span><span class="kw">as_data_frame</span>() %&gt;%
+<span class="st">  </span><span class="kw">gather</span>(key, value)
+
+<span class="kw">ggplot</span>(out, <span class="kw">aes</span>(<span class="dt">y =</span> value, <span class="dt">x =</span> key)) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_boxplot</span>()</code></pre></div>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
 <div id="parameter-tuning" class="section level3">
 <h3><span class="header-section-number">5.7.2</span> Parameter Tuning</h3>
-<p>To use leave-one-out cross-validation for parameter tuning of a lasso. Calculate the test set error for <em>one</em> value of lamda. Then, change the value of lamda and recompute the model and then test set error, so that the test set error becomes a function of lamda, as depicted below. <img src="figures/lasso_cv.png" width="650px" /> Then pick an optimal lamda, e.g. the one with the lowest test error (a bit arbitrary) or one according to some other rule (e.g. pick the least complex model that is within one standard error of the best model).</p>
+<p>We want to use the scheme k-fold cross validation for parameter tuning with a lasso. We first calculate the test set error for <em>one</em> value of lamda (as we did above). Then, change the value of lamda and recompute the model and then test set error, so that the test set error becomes a function of lamda, as depicted below.</p>
+<p><img src="figures/lasso_cv.png" width="650px" /></p>
+<p>Then pick an optimal lamda, e.g. the one with the lowest test error (a bit arbitrary) or one according to some other rule (e.g. pick the least complex model that is within one standard error of the best model).</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#&#39; Given lambda, compute the test set error with k folds</span>
+find_lambda_kfold_one &lt;-<span class="st"> </span>function(lambda, k, n, .data, ...) {
+  x_test &lt;-<span class="st"> </span><span class="kw">get_k_fold</span>(k, n)
+  x_train  &lt;-<span class="st"> </span><span class="kw">get_complement</span>(x_test, n)
+  <span class="kw">map2_dbl</span>(x_test, x_train, ge_ridge, <span class="dt">lambda =</span> lambda, <span class="dt">.data =</span> .data, ...) %&gt;%
+<span class="st">    </span><span class="kw">mean</span>()
+}
+
+<span class="co">#&#39; Given a sequence of lambdas, return the corresponding test set errors</span>
+find_lambda_kfold &lt;-<span class="st"> </span>function(seq, k, .data) {
+  cv &lt;-<span class="st"> </span><span class="kw">map_dbl</span>(seq, find_lambda_kfold_one, 
+                <span class="dt">k =</span> k, <span class="dt">n =</span> <span class="kw">nrow</span>(.data), <span class="dt">.data =</span> .data)
+  results &lt;-<span class="st"> </span><span class="kw">data_frame</span>(<span class="dt">lambda =</span> seq, <span class="dt">cv_score =</span> cv)
+  results
+}</code></pre></div>
+<p>We are almost done. Let us now compute the test set error that we use as an approximation of the generalization error and plot it against different values of lamda.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">find_lambda_kfold</span>(<span class="dt">seq =</span> <span class="kw">seq</span>(<span class="dv">5</span>, <span class="dv">30</span>, <span class="dt">by =</span> <span class="dv">3</span>), <span class="dv">100</span>, ozone) %&gt;%
+<span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> lambda, <span class="dt">y =</span> cv_score)) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_line</span>()</code></pre></div>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>That looks reasonable. We could improve on that by also showing the distribution of the test set error at various lambadas. This could by done by altering <code>find_lambda_kfold_one()</code> to not return the mean, but also the upper and lower 95% confidence interval.</p>
 
 </div>
 </div>
@@ -274,7 +390,7 @@ gitbook.start({
 "link": null,
 "text": null
 },
-"download": ["comp_stats_summary.epub"],
+"download": null,
 "toc": {
 "collapse": "subsection"
 }

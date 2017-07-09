@@ -127,22 +127,152 @@ which coincides with the formula above in certain cases.
 
 ### Practical CV in R
 
-Key concepts to do CV in base R are 
+Key concepts to do CV are
 
 * Do not split the data, split the indices of the data and work with them if 
   ever possible and subset the data. `sample()` is your friend.
-* use `lapply()`, `apply()` and friends. to "loop" over data. Work with 
-  matrices when possible, not with lists or data frames.
+* use `purrr::map()` and friends to "loop" over data. 
+* Always work with lists, never work with data frames of indices. The reason is
+  that data frames have structural constrains (all columns must have same number
+  of elements) that are not natural in some situations. For example, 
+  out-of-bootstrap cv *does* have the same number of observations in the 
+  training set, but not in the test set. 
+* In conjunction with `sample()`, you can use `purrr::rerun` or `replicate` to
+  create lists of indices.
 * use helper function to solve "the small problems in the big problem".
 
+Let's first declare our functions.
+```{r, results=FALSE}
+library("purrr")
+data(ozone, package = "gss")
+
+#' Estimate the generalization error of a ridge regression
+#' @param test Test indices.
+#' @param train Train indices.
+#' @param .data The data.
+#' @param lamda The lamda parameter for the ridge regression.
+ge_ridge <- function(test, train, .data, lambda) {
+  fit <- MASS::lm.ridge(upo3~., 
+                  lambda = lambda,
+                  data = .data[train,])
+  pred <- as.matrix(cbind(1, .data[test, -1])) %*% coef(fit)
+  mean((pred - .data[test,]$upo3)^2)
+}
+
+
+##  ............................................................................
+##  functions to return list with indices                                   ####
+
+
+get_boostrap_mat <- function(B, n) {
+  rerun(B, sample(n, n, replace = TRUE))
+  
+}
+
+get_all_mat <- function(B, n) {
+  rerun(B, 1:n)
+}
+
+get_complement <- function(mat, n){
+  map(mat, ~setdiff(1:n, .x))
+}
+
+get_k_fold <- function(k, n) {
+  step <- trunc(n/k)
+  current <- list()
+  for (i in (0:(k-1) * step + 1))  {
+    current <- append(current, list(
+      (i:(i+step-1))
+    )
+    )
+  }
+  current
+}
+```
+
+Now, let us apply the functions for three cv schemes to estimate the generalization
+error.
+```{r}
+##  ............................................................................
+##  boostrap                                                                ####
+# use boostrap sample to train, use all to test
+n <- nrow(ozone)
+train <- get_boostrap_mat(10, n)
+test <- get_all_mat(10, n)
+bs <- map2_dbl(test, train, ge_ridge, .data = ozone, lambda = 5)
+
+
+
+##  ............................................................................
+##  10-fold                                                                 ####
+test <- get_k_fold(10, n)
+train <- map(test, ~setdiff(1:n, .x))
+kfold <- map2_dbl(test, train, ge_ridge, .data = ozone, lambda = 5)
+
+##  ............................................................................
+##  out-of-boostrap                                                         ####
+train <- get_boostrap_mat(10, n)
+test <- map(test, ~setdiff(1:n, .x))
+oob <- map2_dbl(test, train, ge_ridge, .data = ozone, lambda = 5)
+```
+
+The results are as follows:
+```{r}
+out <- cbind(bs, kfold, oob) %>%
+  as_data_frame() %>%
+  gather(key, value)
+
+ggplot(out, aes(y = value, x = key)) + 
+  geom_boxplot()
+```
+
+
 ### Parameter Tuning
-To use leave-one-out cross-validation for parameter tuning of a
-lasso. Calculate the test set error for *one* value of lamda. Then,
-change the value of lamda and recompute the model and then test set error, so
-that the test set error becomes a function of lamda, as depicted below.
+We want to use the scheme k-fold cross validation for parameter tuning with a
+lasso. We first calculate the test set error for *one* value of lamda (as we
+did above). Then, change the value of lamda and recompute the model and then
+test set error, so that the test set error becomes a function of lamda, as
+depicted below. 
+
 ```{r, out.width="650px", echo=FALSE}
 knitr::include_graphics("figures/lasso_cv.png")
 ```
+
 Then pick an optimal lamda, e.g. the one with the lowest test error (a bit
 arbitrary) or one according to some other rule (e.g. pick the least complex
 model that is within one standard error of the best model).
+
+```{r}
+#' Given lambda, compute the test set error with k folds
+find_lambda_kfold_one <- function(lambda, k, n, .data, ...) {
+  x_test <- get_k_fold(k, n)
+  x_train  <- get_complement(x_test, n)
+  map2_dbl(x_test, x_train, ge_ridge, lambda = lambda, .data = .data, ...) %>%
+    mean()
+}
+
+#' Given a sequence of lambdas, return the corresponding test set errors
+find_lambda_kfold <- function(seq, k, .data) {
+  cv <- map_dbl(seq, find_lambda_kfold_one, 
+                k = k, n = nrow(.data), .data = .data)
+  results <- data_frame(lambda = seq, cv_score = cv)
+  results
+}
+
+```
+
+We are almost done. Let us now compute the test set error that we use as an 
+approximation of the generalization error and plot it against different 
+values of lamda.
+```{r}
+find_lambda_kfold(seq = seq(5, 30, by = 3), 100, ozone) %>%
+  ggplot(aes(x = lambda, y = cv_score)) + 
+  geom_line()
+
+
+```
+
+That looks reasonable. We could improve on that by also showing the distribution
+of the test set error at various lambadas. This could by done by altering 
+`find_lambda_kfold_one()` to not return the mean, but also the upper and lower 
+95% confidence interval.
