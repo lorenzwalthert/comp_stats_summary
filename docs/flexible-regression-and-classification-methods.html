@@ -145,15 +145,16 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="7.5" data-path="classification.html"><a href="classification.html#multiclass-case-j-2"><i class="fa fa-check"></i><b>7.5</b> Multiclass case (J &gt; 2)</a></li>
 </ul></li>
 <li class="chapter" data-level="8" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html"><i class="fa fa-check"></i><b>8</b> Flexible regression and classification methods</a><ul>
-<li class="chapter" data-level="8.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#additive-models-structure-one-assumption-we-can-make-is-to-assume-a"><i class="fa fa-check"></i><b>8.1</b> Additive Models ### Structure One assumption we can make is to assume a</a><ul>
-<li class="chapter" data-level="8.1.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#fitting-procedure"><i class="fa fa-check"></i><b>8.1.1</b> Fitting Procedure</a></li>
-<li class="chapter" data-level="8.1.2" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#additive-models-in-r-you-can-use-the-package-mgcv"><i class="fa fa-check"></i><b>8.1.2</b> Additive Models in R You can use the package <strong>mgcv</strong></a></li>
+<li class="chapter" data-level="8.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#additive-models"><i class="fa fa-check"></i><b>8.1</b> Additive Models</a><ul>
+<li class="chapter" data-level="8.1.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#structure"><i class="fa fa-check"></i><b>8.1.1</b> Structure</a></li>
+<li class="chapter" data-level="8.1.2" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#fitting-procedure"><i class="fa fa-check"></i><b>8.1.2</b> Fitting Procedure</a></li>
+<li class="chapter" data-level="8.1.3" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#additive-models-in-r"><i class="fa fa-check"></i><b>8.1.3</b> Additive Models in R</a></li>
 </ul></li>
 <li class="chapter" data-level="8.2" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#mars"><i class="fa fa-check"></i><b>8.2</b> MARS</a><ul>
-<li class="chapter" data-level="8.2.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#details-for-dummies-note-that-by-using-reflective-pairs-bigx_j---d_-d---x_j_-we-construct-a-piece-wise-linear-function-with-one"><i class="fa fa-check"></i><b>8.2.1</b> Details for Dummies Note that by using reflective pairs <span class="math inline">\(\big\{(x_j - d)_+ \;\;\; (d - x_j)_{+}\; \}\)</span>, we construct a piece-wise linear function with one</a></li>
+<li class="chapter" data-level="8.2.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#details-for-dummies"><i class="fa fa-check"></i><b>8.2.1</b> Details for Dummies</a></li>
 </ul></li>
-<li class="chapter" data-level="8.3" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#example-let-us-consider-the-simple-case-of-a-one-dimensional-predictor-space."><i class="fa fa-check"></i><b>8.3</b> Example Let us consider the simple case of a one dimensional predictor space.</a></li>
-<li class="chapter" data-level="8.4" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#neural-networks-neural-networks-are-high-dimensional-non-linear-regression"><i class="fa fa-check"></i><b>8.4</b> Neural Networks Neural networks are high-dimensional non-linear regression</a><ul>
+<li class="chapter" data-level="8.3" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#example"><i class="fa fa-check"></i><b>8.3</b> Example</a></li>
+<li class="chapter" data-level="8.4" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#neural-networks"><i class="fa fa-check"></i><b>8.4</b> Neural Networks</a><ul>
 <li class="chapter" data-level="8.4.1" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#fitting-neural-networks-in-r-the-nnet-function-from-the-package-with-the"><i class="fa fa-check"></i><b>8.4.1</b> Fitting Neural Networks (in R) The <code>nnet</code> function from the package with the</a></li>
 </ul></li>
 <li class="chapter" data-level="8.5" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#projection-pursuit-regression"><i class="fa fa-check"></i><b>8.5</b> Projection Pursuit Regression</a><ul>
@@ -183,11 +184,14 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="flexible-regression-and-classification-methods" class="section level1">
 <h1><span class="header-section-number">Chapter 8</span> Flexible regression and classification methods</h1>
 <p>The curse of dimensionality makes it very hard to estimate fully nonparametric regression function <span class="math inline">\(\hat{m} = \mathbb{E}[Y|X = x]\)</span> or classification function <span class="math inline">\(\hat{\pi}_j = \mathbb{P}[Y = j | X = x]\)</span>. Hence, by making some (reasonable) structural assumptions, we can improve our models significantly. Generally, we consider the mapping <span class="math inline">\(\mathbb{R}^p \rightarrow \mathbb{P}\)</span> via the function <span class="math inline">\(g(\cdot)\)</span> for both the regression and the classification problem.</p>
-<div id="additive-models-structure-one-assumption-we-can-make-is-to-assume-a" class="section level2">
-<h2><span class="header-section-number">8.1</span> Additive Models ### Structure One assumption we can make is to assume a</h2>
-<p>particular functional form of <span class="math inline">\(g(\cdot)\)</span>, namely an <em>additive</em>. That is <span class="math display">\[g_{add} = \mu + \sum\limits_{j = 1}^pg(x_j) \]</span> <span class="math inline">\(E[g(x_j)] = 0\)</span> is required to make the model identifiable only. Note that we have not placed any assumption on <span class="math inline">\(g(x_j)\)</span> yet, that is, <span class="math inline">\(g(x_j)\)</span> can be fully non-parametric, but each dimension is mapped separately. In other words every <span class="math inline">\(g(x_j) \;\; j = 1, ..., p\)</span> models one input dimension and mapping of input to output is obtained by summing the transformed inputs up. This eliminates the possibility of interaction effects.</p>
+<div id="additive-models" class="section level2">
+<h2><span class="header-section-number">8.1</span> Additive Models</h2>
+<div id="structure" class="section level3">
+<h3><span class="header-section-number">8.1.1</span> Structure</h3>
+<p>One assumption we can make is to assume a particular functional form of <span class="math inline">\(g(\cdot)\)</span>, namely an <em>additive</em>. That is <span class="math display">\[g_{add} = \mu + \sum\limits_{j = 1}^pg(x_j) \]</span> <span class="math inline">\(E[g(x_j)] = 0\)</span> is required to make the model identifiable only. Note that we have not placed any assumption on <span class="math inline">\(g(x_j)\)</span> yet, that is, <span class="math inline">\(g(x_j)\)</span> can be fully non-parametric, but each dimension is mapped separately. In other words every <span class="math inline">\(g(x_j) \;\; j = 1, ..., p\)</span> models one input dimension and mapping of input to output is obtained by summing the transformed inputs up. This eliminates the possibility of interaction effects.</p>
+</div>
 <div id="fitting-procedure" class="section level3">
-<h3><span class="header-section-number">8.1.1</span> Fitting Procedure</h3>
+<h3><span class="header-section-number">8.1.2</span> Fitting Procedure</h3>
 <p>Additive models can be estimated with a technique called back-fitting. However, the model can be estimated with any nonparametric method for one-dimensional smoothing. Here is the receipt:</p>
 <ul>
 <li>since we assume an additive model, we need to initialize all <span class="math inline">\(p\)</span> components of it with zero, that is setting <span class="math inline">\(g_j(\cdot) = 0 \;\; j = 1,..., p\)</span> plus setting <span class="math inline">\(\mu = n^{-1}\sum Y_i\)</span>. * Then we fit one-dimensional smoother repeatedly, that is solving the one-dimensional smoothing problem <span class="math inline">\(Y - \mu - \sum\limits_{j \neq k}\hat{g}_j = \hat{g}_j(x_j)\)</span>, or put differently <span class="math inline">\(\hat{g}_j = S_j(Y - \mu1 - \sum\limits_{j \neq k}g_j)\)</span>. This has to be done repeatedly for <span class="math inline">\(j = 1, ..., p, 1, ..., p \text{etc.}\)</span>.</li>
@@ -197,8 +201,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>Back-fitting is a <strong>coordinate-wise</strong> optimization method that optimizes one coordinate at the time (one $g(), but can be more than one parameter), which may be slower in convergence than a general gradient descent that optimizes all directions simultaneously but also more robust.</p>
 <p><img src="figures/coordinate_wise.png" width="244" /></p>
 </div>
-<div id="additive-models-in-r-you-can-use-the-package-mgcv" class="section level3">
-<h3><span class="header-section-number">8.1.2</span> Additive Models in R You can use the package <strong>mgcv</strong></h3>
+<div id="additive-models-in-r" class="section level3">
+<h3><span class="header-section-number">8.1.3</span> Additive Models in R</h3>
+<p>You can use the package <strong>mgcv</strong></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;ozone&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;gss&quot;</span>) 
 fit &lt;-<span class="st"> </span>mgcv::<span class="kw">gam</span>(upo3 ~<span class="st"> </span><span class="kw">s</span>(vdht) +<span class="st"> </span><span class="kw">s</span>(wdsp) +<span class="st"> </span><span class="kw">s</span>(hmdt) +<span class="st"> </span><span class="kw">s</span>(sbtp), 
            <span class="dt">data =</span> ozone) 
@@ -225,15 +230,15 @@ h_l\]</span> that reduce the residual sum of squares the most with some <span cl
 <span class="math inline">\(x_j\)</span>. The model becomes <span class="math display">\[\hat{g}(x) = \sum\limits_{m = 0}^{2r}\hat{\beta}_m
 h_m(x)\]</span> which can be estimated by least squares. Update the set <span class="math inline">\(\mathcal{M}\)</span> to be <span class="math inline">\(\mathcal{M} = \mathcal{M}_{old} \cup \{h_{2r-1}, h_{2r}\}\)</span> 3. Iterate the above step until the set <span class="math inline">\(\mathcal{M}\)</span> becomes <em>large enough</em>. 4. Do backward deletion (<em>pruning</em>) by removing the <em>one</em> function from a reflected pair that increases the residual sum of squares the least. 5. Stop the pruning when some GCV score reaches its minimum.</li>
 </ol>
-<div id="details-for-dummies-note-that-by-using-reflective-pairs-bigx_j---d_-d---x_j_-we-construct-a-piece-wise-linear-function-with-one" class="section level3">
-<h3><span class="header-section-number">8.2.1</span> Details for Dummies Note that by using reflective pairs <span class="math inline">\(\big\{(x_j - d)_+ \;\;\; (d - x_j)_{+}\; \}\)</span>, we construct a piece-wise linear function with one</h3>
-<p>knot at <span class="math inline">\(d\)</span>, since we sum the functions (which both a have a zero part that does not overlap) up. This hinge function (or better the two parts of individually) <span class="math inline">\(\beta\)</span> will be multiplied with a respective <span class="math inline">\(\beta\)</span>, so the slope is adaptive. Also, since each of the functions have its own <span class="math inline">\(d\)</span>, the kink of the function must not occur at <span class="math inline">\(y = 0\)</span>.</p>
+<div id="details-for-dummies" class="section level3">
+<h3><span class="header-section-number">8.2.1</span> Details for Dummies</h3>
+<p>Note that by using reflective pairs <span class="math inline">\(\big\{(x_j - d)_+ \;\;\; (d - x_j)_{+}\; \}\)</span>, we construct a piece-wise linear function with one knot at <span class="math inline">\(d\)</span>, since we sum the functions (which both a have a zero part that does not overlap) up. This hinge function (or better the two parts of individually) <span class="math inline">\(\beta\)</span> will be multiplied with a respective <span class="math inline">\(\beta\)</span>, so the slope is adaptive. Also, since each of the functions have its own <span class="math inline">\(d\)</span>, the kink of the function must not occur at <span class="math inline">\(y = 0\)</span>.</p>
 <p>From the receipt above, we can see that <span class="math inline">\(d\)</span>-way interactions are only possible if a <span class="math inline">\(d-1\)</span>-way interaction with a subset of the <span class="math inline">\(d\)</span>-way interaction is already in the model. For interpretability and other reasons, restricting the number of interactions to three or two is beneficial. Restricting the degree of interaction to one (which is actually no interaction) will yield an additive model.</p>
 </div>
 </div>
-<div id="example-let-us-consider-the-simple-case-of-a-one-dimensional-predictor-space." class="section level2">
-<h2><span class="header-section-number">8.3</span> Example Let us consider the simple case of a one dimensional predictor space.</h2>
-<p>We add noise to data that is piece-wise linear up to <span class="math inline">\(x= 100\)</span> and then follows a sine-wave. We then fit three mars models with different number of maximal knots.</p>
+<div id="example" class="section level2">
+<h2><span class="header-section-number">8.3</span> Example</h2>
+<p>Let us consider the simple case of a one dimensional predictor space. We add noise to data that is piece-wise linear up to <span class="math inline">\(x= 100\)</span> and then follows a sine-wave. We then fit three mars models with different number of maximal knots.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;earth&quot;</span>) 
 sim &lt;-<span class="st"> </span><span class="kw">data_frame</span>( <span class="dt">x =</span> -<span class="dv">25</span>:<span class="dv">75</span>, 
                    <span class="dt">y =</span> <span class="kw">pmax</span>(<span class="dv">0</span>, x -<span class="st"> </span><span class="dv">40</span>) +<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">100</span>, <span class="dv">0</span>, <span class="dv">3</span>)) %&gt;%<span class="st"> </span>
@@ -269,9 +274,9 @@ sim2 &lt;-<span class="st"> </span>fitted %&gt;%<span class="st"> </span>
 ## GCV 29.6829    RSS 3593.734    GRSq 0.8285947    RSq 0.8339929</code></pre>
 <p>The example shows what we expected. The green line with a maximum of three knots uses just one knot around 30, and only the right part of the reflected pair is used. It cannot distinguish between the linear segment between 40 and 75 and the sine-wave afterwards. By allowing more knots, we can see that the red line fits the data quite well. Note that the default of <code>degree</code> is just <span class="math inline">\(1\)</span>, so we don’t have interaction terms in the model. This does not matter for a one-dimensional example anyways.</p>
 </div>
-<div id="neural-networks-neural-networks-are-high-dimensional-non-linear-regression" class="section level2">
-<h2><span class="header-section-number">8.4</span> Neural Networks Neural networks are high-dimensional non-linear regression</h2>
-<p>models. The way it works is best illustrated with a picture.</p>
+<div id="neural-networks" class="section level2">
+<h2><span class="header-section-number">8.4</span> Neural Networks</h2>
+<p>Neural networks are high-dimensional non-linear regression models. The way it works is best illustrated with a picture.</p>
 <p><img src="figures/nn.png" width="605" /></p>
 <p>This is a neural network with one hidden layer, <span class="math inline">\(p\)</span> input layers and <span class="math inline">\(q\)</span> output layers. Mathematically speaking, the model is: <span class="math display">\[ g_k(x) = f_0\Big(\alpha_k +
 \sum\limits_{h = 1}^q w_{ij} \phi(\tilde{\alpha}_h + \sum\limits_{j = 1}^p
@@ -373,7 +378,7 @@ fitted &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span 
 <span class="st">  </span><span class="kw">scale_color_gradient2</span>()
 <span class="kw">grid.arrange</span>(projected_all, projected_x1, projected_x2, fitted, <span class="dt">nrow =</span> <span class="dv">2</span>)</code></pre></div>
 <p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
-<p>The bottom right picture shows the fit with the projection pursuit approach, which resemble the original data pretty well. Again, the idea is to use a linear model to model interactions properly by first projecting the predictors optimally.</p>
+<p>The bottom right picture shows the predictions with the projection pursuit approach, which resembles the original data pretty well. Again, the idea is to use an additive model to account for the interactions properly by first projecting the predictors optimally.</p>
 
 </div>
 </div>

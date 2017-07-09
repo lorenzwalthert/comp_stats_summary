@@ -10,8 +10,10 @@ structural assumptions, we can improve our models significantly. Generally, we
 consider the mapping $\mathbb{R}^p \rightarrow \mathbb{P}$ via the function 
 $g(\cdot)$ for both the regression and the classification problem.
 
-## Additive Models ### Structure One assumption we can make is to assume a
-particular functional form of $g(\cdot)$, namely an *additive*. That is 
+## Additive Models 
+### Structure
+One assumption we can make is to assume a particular functional form of 
+$g(\cdot)$, namely an *additive*. That is 
 $$g_{add} = \mu + \sum\limits_{j = 1}^pg(x_j) $$ $E[g(x_j)] = 0$ is required to
 make the model identifiable only. Note that we have not placed any assumption
 on $g(x_j)$ yet, that is, $g(x_j)$ can be fully non-parametric, but each
@@ -51,7 +53,8 @@ knitr::include_graphics("figures/coordinate_wise.png")
 # To Do: Think about additive models for classification. 
 ``` 
 
-### Additive Models in R You can use the package **mgcv** 
+### Additive Models in R 
+You can use the package **mgcv** 
 ```{r} 
 data("ozone", package = "gss") 
 fit <- mgcv::gam(upo3 ~ s(vdht) + s(wdsp) + s(hmdt) + s(sbtp), 
@@ -100,7 +103,8 @@ deletion (*pruning*) by removing the *one* function from a reflected pair that
 increases the residual sum of squares the least. 5. Stop the pruning when some
 GCV score reaches its minimum.
 
-### Details for Dummies Note that by using reflective pairs $\big\{(x_j - d)_+
+### Details for Dummies 
+Note that by using reflective pairs $\big\{(x_j - d)_+
 \;\;\; (d - x_j)_{+}\; \}$, we construct a piece-wise linear function with one
 knot at $d$, since we sum the functions (which both a have a zero part that does
 not overlap) up. This hinge function (or better the two parts of individually)
@@ -115,7 +119,8 @@ interactions to three or two is beneficial. Restricting the degree of
 interaction to one (which is actually no interaction) will yield an additive 
 model.
 
-## Example Let us consider the simple case of a one dimensional predictor space.
+## Example 
+Let us consider the simple case of a one dimensional predictor space.
 We add noise to data that is piece-wise linear up to $x= 100$ and then follows a
 sine-wave. We then fit three mars models with different number of maximal knots.
 
@@ -152,7 +157,8 @@ default of `degree` is just $1$, so we don't have interaction terms in the
 model. This does not matter for a one-dimensional example anyways.
 
 
-## Neural Networks Neural networks are high-dimensional non-linear regression
+## Neural Networks 
+Neural networks are high-dimensional non-linear regression
 models. The way it works is best illustrated with a picture.
 
 ```{r, echo=FALSE} 
@@ -301,7 +307,7 @@ fitted <- ggplot(data, aes(x = x1, y = x2)) +
 grid.arrange(projected_all, projected_x1, projected_x2, fitted, nrow = 2)
 ```
 
-The bottom right picture shows the fit with the projection pursuit approach, 
-which resemble the original data pretty well. Again, the idea is to use a 
-linear model to model interactions properly by first projecting the predictors
-optimally.
+The bottom right picture shows the predictions with the projection pursuit approach, 
+which resembles the original data pretty well. Again, the idea is to use an
+additive model to account for the interactions properly by first projecting the 
+predictors optimally.
