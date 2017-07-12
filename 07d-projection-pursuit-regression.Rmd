@@ -1,0 +1,115 @@
+## Projection Pursuit Regression 
+The model takes the form 
+$$g_{PPR} = \mu + \sum\limits_{k = 1}^q f_k(\sum \limits_{j = 1}^p
+\alpha_{jk}x_j) $$ 
+With $\sum \limits_{j = 1}^p \alpha_j = 1$ and
+$E[f_k(\sum \limits_{j = 1}^p \alpha_{jk}x_j)] = 0 \;\; \text{for all k}$. 
+
+$\mathbf{\alpha}_k x_j$ is the projection of the j-th column in the design 
+matrix onto $\alpha_k$. The functions $f_k$ only
+vary along one direction and are hence called ridge functions. 
+
+Projection pursuit regression is similar to both neural nets and additive
+models. It is similar to GAMs because
+
+* it can be seen as an additive model whereas the predictors were first 
+  projected into the optimal direction.
+
+And it is similar neural nets because
+
+* if you assume the identity for $f_0$ in the neral net (which you typically do 
+  for regression) the models become very similar up to the term $w_{hk} \phi$,
+  which is just $f_k$ in projection pursuit regression. Hence, instead of 
+  assuming a parapetric form (the sigmoid function) and multiplying that 
+  transformation with a weight $w_{hk}$^[For regression you need only one 
+  index since you will have just one ouput layer.] we don't make any assumption
+  on the form of the function, that is, let $f_k$ be fully non-parametric.
+
+Probably fot that very reason, the model requires much smaller $q$ than a neural
+net requires hidden units, at the expense of estimating the ridge functions 
+(which is not necessary for neural nets).
+
+### Proejction Pursuit Example
+In the following, we illustrate how optimal projections of the initial predictor
+space can allow us to use an additive functional form to deal with 
+interaction terms. Let us consider the following data-generating model 
+$$ Y = X_1 \times X_2 + \epsilon \; \text{with} \;\epsilon \sim N(0, 1) \; \text{and}\; X_1, X_2 \sim \text{Unif}(-1,1)$$
+
+Where $X \in \mathbb{R}^2$, i.e. a two-dimensional predictor space with the 
+predictors $X_1$ and $X_2$. Using elementary calculus, this can be rewritten as
+$$ Y = \frac{1}{4} (X_1 + X_2)^2  - \frac{1}{4}(X_1 - X_2)^2$$
+Hence, we rewrote a multiplicative model as an additive model. As we are using 
+arbitrary *smooth* functions $f_k$, we can easily fit the quadratic terms in the 
+equation above, so the problem to solve becomes
+$$Y = \mu + f_1(X_1 + X_2) - f_2(X_1 - X_2)$$
+Therefore, the remaining question is how can we choose the two vectors
+$\mathbf{\alpha}_1$ and $\mathbf{\alpha}_1$ such that the result of the projection
+is $X_1 + X_2 \;\text{and}\;X_1 - X_2$.
+With the restriction $|\alpha| = 1$, it turns out we can preceded as follows:
+We project the first predictor onto $(\alpha_{11}, \alpha_{12}) = (0.7, 0.7)$
+and the second predictor onto $(\alpha_{11}, \alpha_{12}) = (0.7, -0.7)$. This
+yields $0.7(X_1 + X_2)$ and $0.7(X_1 - X_2)$.
+
+Let's implement that with R
+```{r}
+data <- data_frame(
+  x1 = runif(500, -1, 1),
+  x2 = runif(500, -1, 1),
+  y = x1*x2 + rnorm(500, 0, 0.005)
+)
+all <- ggplot(data, aes(x = x1, y = x2)) + 
+  geom_point(aes(color = y), size = 3) + 
+  scale_color_gradient2()
+```
+
+We can see the obvious pattern, but we can also see that an additive model would 
+not do well on that.
+```{r}
+x1y <- ggplot(data, aes(x = x1, y = y)) + 
+  geom_point(aes(color = y), size = 3) + 
+  geom_smooth() + 
+  scale_color_gradient2()
+
+
+grid.arrange(all, x1y)
+```
+
+How about using the aforementioned projection?
+
+```{r}
+data <- data %>%
+  mutate(
+    projected_x1 = 0.7*(x1 + x2),
+    projected_x2 = -0.7*(x1 - x2)
+  )
+
+projected_all <- ggplot(data, aes(x = projected_x1, y = projected_x2)) + 
+  geom_point(aes(color = y), size = 3) + 
+  scale_color_gradient2()
+
+projected_x1 <- ggplot(data, aes(x = projected_x1, y = y)) + 
+  geom_point(aes(color = y), size = 3) + 
+  geom_smooth() + 
+  scale_color_gradient2()
+
+projected_x2 <- ggplot(data, aes(x = projected_x2, y = y)) + 
+  geom_point(aes(color = y), size = 3) + 
+  geom_smooth() + 
+  scale_color_gradient2()
+
+fitted_x1 <- mgcv::gam(y~s(projected_x1), data = data)
+fitted_x2 <- mgcv::gam(y~s(projected_x2), data = data)
+
+data <- data %>%
+  mutate(fitted = predict(fitted_x1) + predict(fitted_x2))
+
+fitted <- ggplot(data, aes(x = x1, y = x2)) + 
+  geom_point(aes(color = fitted), size = 3) + 
+  scale_color_gradient2()
+grid.arrange(projected_all, projected_x1, projected_x2, fitted, nrow = 2)
+```
+
+The bottom right picture shows the predictions with the projection pursuit approach, 
+which resembles the original data pretty well. Again, the idea is to use an
+additive model to account for the interactions properly by first projecting the 
+predictors optimally.

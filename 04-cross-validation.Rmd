@@ -18,10 +18,10 @@ $(X_1, ..., X_n.)$. By increasing the number of parameters in the model and by
 allowing for interactions between them, we can make the regression model fitting
 arbitrarily well to the data. However, such an extremely complex model will not
 perform as well with new data, that is, will not generalize well to other 
-situations, since we essentially modeled also a lot of noise. 
-We use the following
-notation:
-$$ l^{-1}\sum\limits_{i = 1}^l\rho(Y_{new, i}, \hat{g}(X_{new, i}))$$
+data sets, since we essentially modeled also a lot of noise. 
+To estimate the performance of an algorithm on a new sample, we introduce the 
+following notation:
+$$ l^{-1}\sum\limits_{i = 1}^l\rho(Y_{new, i}, \hat{g}(X_{new, l}))$$
 Where $\rho$ is a loss function to be evaluated on the new data points 
 $(Y_{new, 1}, ..., Y_{new, l})$ and the prediction made for 
 $(X_{new, 1}, ..., X_{new, l})$ with the function $\hat{g}$, which was estimated
@@ -38,13 +38,17 @@ training error is depicted in the figure below.
 knitr::include_graphics("figures/ge.jpg")
 ```
 
+The optimal model complexity is at around $20$ degrees of freedom. With more
+degrees of freedom, the test set error increases again. We start to model 
+noise. This is also called overfitting.
+
 ## Loss Function
 Depending on the application, 
 one can imagine different loss-functions. For example the squared deviance from
 the *true* value is often used, i.e. 
 $$n^{-1}\sum\limits_{i = 1}^n\rho(Y_i, \hat{m}(X_i)) = n^{-1}\sum\limits_{i = 1}^n(Y_i - \hat{m}(X_i))^2$$ Hence, larger deviance is penalized over-proportionally.
 For classification, one often uses the zero-one error, i.e. 
-$$n^{-1}\sum\limits_{i = 1}^n1_{\hat{m}(X_i) = Y_i}$$.
+$$n^{-1}\sum\limits_{i = 1}^n1_{\hat{m}(X_i) = Y_i}$$
 However, it might also be appropriate to use asymmetric loss functions if
 false negatives are worse than false positives (i.e. for cancer tests).
 
@@ -69,9 +73,9 @@ This method is best explained with a picture.
 ```{r, out.width = "650px"}
 knitr::include_graphics("figures/k_fold_cv.png")
 ```
-Here, one splits the data set into k equally sized fold. Then, we use all 
-$k-1$ folds to build a model and the remaining fold to evaluate the model. 
-Then, we average the $k$ estimates of the generalization error. Or in 
+Here, one splits the data set into k equally sized folds. Then, the idea is
+to use all $k-1$ folds to build a model and the remaining fold to evaluate the 
+model. Then, we average the $k$ estimates of the generalization error. Or in 
 mathematical notation:
 
 $$K^{-1} \sum\limits_{k = 1}^K |B_k|^{-1} \sum\limits_{i \in B_k}\rho({Y_{i}, \hat{m}^{-B_k}_{n-|B_k|}(X_i))}$$ 

@@ -184,6 +184,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="flexible-regression-and-classification-methods" class="section level1">
 <h1><span class="header-section-number">Chapter 8</span> Flexible regression and classification methods</h1>
 <p>The curse of dimensionality makes it very hard to estimate fully nonparametric regression function <span class="math inline">\(\hat{m} = \mathbb{E}[Y|X = x]\)</span> or classification function <span class="math inline">\(\hat{\pi}_j = \mathbb{P}[Y = j | X = x]\)</span>. Hence, by making some (reasonable) structural assumptions, we can improve our models significantly. Generally, we consider the mapping <span class="math inline">\(\mathbb{R}^p \rightarrow \mathbb{P}\)</span> via the function <span class="math inline">\(g(\cdot)\)</span> for both the regression and the classification problem.</p>
+
 <div id="additive-models" class="section level2">
 <h2><span class="header-section-number">8.1</span> Additive Models</h2>
 <div id="structure" class="section level3">
@@ -210,6 +211,7 @@ fit &lt;-<span class="st"> </span>mgcv::<span class="kw">gam</span>(upo3 ~<span 
 
 <span class="kw">plot</span>(fit, <span class="dt">pages =</span> <span class="dv">1</span>) </code></pre></div>
 <p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-16-1.png" width="672" /> You can see that vdht enters the model almost linearly. That is, with an increase of one unit of vdht, the predicted 03 value increases linearly. sbtp is different. Depending on the value of sbtp, the increase in the predicted value is different. Low sbtp values hardly have an impact on the response, higher values do.</p>
+
 </div>
 </div>
 <div id="mars" class="section level2">
@@ -273,6 +275,7 @@ sim2 &lt;-<span class="st"> </span>fitted %&gt;%<span class="st"> </span>
 ## Number of terms at each degree of interaction: 1 1 (additive model)
 ## GCV 29.6829    RSS 3593.734    GRSq 0.8285947    RSq 0.8339929</code></pre>
 <p>The example shows what we expected. The green line with a maximum of three knots uses just one knot around 30, and only the right part of the reflected pair is used. It cannot distinguish between the linear segment between 40 and 75 and the sine-wave afterwards. By allowing more knots, we can see that the red line fits the data quite well. Note that the default of <code>degree</code> is just <span class="math inline">\(1\)</span>, so we don’t have interaction terms in the model. This does not matter for a one-dimensional example anyways.</p>
+
 </div>
 <div id="neural-networks" class="section level2">
 <h2><span class="header-section-number">8.4</span> Neural Networks</h2>
@@ -317,13 +320,23 @@ fit &lt;-<span class="st"> </span>nnet::<span class="kw">nnet</span>( log_upo3 ~
 <p>The in-sample MSE for the regression case is</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mean</span>(<span class="kw">residuals</span>(fit)^<span class="dv">2</span>) </code></pre></div>
 <pre><code>## [1] 0.1036706</code></pre>
+
 </div>
 </div>
 <div id="projection-pursuit-regression" class="section level2">
 <h2><span class="header-section-number">8.5</span> Projection Pursuit Regression</h2>
-<p>Projection pursuit regression is similar to both neural nets and additive models. It can be seen as an additive model whereas the predictors were first projected into the optimal direction. The model takes the form <span class="math display">\[g_{PPR} = \mu + \sum\limits_{k = 1}^q f_k(\sum \limits_{j = 1}^p
+<p>The model takes the form <span class="math display">\[g_{PPR} = \mu + \sum\limits_{k = 1}^q f_k(\sum \limits_{j = 1}^p
 \alpha_{jk}x_j) \]</span> With <span class="math inline">\(\sum \limits_{j = 1}^p \alpha_j = 1\)</span> and <span class="math inline">\(E[f_k(\sum \limits_{j = 1}^p \alpha_{jk}x_j)] = 0 \;\; \text{for all k}\)</span>.</p>
-<p><span class="math inline">\(\mathbf{\alpha}_k x_j\)</span> is the projection of the j-th column in the design matrix onto <span class="math inline">\(\alpha_k\)</span>. The functions <span class="math inline">\(f_k\)</span> only vary along one direction and are hence called ridge functions. The model requires much smaller <span class="math inline">\(q\)</span> than a neural net requires hidden units, at the expense of estimating the ridge functions (which is not necessary for neural nets, as it is already fully specified by the sigmoid function).</p>
+<p><span class="math inline">\(\mathbf{\alpha}_k x_j\)</span> is the projection of the j-th column in the design matrix onto <span class="math inline">\(\alpha_k\)</span>. The functions <span class="math inline">\(f_k\)</span> only vary along one direction and are hence called ridge functions.</p>
+<p>Projection pursuit regression is similar to both neural nets and additive models. It is similar to GAMs because</p>
+<ul>
+<li>it can be seen as an additive model whereas the predictors were first projected into the optimal direction.</li>
+</ul>
+<p>And it is similar neural nets because</p>
+<ul>
+<li>if you assume the identity for <span class="math inline">\(f_0\)</span> in the neral net (which you typically do for regression) the models become very similar up to the term <span class="math inline">\(w_{hk} \phi\)</span>, which is just <span class="math inline">\(f_k\)</span> in projection pursuit regression. Hence, instead of assuming a parapetric form (the sigmoid function) and multiplying that transformation with a weight <span class="math inline">\(w_{hk}\)</span><a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> we don’t make any assumption on the form of the function, that is, let <span class="math inline">\(f_k\)</span> be fully non-parametric.</li>
+</ul>
+<p>Probably fot that very reason, the model requires much smaller <span class="math inline">\(q\)</span> than a neural net requires hidden units, at the expense of estimating the ridge functions (which is not necessary for neural nets).</p>
 <div id="proejction-pursuit-example" class="section level3">
 <h3><span class="header-section-number">8.5.1</span> Proejction Pursuit Example</h3>
 <p>In the following, we illustrate how optimal projections of the initial predictor space can allow us to use an additive functional form to deal with interaction terms. Let us consider the following data-generating model <span class="math display">\[ Y = X_1 \times X_2 + \epsilon \; \text{with} \;\epsilon \sim N(0, 1) \; \text{and}\; X_1, X_2 \sim \text{Unif}(-1,1)\]</span></p>
@@ -383,6 +396,12 @@ fitted &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span 
 </div>
 </div>
 </div>
+<div class="footnotes">
+<hr />
+<ol start="1">
+<li id="fn1"><p>For regression you need only one index since you will have just one ouput layer.<a href="flexible-regression-and-classification-methods.html#fnref1">↩</a></p></li>
+</ol>
+</div>
             </section>
 
           </div>
@@ -420,7 +439,7 @@ gitbook.start({
 "link": null,
 "text": null
 },
-"download": ["comp_stats_summary.pdf"],
+"download": null,
 "toc": {
 "collapse": "subsection"
 }

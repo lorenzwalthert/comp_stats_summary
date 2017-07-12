@@ -1,0 +1,86 @@
+## MARS 
+MARS stands for multivariate adaptive regression splines and allows
+pice-wise linear curve fitting. In contrast to GAMs, they allow for interactions
+between the variables. MARS is very similar to regression trees, but it has a
+continuous response. It uses reflected pairs of basis functions
+
+\begin{equation} 
+  (x_j -d)_{+} = \begin{cases} x_j - d \;\;\ \text{if} \;\;\ x_j - d > 0 \\ 
+  0 \;\;\ \text{else}. 
+  \end{cases} 
+\end{equation} and it counterpart
+$(d - x_j)_{+}$. The index $j$ refers to the j-th predictor variable, d is a
+knot at one of the $x_js$. The pool of basis functions to consider is called
+$\mathbf{B}$ and contains all variables with all potential knots, that is $$
+\mathcal{B} = \{(x_j - d)_+ \;\;\; (d - x_j)_+ \;\;\;j = \{1, ..., p\} \;\; d =
+\{x_{1j}, ..., x_{nj}\}\}$$ The model then is $$ g(x)  = \mu + \sum\limits_{m =
+1}^M\beta_m h_m(x) = \sum\limits_{m = 0}^M\beta_m h_m(x)$$ The model uses
+forward selection and backward deletion and optimizes some (generalized)
+cross-validation criterion. Here is the receipt:
+
+1. initialize $\mathcal{M} = \{h_0(\cdot) = 1\}$ and estimate $\beta_0$ as the 
+data average of the response $n^{-1}\sum\limits_{i = 1}^n Y_i$. 2. for $r = 1,
+2, ...$ search for a new pair of function $(h_{2 r-1} \;\; h_{2 r})$ which are of
+the form $$h_{2 r-1} = (x_j -d)_+ \times h_l$$ $$h_{2 r} = (d - x_j)_+ \times
+h_l$$ that reduce the residual sum of squares the most with some $h_l$ from 
+$\mathcal{M}$ that some basis functions from $\mathcal{B}$ does *not* contain  
+$x_j$. The model becomes $$\hat{g}(x) = \sum\limits_{m = 0}^{2r}\hat{\beta}_m
+h_m(x)$$ which can be estimated by least squares. Update the set $\mathcal{M}$
+to be $\mathcal{M} = \mathcal{M}_{old} \cup \{h_{2r-1}, h_{2r}\}$ 3. Iterate the
+above step until the set $\mathcal{M}$ becomes *large enough*. 4. Do backward
+deletion (*pruning*) by removing the *one* function from a reflected pair that
+increases the residual sum of squares the least. 5. Stop the pruning when some
+GCV score reaches its minimum.
+
+### Details for Dummies 
+Note that by using reflective pairs $\big\{(x_j - d)_+
+\;\;\; (d - x_j)_{+}\; \}$, we construct a piece-wise linear function with one
+knot at $d$, since we sum the functions (which both a have a zero part that does
+not overlap) up. This hinge function (or better the two parts of individually)
+$\beta$ will be multiplied with a respective $\beta$, so the slope is adaptive.
+Also, since each of the functions have its own $d$, the kink of the function
+must not occur at $y = 0$.
+
+From the receipt above, we can see that $d$-way interactions are only possible 
+if a $d-1$-way interaction with a subset of the $d$-way interaction is already 
+in the model. For interpretability and other reasons, restricting the number of 
+interactions to three or two is beneficial. Restricting the degree of 
+interaction to one (which is actually no interaction) will yield an additive 
+model.
+
+## Example 
+Let us consider the simple case of a one dimensional predictor space.
+We add noise to data that is piece-wise linear up to $x= 100$ and then follows a
+sine-wave. We then fit three mars models with different number of maximal knots.
+
+```{r, message=FALSE,warning=FALSE} 
+library("earth") 
+sim <- data_frame( x = -25:75, 
+                   y = pmax(0, x - 40) + rnorm(100, 0, 3)) %>% 
+  bind_rows(data_frame( x = 75:100, y = -1*sqrt(x)* sin(x/3) + 30))
+
+fitted <- data_frame( 
+  nk3  = earth(y~x, data = sim, nk = 3), 
+  nk5  = earth(y~x, data = sim, nk = 5), 
+  nk100 = earth(y~x, data = sim, nk = 100)
+)
+
+
+sim2 <- fitted %>% 
+  map_df(~predict(.x)) %>% 
+  bind_cols(sim) %>% gather(key, value, -x, -y)
+
+
+ggplot(sim2) + 
+  geom_point(aes(x = x, y = y)) + 
+  geom_line(aes(x = x, y = value, color = key)) 
+
+summary(fitted$nk3) 
+``` 
+The example shows what we expected. The
+green line with a maximum of three knots uses just one knot around 30, and only
+the right part of the reflected pair is used. It cannot distinguish between the
+linear segment between 40 and 75 and the sine-wave afterwards. By allowing more
+knots, we can see that the red line fits the data quite well. Note that the
+default of `degree` is just $1$, so we don't have interaction terms in the
+model. This does not matter for a one-dimensional example anyways.
