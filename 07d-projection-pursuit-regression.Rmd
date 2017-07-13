@@ -45,7 +45,7 @@ $$Y = \mu + f_1(X_1 + X_2) - f_2(X_1 - X_2)$$
 Therefore, the remaining question is how can we choose the two vectors
 $\mathbf{\alpha}_1$ and $\mathbf{\alpha}_1$ such that the result of the projection
 is $X_1 + X_2 \;\text{and}\;X_1 - X_2$.
-With the restriction $|\alpha| = 1$, it turns out we can preceded as follows:
+With the restriction $|\alpha| = 1$, it turns out we can proceed as follows:
 We project the first predictor onto $(\alpha_{11}, \alpha_{12}) = (0.7, 0.7)$
 and the second predictor onto $(\alpha_{11}, \alpha_{12}) = (0.7, -0.7)$. This
 yields $0.7(X_1 + X_2)$ and $0.7(X_1 - X_2)$.

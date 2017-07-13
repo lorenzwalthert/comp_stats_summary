@@ -1,0 +1,194 @@
+## Classification and Regression Trees
+
+The model function for trees is
+$$g_{tree}(x) = \sum\limits_{r = 1}^M \beta_r1_{[x \in \mathcal{P}_r]}$$
+Where $\mathcal{P} = \cup_{j = 1}^M \mathcal{P}_j$, that is, the space
+$\mathcal{P} \in \mathbb{R}^p$ is devided into $M$ disjoint partitions. Hence,
+note that in the sum above, $x$ can only be in one of the $M$ martitions and
+hence, all but one indicator functions are zero in the sum. The model yields a
+**pice-wise constant** response, that is, the prediction is the same for all 
+$x \in \mathcal{P}_r$. That can be visualized nicely in a two-dimensional 
+predictor space.
+```{r, echo = FALSE}
+capture <- paste(
+  "Partition with `rpart()`. Color indicate result of the majority voting", 
+  "Source: course script p. 73."
+)
+```
+
+```{r treepart, echo = FALSE, fig.cap = capture}
+knitr::include_graphics("figures/tree-partitioning.png")
+```
+
+Trees are similar to multivariate adaptive regression splines MARS, as mentioned
+in section \@ref(mars) in the sense that they allow for interaction effects. 
+This can be seen well in figure \@ref(fig:treepart). Going form age 50 to age
+100 has different effects depending on the start. Trees are different from MARS
+as they are piece-wise constant, whereas MARS are pice-wise linear.
+
+### Prediction given Partitioning
+
+Estimation of the parameters $\beta_1, ..., \beta_M$ is easy if the partitioning
+is known. For Regression, it is simply the average of the response variables 
+for the subset of the data that lays within the partition. Mathematically 
+speaking
+$$ \hat{\beta}_r = \sum\limits_{i = 1}^n 1_{[x_i \in \mathcal{P}_r]} Y_i / 
+\sum\limits_{i = 1}^n 1_{[x_i \in \mathcal{P}_r]}$$ 
+
+For classification, the class of a partition \mathcal{P}_j is determined by
+the largest group within that partition). We can estimate the class
+probabilities directly (also for J > 2) for the r-th partition as follows:
+
+$$ \hat{\pi}_j(x) =
+\frac{\# \text{from class j in}\; \mathcal{P}_r}{\#\text{total in}\; \mathcal{P}_r} = 
+\sum\limits_{i = 1}^n 1_{[Y_i = j]} 
+1_{[x_i \in \mathcal{P}_r]}/ 
+\sum\limits_{i = 1}^n 1_{[x_i \in \mathcal{P}_r]}$$
+
+### Assumptions on the Patritions
+
+As we saw above, obtaining predictions *given* the partitioning is not hard.
+The more difficult problem is to obtain the partitions. By imposing some 
+restrictions to the shape of the partitions and the strategy to choose them, 
+we can limit the complexity of the question at hand. Namely, we 
+
+* assume partitions that are **axes parallel rectangles**, just as depicted
+  in the pictuer above. Note that this is a stronger limitation than just 
+  assuming linear (decision) boundaries since these boundaries also need to 
+  be parallel to the axis. For example, decision trees would not do well on a 
+  classification problem like this:
+  
+```{r, echo = FALSE}
+class1 <- data_frame(
+  x1 = runif(200, 0, 100),
+  x2 = x1 + rnorm(200, 0, 7),
+  y  = "red"
+)
+
+class2_upper <- data_frame(
+  x1 = class1$x1,
+  x2 = 50 + class1$x2 + rnorm(100, 0, 5),
+  y = "green"
+)
+
+class2_lower <- class2_upper %>%
+  mutate(x2 = x2 - 100 + rnorm(100, 0, 5))
+
+data <- bind_rows(
+  class1,
+  class2_lower,
+  class2_upper
+)
+
+ggplot(data, aes(x = x1, y = x2, col = y)) + 
+  geom_point() + 
+  theme(legend.position = "none")
+```
+
+* we use a **greedy** algorithm since the space of possible partitioning schemes
+  is still huge.
+
+### Algorithm
+
+The algorithm now looks as follows:
+
+1. Start with $M = 1$ and $\mathcal{P} = \{\mathcal{R}\} = \mathbb{R}^p$.
+2. Redefine $\mathcal{R}$ as $\mathcal{R_{left}} \cup \mathcal{R_{right}}$ where
+
+  $\mathcal{R}_{left} \;= \mathbb{R}\times\mathbb{R}\;...\; \times(-\infty, d]\times 
+   \mathbb{R} ...\times\mathbb{R}$ 
+
+  $\mathcal{R}_{right} = \mathbb{R}\times\mathbb{R}\;...\; \times(d, \infty)\times 
+   \mathbb{R} ...\times\mathbb{R}$
+   
+  where $d$ is a value from the *finite* set of midpoints between the data points
+  with regard to the dimension currently considered. We search over all 
+  dimensions $j \in \{1, ..., p\}$ and within each dimension over all potential 
+  split points $d$ such that the negative log-likelihood is decreased the most.
+  The new partition is $\mathcal{P} = \{R_{left}, R_{right}\}$
+
+3. We again refine the current partition as in step 2 by splitting up *one* 
+  partition into two parts. Then, we update the partition
+  $$\mathcal{P} = \mathcal{P}_{old} \setminus \mathcal{P}_{refined} \;\cup\{R_{left}, R_{right}\} $$
+4. Iterate over the step 3 $M$ times.
+5. Prune the tree by reverting some of the partitioning steps above until 
+   the optimal size of the tree is found (e.g via cross-validation).
+
+You can fit a tree in R with the `rpart` package, which stands for recursive
+partitioning.
+```{r}
+tree <- rpart::rpart(
+  upo3~., 
+  data = ozone,
+  control = list(
+    minsplit = 20,
+    cp = 0.003
+  )
+)
+```
+
+### Backward Deletion / Pruning
+After $M$ steps, there will be $M + 1$ partitions. This can also be visualized 
+nicely in a tree structure.
+```{r, out.width = "650px"}
+rpart::prune(tree, cp = 0.05) %>% # prune tree for illustrative purposes
+rpart.plot::prp(extra = 1,
+    box.col=c('pink', 'palegreen3', 'lightsteelblue 2','lightgoldenrod 1')[tree$frame$yval])
+```
+
+The idea is now to subsequently remove the leaves from the tree such that 
+the negative log-likeihood increases the least. If we do that until no leaf
+is left, we end up with a sequence of trees.
+\begin{equation}
+\mathcal{T}_M \supset \mathcal{T}_{M-1} \;\;...\;\;\supset \mathcal{T}_{\emptyset}
+(\#eq:treeset)
+\end{equation}
+Just as with Mallow's $C_p$, we can evaluate compute a score for every model
+that is increasing in the fit of the model but also has a complexity penality
+
+$$R_{\alpha}(\mathcal{T}) = R(\mathcal{T}) + \alpha \times \text{size}(\mathcal{T})$$
+
+Now, we only need to find the right alpha. We can set a few alpha values, then 
+find the best tree for this alpha 
+$\mathcal{T}(\alpha) = \arg\min\limits_{\mathcal{T} \subset \mathcal{T}_M}R_{\alpha}(\mathcal{T})$
+and then do cross-validation for these alpha values to find the optimal alpha.
+It can be shown that the set $\{\mathcal{T}(\alpha)| \alpha \in (0, \infty]\}$
+is the same or a subeset of the set in equation \@ref(eq:treeset).
+Use `rpart::plotcp()` to plot the size of the optimal trees for each alpha
+against the cross-validation score. Then, use the one-standard error rule 
+to select the idal tree size. That is first find the tree with the lowest 
+relative error. Then add one standard error to it's error and find the smallest
+tree that does not execced this relative error. The idea behind this approach 
+is to choose good model that performs similar to the best (and potentially 
+complex)  model but is as simple as possible.
+```{r, out.width = "650px"}
+rpart::plotcp(tree)
+```
+
+### Pros and Cons of Trees
+
+Pros are:
+
+* Straightforward interpretation. Show it your grand mother and she will 
+  understand it.
+* Allow for interaction effects.
+* Competitive performance.
+* Can deal with missing values thanks to the *surrogate split*. For each node
+  the tree algorithm tries to find variables that are highly correlated with
+  the selected splitter. Then, if this variable is not available for a new 
+  observation to be classified, the surrogate is used to *send* the observation
+  to the right or the left.
+* The variable selection is done automatically and variables that are higher up
+  in the hierarchy are considered to be more imporatant for prediction. We will
+  have a look at ridge regression and LASSO which also do variable selection 
+  automatically, but the feature is not present in any method we looked at 
+  before.
+  
+There are some cons also:
+* First and foremost, trees yield **piece-wise** constant predictions, which 
+  is typically not what we assume the true underlaying function to look like.
+* Subsequent splits depend on previous splits. Therefore, if an early split is
+  *wrong*, everything following afterwards is *wrong*. This means the algorithm
+  may not be very stable.
+
+? question how would you use mars for classification?
