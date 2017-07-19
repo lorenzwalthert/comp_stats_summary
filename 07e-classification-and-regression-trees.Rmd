@@ -49,25 +49,26 @@ $$ \hat{\pi}_j(x) =
 
 As we saw above, obtaining predictions *given* the partitioning is not hard.
 The more difficult problem is to obtain the partitions. By imposing some 
-restrictions to the shape of the partitions and the strategy to choose them, 
+restrictions on the shape of the partitions and the strategy to choose them, 
 we can limit the complexity of the question at hand. Namely, we 
 
 * assume partitions that are **axes parallel rectangles**, just as depicted
   in the pictuer above. Note that this is a stronger limitation than just 
   assuming linear (decision) boundaries since these boundaries also need to 
   be parallel to the axis. For example, decision trees would not do well on a 
-  classification problem like this:
+  classification problem like this (unless there is a lot of data and we can have
+  many splits:
   
 ```{r, echo = FALSE}
 class1 <- data_frame(
-  x1 = runif(200, 0, 100),
-  x2 = x1 + rnorm(200, 0, 7),
+  x1 = runif(100, 0, 100),
+  x2 = x1 + rnorm(100, 0, 7),
   y  = "red"
 )
 
 class2_upper <- data_frame(
   x1 = class1$x1,
-  x2 = 50 + class1$x2 + rnorm(100, 0, 5),
+  x2 = 30 + class1$x2 + rnorm(100, 0, 5),
   y = "green"
 )
 
@@ -109,7 +110,7 @@ The algorithm now looks as follows:
 
 3. We again refine the current partition as in step 2 by splitting up *one* 
   partition into two parts. Then, we update the partition
-  $$\mathcal{P} = \mathcal{P}_{old} \setminus \mathcal{P}_{refined} \;\cup\{R_{left}, R_{right}\} $$
+  $$\mathcal{P} = \mathcal{P}_{old} \setminus \mathcal{P}_{to\;refine} \;\cup\{R_{left}, R_{right}\} $$
 4. Iterate over the step 3 $M$ times.
 5. Prune the tree by reverting some of the partitioning steps above until 
    the optimal size of the tree is found (e.g via cross-validation).
@@ -143,7 +144,7 @@ is left, we end up with a sequence of trees.
 \mathcal{T}_M \supset \mathcal{T}_{M-1} \;\;...\;\;\supset \mathcal{T}_{\emptyset}
 (\#eq:treeset)
 \end{equation}
-Just as with Mallow's $C_p$, we can evaluate compute a score for every model
+Just as with Mallow's $C_p$, we can compute a score for every model
 that is increasing in the fit of the model but also has a complexity penality
 
 $$R_{\alpha}(\mathcal{T}) = R(\mathcal{T}) + \alpha \times \text{size}(\mathcal{T})$$
@@ -153,7 +154,7 @@ find the best tree for this alpha
 $\mathcal{T}(\alpha) = \arg\min\limits_{\mathcal{T} \subset \mathcal{T}_M}R_{\alpha}(\mathcal{T})$
 and then do cross-validation for these alpha values to find the optimal alpha.
 It can be shown that the set $\{\mathcal{T}(\alpha)| \alpha \in (0, \infty]\}$
-is the same or a subeset of the set in equation \@ref(eq:treeset).
+is *nested* and the same or a subeset of the set in equation \@ref(eq:treeset).
 Use `rpart::plotcp()` to plot the size of the optimal trees for each alpha
 against the cross-validation score. Then, use the one-standard error rule 
 to select the idal tree size. That is first find the tree with the lowest 
@@ -176,8 +177,8 @@ Pros are:
 * Can deal with missing values thanks to the *surrogate split*. For each node
   the tree algorithm tries to find variables that are highly correlated with
   the selected splitter. Then, if this variable is not available for a new 
-  observation to be classified, the surrogate is used to *send* the observation
-  to the right or the left.
+  observation to be classified, the surrogate is used to classifiy the observation
+  on that split node so subsequent nodes can further process the observation.
 * The variable selection is done automatically and variables that are higher up
   in the hierarchy are considered to be more imporatant for prediction. We will
   have a look at ridge regression and LASSO which also do variable selection 
@@ -185,6 +186,7 @@ Pros are:
   before.
   
 There are some cons also:
+
 * First and foremost, trees yield **piece-wise** constant predictions, which 
   is typically not what we assume the true underlaying function to look like.
 * Subsequent splits depend on previous splits. Therefore, if an early split is
@@ -192,3 +194,32 @@ There are some cons also:
   may not be very stable.
 
 ? question how would you use mars for classification?
+
+### Random Forests
+
+Random forests are made up of three main ingredients:
+
+* regression (or classification) trees
+* boostrapping
+* aggregating
+
+The algorithm is as follows:
+
+* draw $n_{tree}$ boostrap samples (of size n obviously).
+* build for each of them an *unpruned* tree. However, instead of searching over
+  all $p$ variables for the best split at each node, just consider a random
+  sample of $m_{try}$ variables for the split at each node. Obviously, 
+  $m_{try} = p$ is the tree solution introduced before and corresponds to the
+  bagging (which stands for boostrap aggregating, introduced later).
+* Predict a new data point by aggregating the $n_{tree}$ prediction (majority
+  vote for classification, averaging for regression).
+
+To obtain an estimate for the generalization error, you can use the 
+**out-of-bag** approach, that is
+
+* At each boostrap iteration, make predictions with the data that is not in the
+  boostrap sample.
+* aggregate the predictions for all $n_{tree}$ trees and compute the error 
+  rate and call it *out-of-bag estimate of the error rate*.
+  
+The only drawback of trees is that interpretability is lower than for trees.

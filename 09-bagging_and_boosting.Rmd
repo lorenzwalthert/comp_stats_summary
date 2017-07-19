@@ -1,0 +1,39 @@
+# Bagging and Boosting
+
+Bagging stands for boostrapping aggregating and 
+
+## Bagging
+Bagging works as follows:
+Consider a base procedure
+$$ \hat{g}(\cdot): \mathbb{R}^p \rightarrow \mathbb{R}$$
+
+1. Draw a boostrap sample $(Y_1^*, X_1^*), ..., (Y_1^*, X_n^*)$ and compute the 
+   boostrap estomator $\hat{g(\cdot)}^*$.
+2. Repeat the above step $B$ times yielding 
+   $\hat{g}(\cdot)^{*1}, ..., \hat{g}(\cdot)^{*B}$ boostrap estimators
+3. Average the estimates to construct the bagged estimator:
+   $$ \hat{g}_{Bag}(x) = n^{-1} \sum\limits_{i = 1}^B\hat{g}(\cdot)^{*i}$$
+   Then, $\hat{g}(\cdot)$  is nothing else than an approximation of the 
+   boostrap expectation. 
+   $$\hat{g}(\cdot) \approx \mathbb{E}^*[g(x)^{*}]$$
+   Note that the novel point is that we now use this approximation as an 
+   estimate of $g(\cdot)$. However, 
+   \begin{equation}
+   \begin{split}
+   \hat{g}(\cdot)_{Bag} & = \hat{g}(\cdot) + \mathbb{E}^*[g(x)^{*}] - \hat{g}(\cdot) \\
+   & = \hat{g}(\cdot) + \text{bootstrap bias estimate}
+   \end{split}
+   \end{equation}
+
+Instead of substracting the boostrap bias estimate, we are adding it! However,
+for trees for example, bagging reduces the variance of the estimate so much
+that the bias increase will not be strong enough to push the mean square
+error up.
+
+```{r}
+x <- rnorm(1000)
+plot.ecdf(x)
+y <- pnorm(x)
+plot.ecdf(y)
+```
+

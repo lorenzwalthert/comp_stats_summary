@@ -33,7 +33,7 @@
   
   
 <link rel="prev" href="classification.html">
-<link rel="next" href="bagging-and-boosting.html">
+<link rel="next" href="variable-selection-ridge-regression-an-lasso.html">
 
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -166,10 +166,24 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="8.5.3" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#algorithm"><i class="fa fa-check"></i><b>8.5.3</b> Algorithm</a></li>
 <li class="chapter" data-level="8.5.4" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#backward-deletion-pruning"><i class="fa fa-check"></i><b>8.5.4</b> Backward Deletion / Pruning</a></li>
 <li class="chapter" data-level="8.5.5" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#pros-and-cons-of-trees"><i class="fa fa-check"></i><b>8.5.5</b> Pros and Cons of Trees</a></li>
+<li class="chapter" data-level="8.5.6" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#random-forests"><i class="fa fa-check"></i><b>8.5.6</b> Random Forests</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="9" data-path="bagging-and-boosting.html"><a href="bagging-and-boosting.html"><i class="fa fa-check"></i><b>9</b> Bagging and Boosting</a></li>
-<li class="chapter" data-level="10" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>10</b> Introduction</a></li>
+<li class="chapter" data-level="9" data-path="variable-selection-ridge-regression-an-lasso.html"><a href="variable-selection-ridge-regression-an-lasso.html"><i class="fa fa-check"></i><b>9</b> Variable Selection - Ridge Regression an Lasso</a><ul>
+<li class="chapter" data-level="9.1" data-path="variable-selection-ridge-regression-an-lasso.html"><a href="variable-selection-ridge-regression-an-lasso.html#ridge-regression"><i class="fa fa-check"></i><b>9.1</b> Ridge Regression</a></li>
+<li class="chapter" data-level="9.2" data-path="variable-selection-ridge-regression-an-lasso.html"><a href="variable-selection-ridge-regression-an-lasso.html#lasso"><i class="fa fa-check"></i><b>9.2</b> Lasso</a></li>
+<li class="chapter" data-level="9.3" data-path="variable-selection-ridge-regression-an-lasso.html"><a href="variable-selection-ridge-regression-an-lasso.html#extensions"><i class="fa fa-check"></i><b>9.3</b> Extensions</a><ul>
+<li class="chapter" data-level="9.3.1" data-path="variable-selection-ridge-regression-an-lasso.html"><a href="variable-selection-ridge-regression-an-lasso.html#elastic-net"><i class="fa fa-check"></i><b>9.3.1</b> Elastic Net</a></li>
+<li class="chapter" data-level="9.3.2" data-path="variable-selection-ridge-regression-an-lasso.html"><a href="variable-selection-ridge-regression-an-lasso.html#adaptive-lasso"><i class="fa fa-check"></i><b>9.3.2</b> Adaptive Lasso</a></li>
+<li class="chapter" data-level="9.3.3" data-path="variable-selection-ridge-regression-an-lasso.html"><a href="variable-selection-ridge-regression-an-lasso.html#relaxed-lasso"><i class="fa fa-check"></i><b>9.3.3</b> Relaxed Lasso</a></li>
+<li class="chapter" data-level="9.3.4" data-path="variable-selection-ridge-regression-an-lasso.html"><a href="variable-selection-ridge-regression-an-lasso.html#sparse-group-lasso"><i class="fa fa-check"></i><b>9.3.4</b> (Sparse) Group Lasso</a></li>
+<li class="chapter" data-level="9.3.5" data-path="variable-selection-ridge-regression-an-lasso.html"><a href="variable-selection-ridge-regression-an-lasso.html#oracle-properties"><i class="fa fa-check"></i><b>9.3.5</b> Oracle Properties</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="bagging-and-boosting.html"><a href="bagging-and-boosting.html"><i class="fa fa-check"></i><b>10</b> Bagging and Boosting</a><ul>
+<li class="chapter" data-level="10.1" data-path="bagging-and-boosting.html"><a href="bagging-and-boosting.html#bagging"><i class="fa fa-check"></i><b>10.1</b> Bagging</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>11</b> Introduction</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 </ul>
 
@@ -429,9 +443,9 @@ Figure 8.1: Partition with <code>rpart()</code>. Color indicate result of the ma
 </div>
 <div id="assumptions-on-the-patritions" class="section level3">
 <h3><span class="header-section-number">8.5.2</span> Assumptions on the Patritions</h3>
-<p>As we saw above, obtaining predictions <em>given</em> the partitioning is not hard. The more difficult problem is to obtain the partitions. By imposing some restrictions to the shape of the partitions and the strategy to choose them, we can limit the complexity of the question at hand. Namely, we</p>
+<p>As we saw above, obtaining predictions <em>given</em> the partitioning is not hard. The more difficult problem is to obtain the partitions. By imposing some restrictions on the shape of the partitions and the strategy to choose them, we can limit the complexity of the question at hand. Namely, we</p>
 <ul>
-<li>assume partitions that are <strong>axes parallel rectangles</strong>, just as depicted in the pictuer above. Note that this is a stronger limitation than just assuming linear (decision) boundaries since these boundaries also need to be parallel to the axis. For example, decision trees would not do well on a classification problem like this:</li>
+<li>assume partitions that are <strong>axes parallel rectangles</strong>, just as depicted in the pictuer above. Note that this is a stronger limitation than just assuming linear (decision) boundaries since these boundaries also need to be parallel to the axis. For example, decision trees would not do well on a classification problem like this (unless there is a lot of data and we can have many splits:</li>
 </ul>
 <p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
 <ul>
@@ -449,7 +463,7 @@ Figure 8.1: Partition with <code>rpart()</code>. Color indicate result of the ma
 <p><span class="math inline">\(\mathcal{R}_{right} = \mathbb{R}\times\mathbb{R}\;...\; \times(d, \infty)\times  \mathbb{R} ...\times\mathbb{R}\)</span></p>
 <p>where <span class="math inline">\(d\)</span> is a value from the <em>finite</em> set of midpoints between the data points with regard to the dimension currently considered. We search over all dimensions <span class="math inline">\(j \in \{1, ..., p\}\)</span> and within each dimension over all potential split points <span class="math inline">\(d\)</span> such that the negative log-likelihood is decreased the most. The new partition is <span class="math inline">\(\mathcal{P} = \{R_{left}, R_{right}\}\)</span></p>
 <ol start="3" style="list-style-type: decimal">
-<li>We again refine the current partition as in step 2 by splitting up <em>one</em> partition into two parts. Then, we update the partition <span class="math display">\[\mathcal{P} = \mathcal{P}_{old} \setminus \mathcal{P}_{refined} \;\cup\{R_{left}, R_{right}\} \]</span></li>
+<li>We again refine the current partition as in step 2 by splitting up <em>one</em> partition into two parts. Then, we update the partition <span class="math display">\[\mathcal{P} = \mathcal{P}_{old} \setminus \mathcal{P}_{to\;refine} \;\cup\{R_{left}, R_{right}\} \]</span></li>
 <li>Iterate over the step 3 <span class="math inline">\(M\)</span> times.</li>
 <li>Prune the tree by reverting some of the partitioning steps above until the optimal size of the tree is found (e.g via cross-validation).</li>
 </ol>
@@ -475,9 +489,9 @@ The idea is now to subsequently remove the leaves from the tree such that the ne
 \mathcal{T}_M \supset \mathcal{T}_{M-1} \;\;...\;\;\supset \mathcal{T}_{\emptyset}
 \tag{8.1}
 \end{equation}\]</span>
-<p>Just as with Mallow’s <span class="math inline">\(C_p\)</span>, we can evaluate compute a score for every model that is increasing in the fit of the model but also has a complexity penality</p>
+<p>Just as with Mallow’s <span class="math inline">\(C_p\)</span>, we can compute a score for every model that is increasing in the fit of the model but also has a complexity penality</p>
 <p><span class="math display">\[R_{\alpha}(\mathcal{T}) = R(\mathcal{T}) + \alpha \times \text{size}(\mathcal{T})\]</span></p>
-<p>Now, we only need to find the right alpha. We can set a few alpha values, then find the best tree for this alpha <span class="math inline">\(\mathcal{T}(\alpha) = \arg\min\limits_{\mathcal{T} \subset \mathcal{T}_M}R_{\alpha}(\mathcal{T})\)</span> and then do cross-validation for these alpha values to find the optimal alpha. It can be shown that the set <span class="math inline">\(\{\mathcal{T}(\alpha)| \alpha \in (0, \infty]\}\)</span> is the same or a subeset of the set in equation <a href="flexible-regression-and-classification-methods.html#eq:treeset">(8.1)</a>. Use <code>rpart::plotcp()</code> to plot the size of the optimal trees for each alpha against the cross-validation score. Then, use the one-standard error rule to select the idal tree size. That is first find the tree with the lowest relative error. Then add one standard error to it’s error and find the smallest tree that does not execced this relative error. The idea behind this approach is to choose good model that performs similar to the best (and potentially complex) model but is as simple as possible.</p>
+<p>Now, we only need to find the right alpha. We can set a few alpha values, then find the best tree for this alpha <span class="math inline">\(\mathcal{T}(\alpha) = \arg\min\limits_{\mathcal{T} \subset \mathcal{T}_M}R_{\alpha}(\mathcal{T})\)</span> and then do cross-validation for these alpha values to find the optimal alpha. It can be shown that the set <span class="math inline">\(\{\mathcal{T}(\alpha)| \alpha \in (0, \infty]\}\)</span> is <em>nested</em> and the same or a subeset of the set in equation <a href="flexible-regression-and-classification-methods.html#eq:treeset">(8.1)</a>. Use <code>rpart::plotcp()</code> to plot the size of the optimal trees for each alpha against the cross-validation score. Then, use the one-standard error rule to select the idal tree size. That is first find the tree with the lowest relative error. Then add one standard error to it’s error and find the smallest tree that does not execced this relative error. The idea behind this approach is to choose good model that performs similar to the best (and potentially complex) model but is as simple as possible.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rpart::<span class="kw">plotcp</span>(tree)</code></pre></div>
 <p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-29-1.png" width="650px" /></p>
 </div>
@@ -488,11 +502,36 @@ The idea is now to subsequently remove the leaves from the tree such that the ne
 <li>Straightforward interpretation. Show it your grand mother and she will understand it.</li>
 <li>Allow for interaction effects.</li>
 <li>Competitive performance.</li>
-<li>Can deal with missing values thanks to the <em>surrogate split</em>. For each node the tree algorithm tries to find variables that are highly correlated with the selected splitter. Then, if this variable is not available for a new observation to be classified, the surrogate is used to <em>send</em> the observation to the right or the left.</li>
+<li>Can deal with missing values thanks to the <em>surrogate split</em>. For each node the tree algorithm tries to find variables that are highly correlated with the selected splitter. Then, if this variable is not available for a new observation to be classified, the surrogate is used to classifiy the observation on that split node so subsequent nodes can further process the observation.</li>
 <li>The variable selection is done automatically and variables that are higher up in the hierarchy are considered to be more imporatant for prediction. We will have a look at ridge regression and LASSO which also do variable selection automatically, but the feature is not present in any method we looked at before.</li>
 </ul>
-<p>There are some cons also: * First and foremost, trees yield <strong>piece-wise</strong> constant predictions, which is typically not what we assume the true underlaying function to look like. * Subsequent splits depend on previous splits. Therefore, if an early split is <em>wrong</em>, everything following afterwards is <em>wrong</em>. This means the algorithm may not be very stable.</p>
+<p>There are some cons also:</p>
+<ul>
+<li>First and foremost, trees yield <strong>piece-wise</strong> constant predictions, which is typically not what we assume the true underlaying function to look like.</li>
+<li>Subsequent splits depend on previous splits. Therefore, if an early split is <em>wrong</em>, everything following afterwards is <em>wrong</em>. This means the algorithm may not be very stable.</li>
+</ul>
 <p>? question how would you use mars for classification?</p>
+</div>
+<div id="random-forests" class="section level3">
+<h3><span class="header-section-number">8.5.6</span> Random Forests</h3>
+<p>Random forests are made up of three main ingredients:</p>
+<ul>
+<li>regression (or classification) trees</li>
+<li>boostrapping</li>
+<li>aggregating</li>
+</ul>
+<p>The algorithm is as follows:</p>
+<ul>
+<li>draw <span class="math inline">\(n_{tree}\)</span> boostrap samples (of size n obviously).</li>
+<li>build for each of them an <em>unpruned</em> tree. However, instead of searching over all <span class="math inline">\(p\)</span> variables for the best split at each node, just consider a random sample of <span class="math inline">\(m_{try}\)</span> variables for the split at each node. Obviously, <span class="math inline">\(m_{try} = p\)</span> is the tree solution introduced before and corresponds to the bagging (which stands for boostrap aggregating, introduced later).</li>
+<li>Predict a new data point by aggregating the <span class="math inline">\(n_{tree}\)</span> prediction (majority vote for classification, averaging for regression).</li>
+</ul>
+<p>To obtain an estimate for the generalization error, you can use the <strong>out-of-bag</strong> approach, that is</p>
+<ul>
+<li>At each boostrap iteration, make predictions with the data that is not in the boostrap sample.</li>
+<li>aggregate the predictions for all <span class="math inline">\(n_{tree}\)</span> trees and compute the error rate and call it <em>out-of-bag estimate of the error rate</em>.</li>
+</ul>
+<p>The only drawback of trees is that interpretability is lower than for trees.</p>
 
 </div>
 </div>
@@ -509,7 +548,7 @@ The idea is now to subsequently remove the leaves from the tree such that the ne
         </div>
       </div>
 <a href="classification.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="bagging-and-boosting.html" class="navigation navigation-next " aria-label="Next page""><i class="fa fa-angle-right"></i></a>
+<a href="variable-selection-ridge-regression-an-lasso.html" class="navigation navigation-next " aria-label="Next page""><i class="fa fa-angle-right"></i></a>
 
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/lunr.js"></script>

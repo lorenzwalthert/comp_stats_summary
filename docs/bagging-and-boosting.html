@@ -32,7 +32,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   
   
-<link rel="prev" href="flexible-regression-and-classification-methods.html">
+<link rel="prev" href="variable-selection-ridge-regression-an-lasso.html">
 <link rel="next" href="intro.html">
 
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
@@ -166,10 +166,24 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="8.5.3" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#algorithm"><i class="fa fa-check"></i><b>8.5.3</b> Algorithm</a></li>
 <li class="chapter" data-level="8.5.4" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#backward-deletion-pruning"><i class="fa fa-check"></i><b>8.5.4</b> Backward Deletion / Pruning</a></li>
 <li class="chapter" data-level="8.5.5" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#pros-and-cons-of-trees"><i class="fa fa-check"></i><b>8.5.5</b> Pros and Cons of Trees</a></li>
+<li class="chapter" data-level="8.5.6" data-path="flexible-regression-and-classification-methods.html"><a href="flexible-regression-and-classification-methods.html#random-forests"><i class="fa fa-check"></i><b>8.5.6</b> Random Forests</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="9" data-path="bagging-and-boosting.html"><a href="bagging-and-boosting.html"><i class="fa fa-check"></i><b>9</b> Bagging and Boosting</a></li>
-<li class="chapter" data-level="10" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>10</b> Introduction</a></li>
+<li class="chapter" data-level="9" data-path="variable-selection-ridge-regression-an-lasso.html"><a href="variable-selection-ridge-regression-an-lasso.html"><i class="fa fa-check"></i><b>9</b> Variable Selection - Ridge Regression an Lasso</a><ul>
+<li class="chapter" data-level="9.1" data-path="variable-selection-ridge-regression-an-lasso.html"><a href="variable-selection-ridge-regression-an-lasso.html#ridge-regression"><i class="fa fa-check"></i><b>9.1</b> Ridge Regression</a></li>
+<li class="chapter" data-level="9.2" data-path="variable-selection-ridge-regression-an-lasso.html"><a href="variable-selection-ridge-regression-an-lasso.html#lasso"><i class="fa fa-check"></i><b>9.2</b> Lasso</a></li>
+<li class="chapter" data-level="9.3" data-path="variable-selection-ridge-regression-an-lasso.html"><a href="variable-selection-ridge-regression-an-lasso.html#extensions"><i class="fa fa-check"></i><b>9.3</b> Extensions</a><ul>
+<li class="chapter" data-level="9.3.1" data-path="variable-selection-ridge-regression-an-lasso.html"><a href="variable-selection-ridge-regression-an-lasso.html#elastic-net"><i class="fa fa-check"></i><b>9.3.1</b> Elastic Net</a></li>
+<li class="chapter" data-level="9.3.2" data-path="variable-selection-ridge-regression-an-lasso.html"><a href="variable-selection-ridge-regression-an-lasso.html#adaptive-lasso"><i class="fa fa-check"></i><b>9.3.2</b> Adaptive Lasso</a></li>
+<li class="chapter" data-level="9.3.3" data-path="variable-selection-ridge-regression-an-lasso.html"><a href="variable-selection-ridge-regression-an-lasso.html#relaxed-lasso"><i class="fa fa-check"></i><b>9.3.3</b> Relaxed Lasso</a></li>
+<li class="chapter" data-level="9.3.4" data-path="variable-selection-ridge-regression-an-lasso.html"><a href="variable-selection-ridge-regression-an-lasso.html#sparse-group-lasso"><i class="fa fa-check"></i><b>9.3.4</b> (Sparse) Group Lasso</a></li>
+<li class="chapter" data-level="9.3.5" data-path="variable-selection-ridge-regression-an-lasso.html"><a href="variable-selection-ridge-regression-an-lasso.html#oracle-properties"><i class="fa fa-check"></i><b>9.3.5</b> Oracle Properties</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="bagging-and-boosting.html"><a href="bagging-and-boosting.html"><i class="fa fa-check"></i><b>10</b> Bagging and Boosting</a><ul>
+<li class="chapter" data-level="10.1" data-path="bagging-and-boosting.html"><a href="bagging-and-boosting.html#bagging"><i class="fa fa-check"></i><b>10.1</b> Bagging</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>11</b> Introduction</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 </ul>
 
@@ -189,15 +203,38 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
             <section class="normal" id="section-">
 <div id="bagging-and-boosting" class="section level1">
-<h1><span class="header-section-number">Chapter 9</span> Bagging and Boosting</h1>
+<h1><span class="header-section-number">Chapter 10</span> Bagging and Boosting</h1>
+<p>Bagging stands for boostrapping aggregating and</p>
+<div id="bagging" class="section level2">
+<h2><span class="header-section-number">10.1</span> Bagging</h2>
+<p>Bagging works as follows: Consider a base procedure <span class="math display">\[ \hat{g}(\cdot): \mathbb{R}^p \rightarrow \mathbb{R}\]</span></p>
+<ol style="list-style-type: decimal">
+<li>Draw a boostrap sample <span class="math inline">\((Y_1^*, X_1^*), ..., (Y_1^*, X_n^*)\)</span> and compute the boostrap estomator <span class="math inline">\(\hat{g(\cdot)}^*\)</span>.</li>
+<li>Repeat the above step <span class="math inline">\(B\)</span> times yielding <span class="math inline">\(\hat{g}(\cdot)^{*1}, ..., \hat{g}(\cdot)^{*B}\)</span> boostrap estimators</li>
+<li>Average the estimates to construct the bagged estimator: <span class="math display">\[ \hat{g}_{Bag}(x) = n^{-1} \sum\limits_{i = 1}^B\hat{g}(\cdot)^{*i}\]</span> Then, <span class="math inline">\(\hat{g}(\cdot)\)</span> is nothing else than an approximation of the boostrap expectation. <span class="math display">\[\hat{g}(\cdot) \approx \mathbb{E}^*[g(x)^{*}]\]</span> Note that the novel point is that we now use this approximation as an estimate of <span class="math inline">\(g(\cdot)\)</span>. However,
+<span class="math display">\[\begin{equation}
+   \begin{split}
+   \hat{g}(\cdot)_{Bag} &amp; = \hat{g}(\cdot) + \mathbb{E}^*[g(x)^{*}] - \hat{g}(\cdot) \\
+   &amp; = \hat{g}(\cdot) + \text{bootstrap bias estimate}
+   \end{split}
+   \end{equation}\]</span></li>
+</ol>
+<p>Instead of substracting the boostrap bias estimate, we are adding it! However, for trees for example, bagging reduces the variance of the estimate so much that the bias increase will not be strong enough to push the mean square error up.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">1000</span>)
+<span class="kw">plot.ecdf</span>(x)</code></pre></div>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-34-1.png" width="672" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">y &lt;-<span class="st"> </span><span class="kw">pnorm</span>(x)
+<span class="kw">plot.ecdf</span>(y)</code></pre></div>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-34-2.png" width="672" /></p>
 
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="flexible-regression-and-classification-methods.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="variable-selection-ridge-regression-an-lasso.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
 <a href="intro.html" class="navigation navigation-next " aria-label="Next page""><i class="fa fa-angle-right"></i></a>
 
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

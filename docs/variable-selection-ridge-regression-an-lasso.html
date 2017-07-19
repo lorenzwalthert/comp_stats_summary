@@ -32,8 +32,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   
   
-<link rel="prev" href="nonparametric-regression.html">
-<link rel="next" href="bootstrap.html">
+<link rel="prev" href="flexible-regression-and-classification-methods.html">
+<link rel="next" href="bagging-and-boosting.html">
 
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -202,176 +202,104 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="cross-validation" class="section level1">
-<h1><span class="header-section-number">Chapter 5</span> Cross Validation</h1>
-<div id="motivation-and-core-idea" class="section level2">
-<h2><span class="header-section-number">5.1</span> Motivation and Core Idea</h2>
-<p>Cross-validation is a tool for estimating the performance of an algorithm on new data points, the so-called the generalization error. An estimate of the generalization allows us to do two important things:</p>
+<div id="variable-selection---ridge-regression-an-lasso" class="section level1">
+<h1><span class="header-section-number">Chapter 9</span> Variable Selection - Ridge Regression an Lasso</h1>
+<p>Except for trees, none of the techniques introduced so far perform variable selection. Variable selection is particularly important when working with high-dimensional data, namely for two reasons:</p>
 <ul>
-<li>Tuning the parameters of a statistical technique.</li>
-<li>Comparing statistical techniques with regard to their accuracy.</li>
+<li>In the case of highly correlated predictors, regression coefficient estimates become <strong>ill-determined</strong>, which means - loosly speaking - that there are a lot of different values for each predictor such that the model leads to the same prediction if the other coefficients are set wisely. This is undesirable. Note that the fitted values are not ill-determined since they don’t vary when changing the coefficients.</li>
+<li>In cases where we have <strong><span class="math inline">\(\mathbf{n}&gt; \mathbf{p}\)</span></strong>, we cannot estimate many models, so for example OLS. That means we first need to select some predictors before we can proceed.</li>
 </ul>
-<p>If we use the <strong>training data</strong> to evaluate the performance of an algorithm, this estimate will be over-optimistic because an estimator is usually obtained by minimizing some sort of error in the training data. Therefore, we use a separate data pool, called the <strong>test data</strong> to evaluate the performance out of sample. Consider the regression function estimate <span class="math inline">\(\hat{m}\)</span> based on a sample <span class="math inline">\((X_1, ..., X_n.)\)</span>. By increasing the number of parameters in the model and by allowing for interactions between them, we can make the regression model fitting arbitrarily well to the data. However, such an extremely complex model will not perform as well with new data, that is, will not generalize well to other data sets, since we essentially modeled also a lot of noise. To estimate the performance of an algorithm on a new sample, we introduce the following notation: <span class="math display">\[ l^{-1}\sum\limits_{i = 1}^l\rho(Y_{new, i}, \hat{g}(X_{new, l}))\]</span> Where <span class="math inline">\(\rho\)</span> is a loss function to be evaluated on the new data points <span class="math inline">\((Y_{new, 1}, ..., Y_{new, l})\)</span> and the prediction made for <span class="math inline">\((X_{new, 1}, ..., X_{new, l})\)</span> with the function <span class="math inline">\(\hat{g}\)</span>, which was estimated from the training data <span class="math inline">\((X_1, ..., X_n)\)</span>. When <span class="math inline">\(l\)</span> gets large, this approximates the <strong>test error</strong> <span class="math display">\[\mathbb{E}_{(X_{new}, Y_{new})}[\rho(Y_{new}, \hat{m}(X_{new})]\]</span> which is still a function of the training data (since it is conditional on the training data). Note that the <em>test error</em> is not the same as the <strong>generalization error</strong>. The latter is an expectation over both the training and the test data. The typical relationship between the test error and the training error is depicted in the figure below.</p>
-<p><img src="figures/ge.jpg" width="650px" /></p>
-<p>The optimal model complexity is at around <span class="math inline">\(20\)</span> degrees of freedom. With more degrees of freedom, the test set error increases again. We start to model noise. This is also called overfitting.</p>
+<p>In addition, a model with few predictors is often easier to interpret than a model with many predictors.</p>
+<p><strong>Ride and Lasso - which is which?</strong> Ridge regression - two words, is the method with an L2-penalty. Lasso is just one word - and has an L1-penalty.</p>
+<div id="ridge-regression" class="section level2">
+<h2><span class="header-section-number">9.1</span> Ridge Regression</h2>
+<p>Consider the OLS Problem <span class="math display">\[y_i = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + ... + \beta_p x_p +  \epsilon\]</span> We can demean the predictors and obtain <span class="math display">\[y_i = \beta_0 + \beta_1(x_1 - \bar{x}_1) + \beta_2(x_2 - \bar{x}_2) + ... 
++ \beta_p(x_p - \bar{x}_p) + \epsilon\]</span> In which case <span class="math inline">\(\hat{\beta}_0 = \bar{Y} - \hat{\beta}_1\bar{X} = \bar{Y}\)</span> and can take it to the other side and end up with the model. <span class="math display">\[\tilde{y} = \hat{\beta}_1 \tilde{x}_1 + \hat{\beta}_2 \tilde{x}_2 + 
+... \hat{\beta}_p \tilde{x}_p +\epsilon\]</span></p>
+With all variables having a mean of zero. Hence we got rid of the intercept. In order to compare the different <span class="math inline">\(\beta\)</span>s, we should also scale the predictors. Hence, if there are two variables that are highly correlated, we can expres this part of the model equation as follows <span class="math display">\[ \beta_j x^{(j)} + \beta_k x^{(k)} \approx (\beta_j + c \beta_j ) x^{(j)}\]</span> You can see that for each <span class="math inline">\(\beta_j\)</span>, we can find an appropriate <span class="math inline">\(\beta_k\)</span> so that the sum does not change. That’s what we meant above when we said the coefficients are not stable but the sum is. One way to make the coefficients <em>better-determined</em> is to impose further conditions on them. For example, we can restrict <span class="math inline">\(\sum\limits_{j = 1}^p \beta_j &lt; s\)</span>. The regression problem becomes <span class="math display">\[\beta = \arg\min\limits_{\|\beta\| &lt; s}\|X\beta\|\]</span> which is equivalent to the lagrangian problem <span class="math inline">\(\arg\min\limits_{\beta} \{ \|X \beta \|+ \lambda \| \beta \|_2^2 \}\)</span> With a one-to-one mapping of <span class="math inline">\(s \rightarrow \lambda\)</span> Note that this is a generalization of the least square solution since it contains the least squares solution for <span class="math inline">\(\lambda = 0\)</span>. The resulting normal equations are <span class="math display">\[(X&#39;X + \lambda I)^{-1}\hat{\beta}^* = X&#39;Y\]</span> Where one can see that the matrix to invert will be non-singular <span class="math inline">\(\lambda &gt; 0\)</span>, even if <span class="math inline">\(X&#39;X\)</span> is singular. Due to this shrinking, it is intuitive that the <span class="math inline">\(E[\hat{\beta}] \neq \beta\)</span>, that is, the coefficient will be biased. That can be seen easily if we <em>sneak in</em> the ols solution for which we know it is unbiased.
+<span class="math display">\[\begin{equation}
+\begin{split}
+
+(E[\hat{\beta}] = &amp; E[(X&#39;X + \lambda I)^{-1}X&#39;y]) \\
+&amp; E[(X&#39;X + \lambda I)^{-1} (X&#39;X)(X&#39;X)^{-1}X&#39;y] \\
+&amp; E[(X&#39;X + \lambda I)^{-1} (X&#39;X)\beta^{ols}] \\
+&amp; (X&#39;X + \lambda I)^{-1} (X&#39;X)\beta^{ols}
+\end{split}
+\end{equation}\]</span>
+<p>Whereas <span class="math inline">\(E[\hat{\beta}] \neq \beta\)</span> for <span class="math inline">\(\lambda &gt; 0\)</span> Also, we can see that for <span class="math inline">\(\lambda \rightarrow \infty\)</span>, <span class="math inline">\(\beta \rightarrow 0\)</span>.</p>
+<p>However, since by introducing a bias, we at the same time decrease the variance of our estimator. Therefore, we can optimize the bias-variance trade-off by finding an appropriate <span class="math inline">\(\lambda\)</span>, e.g. by (generalized) cross-valdiation. The regularization parameter lamda here is similar to the one we saw in the chapter about smoothing splines.</p>
+<p>To estimate the model, we can use the <code>MASS</code> package.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fitted &lt;-<span class="st"> </span>MASS::<span class="kw">lm.ridge</span>(
+  GNP.deflator ~., 
+  <span class="co"># it&#39;s lamBda, not lamda! R won&#39;t complain due to ... !</span>
+  <span class="dt">lambda =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="fl">0.1</span>, <span class="dt">by =</span> <span class="fl">0.001</span>), 
+  <span class="dt">data =</span> longley
+)</code></pre></div>
+<p>We can plot the coefficients for different values of <span class="math inline">\(\lambda\)</span> in a so-called trace plot.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(fitted)</code></pre></div>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
+<p>We can also get the coeficients for each lamda we estimated and select the best model and get the usual <code>lm</code> summary for it.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">coef</span>(fitted) %&gt;%
+<span class="st">  </span><span class="kw">as_data_frame</span>()</code></pre></div>
+<pre><code>## # A tibble: 101 x 7
+##            ``       GNP Unemployed Armed.Forces Population        Year
+##         &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;        &lt;dbl&gt;      &lt;dbl&gt;       &lt;dbl&gt;
+##  1 2946.85636 0.2635272 0.03648291  0.011161050  -1.737030 -1.41879853
+##  2 1895.97527 0.2392348 0.03100610  0.009372158  -1.643803 -0.87657471
+##  3 1166.33337 0.2209952 0.02719073  0.008243201  -1.565026 -0.50108472
+##  4  635.78843 0.2066111 0.02440554  0.007514565  -1.496246 -0.22885815
+##  5  236.65772 0.1948539 0.02230066  0.007043302  -1.434886 -0.02473192
+##  6  -71.53274 0.1849806 0.02066688  0.006744636  -1.379323  0.13231532
+##  7 -314.43247 0.1765137 0.01937157  0.006565392  -1.328460  0.25560068
+##  8 -509.05648 0.1691312 0.01832674  0.006470736  -1.281519  0.35395451
+##  9 -667.11647 0.1626072 0.01747181  0.006437042  -1.237922  0.43345188
+## 10 -796.92303 0.1567781 0.01676376  0.006447832  -1.197224  0.49840118
+## # ... with 91 more rows, and 1 more variables: Employed &lt;dbl&gt;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">MASS::<span class="kw">select</span>(fitted)</code></pre></div>
+<pre><code>## modified HKB estimator is 0.006836982 
+## modified L-W estimator is 0.05267247 
+## smallest value of GCV  at 0.006</code></pre>
+<p>As pointed out above, <span class="math inline">\(\lambda = 0\)</span> corresponds to the OLS solution.</p>
 </div>
-<div id="loss-function" class="section level2">
-<h2><span class="header-section-number">5.2</span> Loss Function</h2>
-<p>Depending on the application, one can imagine different loss-functions. For example the squared deviance from the <em>true</em> value is often used, i.e. <span class="math display">\[n^{-1}\sum\limits_{i = 1}^n\rho(Y_i, \hat{m}(X_i)) = n^{-1}\sum\limits_{i = 1}^n(Y_i - \hat{m}(X_i))^2\]</span> Hence, larger deviance is penalized over-proportionally. For classification, one often uses the zero-one error, i.e. <span class="math display">\[n^{-1}\sum\limits_{i = 1}^n1_{\hat{m}(X_i) = Y_i}\]</span> However, it might also be appropriate to use asymmetric loss functions if false negatives are worse than false positives (i.e. for cancer tests).</p>
+<div id="lasso" class="section level2">
+<h2><span class="header-section-number">9.2</span> Lasso</h2>
+<p>The Lasso is essentially just a variant of ridge regression whereas the penalty is the L1-norm instead of the <em>squared</em> L2 norm. <span class="math display">\[\arg\min\limits_{\beta} \{ \|X \beta \|+ \lambda \| \beta \|_1 \}\]</span> Where <span class="math inline">\(\| \beta \|_1 = \sum\limits_{j = 1}^p|\beta_j|\)</span>, i.e. the sum of the absolute values of the coefficients. The mathematical properties of the L1-norm imply that some coefficients actually will become exactly zero, which is not the case for ridge regression. In the latter case, a decrease of a coefficient from <span class="math inline">\(0.1\)</span> to <span class="math inline">\(0\)</span> will decrease the penalty from <span class="math inline">\(0.001\)</span> to <span class="math inline">\(0\)</span>, whereas a decrease from a coefficient of <span class="math inline">\(10\)</span> to <span class="math inline">\(9\)</span> wil decrease the penalty from <span class="math inline">\(100\)</span> to <span class="math inline">\(81\)</span>. Hence, Lasso will tend to shrink larger coefficients more since the loss function rewards this more.</p>
+<p><img src="figures/lasso_trace.png" width="580" /></p>
+<p>The above plot shows the Lasso traces for six coefficients. On the x-axis we don’t have lamda, but the norm of the Beta vector. <span class="math inline">\(max |\beta|\)</span> corresponds to the OLS solution with <span class="math inline">\(\lambda = 0\)</span> since for any other value of <span class="math inline">\(\lambda\)</span>, the norm is smaller. Hence, <span class="math inline">\(x = 1\)</span> corresponds to the OLS solution. On the other hand, <span class="math inline">\(x = 0\)</span> corresponds to <span class="math inline">\(\lambda = \infty\)</span>, since <span class="math inline">\(\|\beta\|\)</span> equals zero. In this case, all coefficients are zero obviously.</p>
+<p>Note that both Lasso and Ridge regression have <em>worse</em> in-sample performance than OLS, since the coefficients are biased. However, the out-of-sample performance is better since the bias variance trade-off is optimized.</p>
 </div>
-<div id="implementation" class="section level2">
-<h2><span class="header-section-number">5.3</span> Implementation</h2>
-<p>There are different ways to do cross validation while adhering to the principles introduced above.</p>
-<div id="leave-one-out" class="section level3">
-<h3><span class="header-section-number">5.3.1</span> Leave-one-out</h3>
-<ul>
-<li>Use all but one data point to construct a model and predict on the remaining data point.</li>
-<li>Do that <span class="math inline">\(n\)</span> times until all <span class="math inline">\(n\)</span> points were used for prediction once.</li>
-<li>Compute the test error as an average over all n errors measured, i.e</li>
-</ul>
-<p><span class="math display">\[n^{-1}\sum\limits_{i = 1}^n \rho{(Y_{i}, \hat{m}_{n-1}^{-i}(X_i)})\]</span> And use that as an approximation of the <em>generalization error</em>.</p>
+<div id="extensions" class="section level2">
+<h2><span class="header-section-number">9.3</span> Extensions</h2>
+<div id="elastic-net" class="section level3">
+<h3><span class="header-section-number">9.3.1</span> Elastic Net</h3>
+<p>The elastic net combines the penalties used in ridge regression and lasso. <span class="math display">\[ \hat{\beta} =  \|Y- X\beta\|^2 \;\; \text{subject to}\; (1 - \alpha) \|\beta\|_1 + \alpha \|\beta\|^2 &lt;t\]</span> The lasso penalty <span class="math inline">\((1 - \alpha) \|\beta\|_1 + \alpha \|\beta\|^2\)</span> is a sum of a structky convex function and a convex function and hence strictly convex.</p>
 </div>
+<div id="adaptive-lasso" class="section level3">
+<h3><span class="header-section-number">9.3.2</span> Adaptive Lasso</h3>
+<p>The idea is to use a different weight for each coefficient in the penalty term: <span class="math display">\[ \hat{\beta} =  \arg\min\|Y- X\beta\|^2 \;\; + \lambda \sum\limits_{j = 1}^p w_j|\beta_j|\]</span> The idea is now to use consistent esitimates for all coefficients, e.g. through least squares. Then, do a lasso and set <span class="math inline">\(w_j = \frac{1}{\hat{\beta_j}}\)</span>. This means that we now penalize small coefficients more, so they get shrunken to zero more quickly, whereas large coefficients (which are clearly non-zero) are given a low weight so their bias after the shrinkage is small</p>
 </div>
-<div id="k-fold-cross-validation" class="section level2">
-<h2><span class="header-section-number">5.4</span> K-fold Cross-Validation</h2>
-<p>This method is best explained with a picture.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">knitr::<span class="kw">include_graphics</span>(<span class="st">&quot;figures/k_fold_cv.png&quot;</span>)</code></pre></div>
-<p><img src="figures/k_fold_cv.png" width="650px" /> Here, one splits the data set into k equally sized folds. Then, the idea is to use all <span class="math inline">\(k-1\)</span> folds to build a model and the remaining fold to evaluate the model. Then, we average the <span class="math inline">\(k\)</span> estimates of the generalization error. Or in mathematical notation:</p>
-<p><span class="math display">\[K^{-1} \sum\limits_{k = 1}^K |B_k|^{-1} \sum\limits_{i \in B_k}\rho({Y_{i}, \hat{m}^{-B_k}_{n-|B_k|}(X_i))}\]</span></p>
-<p>Note that leave-one out cv is the same as k-fold cross validation with <span class="math inline">\(=n\)</span>.</p>
-<div id="random-division-into-test-and-training-data-set" class="section level3">
-<h3><span class="header-section-number">5.4.1</span> Random Division into test and training data set</h3>
-<p>The problem of K-fold cross-validation is that it depends on <strong>one realization</strong> of the split into k folds. Instead, we can generalize leave-one-out to leave-d-out. That means, we remove <span class="math inline">\(d\)</span> observations from our initial data, apply our estimation procedure and evaluate on the <span class="math inline">\(d\)</span> observations. <span class="math display">\[\hat{\theta}^{-C_k}_{n-k} \;\;\; \text{for all possible subsets}\;\; C_k, \;\; k=1, ..., {\binom{n}{d}}\]</span> The generalization error can be estimated with <span class="math display">\[{\binom{n}{d}}^{-1}\sum\limits_{k = 1}^{\binom{n}{d}} d^{-1}\sum\limits_{i \in C_k} \rho(Y_i, \hat{m}^{-C_k}_{n-d}(X_i))\]</span> For <span class="math inline">\(d &gt; 3\)</span>, the computational burden becomes immense. For that reason, instead of considering all <span class="math inline">\({\binom{n}{d}}\)</span> sets, we can uniformly draw <span class="math inline">\(B\)</span> sets (<span class="math inline">\(C_1^*, ... C_B^*\)</span>) from <span class="math inline">\(C_1, ..., C_{\binom{n}{d}}\)</span> <em>without replacement</em>. For <span class="math inline">\(B=\binom{n}{d}\)</span>, we obviously get the full leave-d-out solution. The <strong>computational cost</strong> for computing such an approximation to the leave-d-out is linear in <span class="math inline">\(B\)</span> (since evaluating is almost for free). For leave-one-out, the cost is linear in <span class="math inline">\(n\)</span> in the same way. Hence, the stochastic approximation for leave-d-out can be even smaller than for leave-one-out if <span class="math inline">\(B &lt; n\)</span>.</p>
+<div id="relaxed-lasso" class="section level3">
+<h3><span class="header-section-number">9.3.3</span> Relaxed Lasso</h3>
+<p>The relaxed lasso is also based on the idea of doing variable shrinkage isolated from variable selection. Hence, the idea is doing a lasso first to obtain the relevant variables. Then, a combination between lasso and OLS is used to obtain the final model</p>
+<p><span class="math display">\[\hat{\beta}^{\lambda, \phi} = \arg\min\limits_{\beta} \sum\limits_{i = 1}^n(yi - 
+\sum\limits_{j \in \mathcal{M}_\lambda} \beta_j x_{i, j})^2 + 
+\lambda \phi \sum\limits_{j = 1}^p|\beta_j|\]</span></p>
+<p>For <span class="math inline">\(\phi = 0\)</span>, the final estimates are just the OLS estimates with <span class="math inline">\(\mathcal{M}_\lambda\)</span>, <span class="math inline">\(\phi = 1\)</span> just reproduces the lasso that was used for variable selection.</p>
 </div>
+<div id="sparse-group-lasso" class="section level3">
+<h3><span class="header-section-number">9.3.4</span> (Sparse) Group Lasso</h3>
+<p>When dealing with categorical data with $ J&gt;2$, the techniques introduced above have the drawback that they may select just a few of the dummy variables to be non-zero. However, for interpretability, we want to keep all or none of the dummies in the model instead of selecting each variable <em>independently</em>. This can be achieved with a group lasso. We first split the design matrix into <span class="math inline">\(L\)</span> design matrices where each of them contains a block of <span class="math inline">\(p_l\)</span> predictors and all observations and it holds that <span class="math inline">\(\sum\limits_{p = 1}^L p_l = p\)</span>. We also split the corresponding coefficient vector <span class="math inline">\(\beta\)</span> into pieces. Then, we group-wise scaled L2 penalties.</p>
+<p><span class="math display">\[ \|Y-\sum\limits_{l = 1}^L X_l\beta_l \|_2^2 + 
+\lambda \sum\limits_{l = 1}^L \sqrt{p_l} \|\beta_l\|_2\]</span> Each continuous predictor forms its own group, categorical predictors are put in one group. Note that for <span class="math inline">\(L = p\)</span>, the problem reduces to a lasso<br />
+although we have an L2-penalty. This is because the L2 norm and the L1 norm of a scalar concide, or mathematically speaking <span class="math inline">\(\||s\|_2 = \sqrt{s^2} = |s| = \|s\|_1\)</span>. This acts like a lasso on the group level, i.e. it sets all coefficients of a group to zero - or none of them.</p>
+<p>There is an extension called <em>sparse group lasso</em> which can bring sprasity within a group. This is not helpful for dummy variables, but for situations where you have predictors that form a group since they are highly correlated or otherwise connected. It also applies the idea of an elastic net penalty to the group lasso. The formula is</p>
+<p><span class="math display">\[ \|Y-\sum\limits_{l = 1}^L X_l\beta_l \|_2^2 + 
+\lambda_1 \sum\limits_{l = 1}^L \sqrt{p_l} \|\beta_l\|_2 + 
+\lambda_2 \|\beta_l \|_1\]</span></p>
 </div>
-<div id="properties-of-the-different-schemes" class="section level2">
-<h2><span class="header-section-number">5.5</span> Properties of the different schemes</h2>
-<ul>
-<li><strong>leave-one-out</strong> is an asymptotically <strong>unbiased</strong> estimator for the generalization error and the true prediction. However, we use a sample size <span class="math inline">\(n-1\)</span> instead of <span class="math inline">\(n\)</span>, which causes a slight bias (meaning we have less data as we do in a real world scenario, which most likely makes the CV score a tiny little bit worse than it should be). Because the training sets are very similar to each other the leave-one-out scheme has a <strong>large variance</strong>.</li>
-<li><strong>leave-d-out</strong> has a <strong>higher bias</strong> than leave-one-out because the sample size is even smaller than <span class="math inline">\(n-1\)</span> (for <span class="math inline">\(d&gt;1\)</span>). However, since we aggregate over more (<span class="math inline">\(\binom{n}{d}\)</span> instead of <span class="math inline">\(n\)</span>) cv scores, which can be shown to decrease the variance of the final cv estimator.</li>
-<li><strong>k-fold</strong> cv has a <strong>higher bias</strong> than both leave one out.</li>
-</ul>
-</div>
-<div id="shortcuts-for-some-linear-fitting-operators" class="section level2">
-<h2><span class="header-section-number">5.6</span> Shortcuts for (some) linear fitting operators</h2>
-<p>Leave-one-out cv score for some linear fitting procedures such as least squares or smoothing spline can be computed via a shortcut when our loss function is <span class="math inline">\(\rho(y, \hat{y}) = |y-\hat{y}|^2\)</span>. In particular, we can compute the estimator for such a linear fitting procedure <strong>once</strong>, compute the linear fitting operator <span class="math inline">\(S\)</span>, which satisfies <span class="math inline">\(\mathbf{Y} = \mathbf{SY}\)</span> and plug it in this formula: <span class="math display">\[n^{-1}\sum\limits_{i = 1}^n \Bigg(\frac{Y_i - \hat{m}(X_i)}{1-S_{ii}}\Bigg)^2\]</span> Computing <span class="math inline">\(\mathbf{S}\)</span> requires <span class="math inline">\(O(n)\)</span> operations (see exercises).</p>
-<p>Historically, it has been computationally easier to compute the trace of <span class="math inline">\(\mathbf{S}\)</span> so there is also a quantity called generalized cross validation (which is a misleading terminology), which coincides with the formula above in certain cases.</p>
-</div>
-<div id="examples" class="section level2">
-<h2><span class="header-section-number">5.7</span> Examples</h2>
-<div id="practical-cv-in-r" class="section level3">
-<h3><span class="header-section-number">5.7.1</span> Practical CV in R</h3>
-<p>Key concepts to do CV are</p>
-<ul>
-<li>Do not split the data, split the indices of the data and work with them if ever possible and subset the data. <code>sample()</code> is your friend.</li>
-<li>use <code>purrr::map()</code> and friends to “loop” over data.</li>
-<li>Always work with lists, never work with data frames of indices. The reason is that data frames have structural constrains (all columns must have same number of elements) that are not natural in some situations. For example, out-of-bootstrap cv <em>does</em> have the same number of observations in the training set, but not in the test set.</li>
-<li>In conjunction with <code>sample()</code>, you can use <code>purrr::rerun</code> or <code>replicate</code> to create lists of indices.</li>
-<li>use helper function to solve “the small problems in the big problem”.</li>
-</ul>
-<p>Let’s first declare our functions.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;purrr&quot;</span>)
-<span class="kw">data</span>(ozone, <span class="dt">package =</span> <span class="st">&quot;gss&quot;</span>)
-
-<span class="co">#&#39; Estimate the generalization error of a ridge regression</span>
-<span class="co">#&#39; @param test Test indices.</span>
-<span class="co">#&#39; @param train Train indices.</span>
-<span class="co">#&#39; @param .data The data.</span>
-<span class="co">#&#39; @param lamda The lamda parameter for the ridge regression.</span>
-ge_ridge &lt;-<span class="st"> </span>function(test, train, .data, lambda) {
-  fit &lt;-<span class="st"> </span>MASS::<span class="kw">lm.ridge</span>(upo3~., 
-                  <span class="dt">lambda =</span> lambda,
-                  <span class="dt">data =</span> .data[train,])
-  pred &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(<span class="kw">cbind</span>(<span class="dv">1</span>, .data[test, -<span class="dv">1</span>])) %*%<span class="st"> </span><span class="kw">coef</span>(fit)
-  <span class="kw">mean</span>((pred -<span class="st"> </span>.data[test,]$upo3)^<span class="dv">2</span>)
-}
-
-
-##  ............................................................................
-##  functions to return list with indices                                   ####
-
-
-get_boostrap_mat &lt;-<span class="st"> </span>function(B, n) {
-  <span class="kw">rerun</span>(B, <span class="kw">sample</span>(n, n, <span class="dt">replace =</span> <span class="ot">TRUE</span>))
-  
-}
-
-get_all_mat &lt;-<span class="st"> </span>function(B, n) {
-  <span class="kw">rerun</span>(B, <span class="dv">1</span>:n)
-}
-
-get_complement &lt;-<span class="st"> </span>function(mat, n){
-  <span class="kw">map</span>(mat, ~<span class="kw">setdiff</span>(<span class="dv">1</span>:n, .x))
-}
-
-get_k_fold &lt;-<span class="st"> </span>function(k, n) {
-  step &lt;-<span class="st"> </span><span class="kw">trunc</span>(n/k)
-  current &lt;-<span class="st"> </span><span class="kw">list</span>()
-  for (i in (<span class="dv">0</span>:(k<span class="dv">-1</span>) *<span class="st"> </span>step +<span class="st"> </span><span class="dv">1</span>))  {
-    current &lt;-<span class="st"> </span><span class="kw">append</span>(current, <span class="kw">list</span>(
-      (i:(i+step<span class="dv">-1</span>))
-    )
-    )
-  }
-  current
-}</code></pre></div>
-<p>Now, let us apply the functions for three cv schemes to estimate the generalization error.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">##  ............................................................................
-##  boostrap                                                                ####
-<span class="co"># use boostrap sample to train, use all to test</span>
-n &lt;-<span class="st"> </span><span class="kw">nrow</span>(ozone)
-train &lt;-<span class="st"> </span><span class="kw">get_boostrap_mat</span>(<span class="dv">10</span>, n)
-test &lt;-<span class="st"> </span><span class="kw">get_all_mat</span>(<span class="dv">10</span>, n)
-bs &lt;-<span class="st"> </span><span class="kw">map2_dbl</span>(test, train, ge_ridge, <span class="dt">.data =</span> ozone, <span class="dt">lambda =</span> <span class="dv">5</span>)
-
-
-
-##  ............................................................................
-##  10-fold                                                                 ####
-test &lt;-<span class="st"> </span><span class="kw">get_k_fold</span>(<span class="dv">10</span>, n)
-train &lt;-<span class="st"> </span><span class="kw">map</span>(test, ~<span class="kw">setdiff</span>(<span class="dv">1</span>:n, .x))
-kfold &lt;-<span class="st"> </span><span class="kw">map2_dbl</span>(test, train, ge_ridge, <span class="dt">.data =</span> ozone, <span class="dt">lambda =</span> <span class="dv">5</span>)
-
-##  ............................................................................
-##  out-of-boostrap                                                         ####
-train &lt;-<span class="st"> </span><span class="kw">get_boostrap_mat</span>(<span class="dv">10</span>, n)
-test &lt;-<span class="st"> </span><span class="kw">map</span>(test, ~<span class="kw">setdiff</span>(<span class="dv">1</span>:n, .x))
-oob &lt;-<span class="st"> </span><span class="kw">map2_dbl</span>(test, train, ge_ridge, <span class="dt">.data =</span> ozone, <span class="dt">lambda =</span> <span class="dv">5</span>)</code></pre></div>
-<p>The results are as follows:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">out &lt;-<span class="st"> </span><span class="kw">cbind</span>(bs, kfold, oob) %&gt;%
-<span class="st">  </span><span class="kw">as_data_frame</span>() %&gt;%
-<span class="st">  </span><span class="kw">gather</span>(key, value)
-
-<span class="kw">ggplot</span>(out, <span class="kw">aes</span>(<span class="dt">y =</span> value, <span class="dt">x =</span> key)) +<span class="st"> </span>
-<span class="st">  </span><span class="kw">geom_boxplot</span>()</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-</div>
-<div id="parameter-tuning" class="section level3">
-<h3><span class="header-section-number">5.7.2</span> Parameter Tuning</h3>
-<p>We want to use the scheme k-fold cross validation for parameter tuning with a lasso. We first calculate the test set error for <em>one</em> value of lamda (as we did above). Then, change the value of lamda and recompute the model and then test set error, so that the test set error becomes a function of lamda, as depicted below.</p>
-<p><img src="figures/lasso_cv.png" width="650px" /></p>
-<p>Then pick an optimal lamda, e.g. the one with the lowest test error (a bit arbitrary) or one according to some other rule (e.g. pick the least complex model that is within one standard error of the best model).</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#&#39; Given lambda, compute the test set error with k folds</span>
-find_lambda_kfold_one &lt;-<span class="st"> </span>function(lambda, k, n, .data, ...) {
-  x_test &lt;-<span class="st"> </span><span class="kw">get_k_fold</span>(k, n)
-  x_train  &lt;-<span class="st"> </span><span class="kw">get_complement</span>(x_test, n)
-  <span class="kw">map2_dbl</span>(x_test, x_train, ge_ridge, <span class="dt">lambda =</span> lambda, <span class="dt">.data =</span> .data, ...) %&gt;%
-<span class="st">    </span><span class="kw">mean</span>()
-}
-
-<span class="co">#&#39; Given a sequence of lambdas, return the corresponding test set errors</span>
-find_lambda_kfold &lt;-<span class="st"> </span>function(seq, k, .data) {
-  cv &lt;-<span class="st"> </span><span class="kw">map_dbl</span>(seq, find_lambda_kfold_one, 
-                <span class="dt">k =</span> k, <span class="dt">n =</span> <span class="kw">nrow</span>(.data), <span class="dt">.data =</span> .data)
-  results &lt;-<span class="st"> </span><span class="kw">data_frame</span>(<span class="dt">lambda =</span> seq, <span class="dt">cv_score =</span> cv)
-  results
-}</code></pre></div>
-<p>We are almost done. Let us now compute the test set error that we use as an approximation of the generalization error and plot it against different values of lamda.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">find_lambda_kfold</span>(<span class="dt">seq =</span> <span class="kw">seq</span>(<span class="dv">5</span>, <span class="dv">30</span>, <span class="dt">by =</span> <span class="dv">3</span>), <span class="dv">100</span>, ozone) %&gt;%
-<span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> lambda, <span class="dt">y =</span> cv_score)) +<span class="st"> </span>
-<span class="st">  </span><span class="kw">geom_line</span>()</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
-<p>That looks reasonable. We could improve on that by also showing the distribution of the test set error at various lambadas. This could by done by altering <code>find_lambda_kfold_one()</code> to not return the mean, but also the upper and lower 95% confidence interval.</p>
+<div id="oracle-properties" class="section level3">
+<h3><span class="header-section-number">9.3.5</span> Oracle Properties</h3>
+<p>The adaptive lasso (unlike all other lasso-related techniques presented here posseses so-called oracle properties). Consider the set $, which contains the all non-zero perdictor variabiables from a large number of available predictors. <span class="math display">\[ \mathcal{M} = \{j \in \{1, ..., p\}; \; \beta_j \neq 0\}\]</span> The set <span class="math inline">\(\mathcal{M}_\lambda\)</span> contains all predictors that were estimated to be non-zero via a Lasso estimate <span class="math display">\[ \mathcal{M}_\lambda = \{j \in \{1, ..., p\}; \; \hat{\beta}_j \neq 0\}\]</span> An estimator has oracle properties if <span class="math display">\[ \mathcal{M}_\lambda =\mathcal{M} \; \text{for} \; n \rightarrow \infty\]</span> Lasso typically produces too large of non-zero predictors, but all non-zero predictors are in that set, that is <span class="math display">\[  \mathcal{M}_{\lambda}^{Lasso} \supset \mathcal{M} \]</span></p>
 
 </div>
 </div>
@@ -381,8 +309,8 @@ find_lambda_kfold &lt;-<span class="st"> </span>function(seq, k, .data) {
           </div>
         </div>
       </div>
-<a href="nonparametric-regression.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="bootstrap.html" class="navigation navigation-next " aria-label="Next page""><i class="fa fa-angle-right"></i></a>
+<a href="flexible-regression-and-classification-methods.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="bagging-and-boosting.html" class="navigation navigation-next " aria-label="Next page""><i class="fa fa-angle-right"></i></a>
 
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/lunr.js"></script>
