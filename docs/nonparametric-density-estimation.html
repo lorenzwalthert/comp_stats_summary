@@ -101,7 +101,12 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <ul class="summary">
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
 <li class="chapter" data-level="2" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html"><i class="fa fa-check"></i><b>2</b> Multiple Linear Regression</a></li>
-<li class="chapter" data-level="3" data-path="nonparametric-density-estimation.html"><a href="nonparametric-density-estimation.html"><i class="fa fa-check"></i><b>3</b> Nonparametric Density Estimation</a></li>
+<li class="chapter" data-level="3" data-path="nonparametric-density-estimation.html"><a href="nonparametric-density-estimation.html"><i class="fa fa-check"></i><b>3</b> Nonparametric Density Estimation</a><ul>
+<li class="chapter" data-level="3.1" data-path="nonparametric-density-estimation.html"><a href="nonparametric-density-estimation.html#the-histogramm"><i class="fa fa-check"></i><b>3.1</b> The Histogramm</a></li>
+<li class="chapter" data-level="3.2" data-path="nonparametric-density-estimation.html"><a href="nonparametric-density-estimation.html#kernels"><i class="fa fa-check"></i><b>3.2</b> Kernels</a><ul>
+<li class="chapter" data-level="3.2.1" data-path="nonparametric-density-estimation.html"><a href="nonparametric-density-estimation.html#the-naive-estimator"><i class="fa fa-check"></i><b>3.2.1</b> The naive Estimator</a></li>
+</ul></li>
+</ul></li>
 <li class="chapter" data-level="4" data-path="nonparametric-regression.html"><a href="nonparametric-regression.html"><i class="fa fa-check"></i><b>4</b> Nonparametric Regression</a></li>
 <li class="chapter" data-level="5" data-path="cross-validation.html"><a href="cross-validation.html"><i class="fa fa-check"></i><b>5</b> Cross Validation</a><ul>
 <li class="chapter" data-level="5.1" data-path="cross-validation.html"><a href="cross-validation.html#motivation-and-core-idea"><i class="fa fa-check"></i><b>5.1</b> Motivation and Core Idea</a></li>
@@ -182,6 +187,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul></li>
 <li class="chapter" data-level="10" data-path="bagging-and-boosting.html"><a href="bagging-and-boosting.html"><i class="fa fa-check"></i><b>10</b> Bagging and Boosting</a><ul>
 <li class="chapter" data-level="10.1" data-path="bagging-and-boosting.html"><a href="bagging-and-boosting.html#bagging"><i class="fa fa-check"></i><b>10.1</b> Bagging</a></li>
+<li class="chapter" data-level="10.2" data-path="bagging-and-boosting.html"><a href="bagging-and-boosting.html#subagging"><i class="fa fa-check"></i><b>10.2</b> Subagging</a></li>
+<li class="chapter" data-level="10.3" data-path="bagging-and-boosting.html"><a href="bagging-and-boosting.html#l_2-boosting"><i class="fa fa-check"></i><b>10.3</b> <span class="math inline">\(L_2\)</span>-Boosting</a></li>
+<li class="chapter" data-level="10.4" data-path="bagging-and-boosting.html"><a href="bagging-and-boosting.html#some-unfinished-stuff"><i class="fa fa-check"></i><b>10.4</b> Some unfinished stuff</a></li>
 </ul></li>
 <li class="chapter" data-level="11" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>11</b> Introduction</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
@@ -204,7 +212,49 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
             <section class="normal" id="section-">
 <div id="nonparametric-density-estimation" class="section level1">
 <h1><span class="header-section-number">Chapter 3</span> Nonparametric Density Estimation</h1>
+<div id="the-histogramm" class="section level2">
+<h2><span class="header-section-number">3.1</span> The Histogramm</h2>
+<p>The simplest density estimator is the histogram. The drawback is that we need to specify two parameters. The origin <span class="math inline">\(x_0\)</span> and the bandwidth <span class="math inline">\(h\)</span>. At least the former is highly arbitrary and both affect the resulting histogram remarkably.</p>
+</div>
+<div id="kernels" class="section level2">
+<h2><span class="header-section-number">3.2</span> Kernels</h2>
+<div id="the-naive-estimator" class="section level3">
+<h3><span class="header-section-number">3.2.1</span> The naive Estimator</h3>
+<p>We can compute the relative frequency of observations falling into some region and use these frequencies as estimators for the probabilities.</p>
+<p>Let’s consider some example data distributed uniformly at random between <span class="math inline">\(-0.5\)</span> and <span class="math inline">\(+0.5\)</span>. Let us try to estimate the densities via the relative frequencies. We consider three points in x: <span class="math inline">\(-0.5, 0\)</span> and <span class="math inline">\(+0.5\)</span>. For x equal zero, we know that all points are comprised in the range, so the relative frequency is one, for the two other x values, it is a half each. We can interpolate and then the a triangle. We don’t need to normalize anything since the area has size one already, which we need for it to be a density. However, if we use a larger <span class="math inline">\(h\)</span>, for example <span class="math inline">\(h = 1\)</span>, we need to divide by <span class="math inline">\(2\)</span> to get an area of size one since at all three points, the relative frequency is one and it becomes zero only when the absolute value of x is larger than 3/2. Hence, we found the formula to obtain densities. <span class="math display">\[ f(x) = \frac{1}{2h}\mathbb{P}(x-h&lt; X &lt; x+h)\]</span> Which translates into frequencies for our estimator <span class="math display">\[ \hat{f}(x) = \frac{1}{2hn}\#(X_i \in [x-h, x+h))\]</span> We can see how changing <span class="math inline">\(h\)</span> improves our estimates density estimates:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="dv">10000</span>, <span class="dt">min =</span> -<span class="dv">1</span>/<span class="dv">2</span>, <span class="dt">max =</span> <span class="dv">1</span>/<span class="dv">2</span>)
+dens &lt;-<span class="st"> </span><span class="kw">density</span>(x, <span class="dt">kernel =</span> <span class="st">&quot;rectangular&quot;</span>, <span class="dt">bw =</span> <span class="dv">1</span>/<span class="dv">2</span>)
 
+
+eval_one &lt;-<span class="st"> </span>function(e_eval_one, x, h) {
+  <span class="dv">1</span>/(<span class="dv">2</span>*h)*<span class="st"> </span><span class="kw">mean</span>(e_eval_one +<span class="st"> </span>h &gt;<span class="st"> </span>x &amp;<span class="st"> </span>e_eval_one -<span class="st"> </span>h &lt;<span class="st"> </span>x)
+}
+
+naive_density &lt;-<span class="st"> </span>function(x, h, x_eval) {
+  <span class="kw">data_frame</span>(
+    <span class="dt">x_eval =</span> x_eval, 
+    <span class="dt">y_est =</span> <span class="kw">map_dbl</span>(x_eval, eval_one, <span class="dt">x =</span> x, <span class="dt">h =</span> h),
+    <span class="dt">h =</span> h
+  )
+}
+
+one_est &lt;-<span class="st"> </span><span class="kw">naive_density</span>(x, <span class="dv">1</span>/<span class="dv">2</span>, <span class="kw">seq</span>(-<span class="dv">1</span>, <span class="dv">1</span>, <span class="dt">length.out =</span> <span class="dv">3</span>))
+
+<span class="kw">ggplot</span>(one_est, <span class="kw">aes</span>(<span class="dt">x =</span> x_eval, <span class="dt">y =</span> y_est)) +<span class="st"> </span><span class="kw">geom_path</span>()</code></pre></div>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>This is quite wrong, as we know the true distribution is uniform between minus one and one. Let us tune <span class="math inline">\(h\)</span> to see whether we can improve</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">h_seq &lt;-<span class="st"> </span><span class="fl">0.5</span>^(<span class="dv">1</span>:<span class="dv">8</span>)
+
+multiple &lt;-<span class="st"> </span><span class="kw">map_df</span>(h_seq, naive_density, <span class="dt">x =</span> x, <span class="dt">x_eval =</span> <span class="kw">seq</span>(-<span class="dv">1</span>, <span class="dv">1</span>, <span class="dt">length.out =</span> <span class="dv">22</span>))
+
+<span class="kw">ggplot</span>(multiple, <span class="kw">aes</span>(<span class="dt">x =</span> x_eval, <span class="dt">y =</span> y_est, <span class="dt">color =</span> h)) +<span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_path</span>() +
+<span class="st">  </span><span class="kw">scale_color_gradient2</span>(<span class="dt">trans =</span> <span class="st">&quot;log10&quot;</span>)</code></pre></div>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>It seems that with <span class="math inline">\(h \rightarrow \infty\)</span>, we are approaching the true distribution. The nice thing about this estimator is that there is no need to set the tuning parameter <span class="math inline">\(x_0\)</span> anymore.</p>
+
+</div>
+</div>
 </div>
             </section>
 

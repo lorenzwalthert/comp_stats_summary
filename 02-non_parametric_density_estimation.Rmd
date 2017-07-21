@@ -1,1 +1,71 @@
 # Nonparametric Density Estimation
+
+## The Histogramm
+The simplest density estimator is the histogram. The drawback is that we need
+to specify two parameters. The origin $x_0$ and the bandwidth $h$. At least
+the former is highly arbitrary and both affect the resulting histogram 
+remarkably.
+
+
+## Kernels
+### The naive Estimator
+
+We can compute the relative frequency of observations falling into some region
+and use these frequencies as estimators for the probabilities.
+
+Let's consider some example data distributed uniformly at random between 
+$-0.5$ and $+0.5$. 
+Let us try to estimate the densities via the relative frequencies. We consider
+three points in x: $-0.5, 0$ and $+0.5$. For x equal zero, we know that all
+points are comprised in the range, so the relative frequency is one, for the
+two other x values, it is a half each. We can interpolate and then the a
+triangle. We don't need to normalize anything since the area has size one
+already, which we need for it to be a density. However, if we use a larger
+$h$, for example $h = 1$, we need to divide by $2$ to get an area of size one
+since at all three points, the relative frequency is one and it becomes zero
+only when the absolute value of x is larger than 3/2.
+Hence, we found the formula to obtain densities.
+$$ f(x) = \frac{1}{2h}\mathbb{P}(x-h< X < x+h)$$
+Which translates into frequencies for our estimator
+$$ \hat{f}(x) = \frac{1}{2hn}\#(X_i \in [x-h, x+h))$$
+We can see how changing $h$ improves our estimates density estimates:
+```{r}
+x <- runif(10000, min = -1/2, max = 1/2)
+dens <- density(x, kernel = "rectangular", bw = 1/2)
+
+
+eval_one <- function(e_eval_one, x, h) {
+  1/(2*h)* mean(e_eval_one + h > x & e_eval_one - h < x)
+}
+
+naive_density <- function(x, h, x_eval) {
+  data_frame(
+    x_eval = x_eval, 
+    y_est = map_dbl(x_eval, eval_one, x = x, h = h),
+    h = h
+  )
+}
+
+one_est <- naive_density(x, 1/2, seq(-1, 1, length.out = 3))
+
+ggplot(one_est, aes(x = x_eval, y = y_est)) + geom_path()
+```
+
+This is quite wrong, as we know the true distribution is uniform between 
+minus one and one.
+Let us tune $h$ to see whether we can improve
+
+```{r}
+h_seq <- 0.5^(1:8)
+
+multiple <- map_df(h_seq, naive_density, x = x, x_eval = seq(-1, 1, length.out = 22))
+
+ggplot(multiple, aes(x = x_eval, y = y_est, color = h)) + 
+  geom_path() +
+  scale_color_gradient2(trans = "log10")
+```
+
+It seems that with $h \rightarrow \infty$, we are approaching the true 
+distribution.
+The nice thing about this estimator is that there is no need to set the 
+tuning parameter $x_0$ anymore.
