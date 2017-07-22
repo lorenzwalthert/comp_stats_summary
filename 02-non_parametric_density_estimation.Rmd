@@ -156,7 +156,7 @@ The bandwidth is closely related to the
 Here is a shiny app that lets you try different parameters.
 ```{r, echo = FALSE}
 knitr::include_app("https://lorenzwalthert.shinyapps.io/naive_density/", 
-  height = "1200px")
+  height = "1000px")
 ```
 
   
