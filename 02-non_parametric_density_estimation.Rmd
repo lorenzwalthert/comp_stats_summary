@@ -54,19 +54,8 @@ ggplot(one_est, aes(x = x_eval, y = y_est)) + geom_path()
 
 This is quite wrong, as we know the true distribution is uniform between 
 minus one and one.
-Let us tune $h$ to see whether we can improve
-
-```{r}
-h_seq <- 0.5^(1:8)
-
-multiple <- map_df(h_seq, naive_density, x = x, x_eval = seq(-1, 1, length.out = 22))
-
-ggplot(multiple, aes(x = x_eval, y = y_est, color = h)) + 
-  geom_path() +
-  scale_color_gradient2(trans = "log10")
-```
-
-It seems that with $h \rightarrow \infty$, we are approaching the true 
+However, as you can see by playing around with the shiny app further down the
+page, it seems that with $h \rightarrow \infty$, we are approaching the true 
 distribution.
 The nice thing about this estimator is that there is no need to set the 
 tuning parameter $x_0$ anymore.
@@ -160,3 +149,15 @@ a very wiggly function (since only the points in the very close neighbourhood
 are given a signicifant weight), a large bandwidth will produce a function 
 that is varying slowly as a function of x.
 The bandwidth is closely related to the 
+
+
+
+### Bring it all together
+Here is a shiny app that lets you try different parameters.
+```{r, echo = FALSE}
+knitr::include_app("https://lorenzwalthert.shinyapps.io/naive_density/", 
+  height = "1200px")
+```
+
+  
+
