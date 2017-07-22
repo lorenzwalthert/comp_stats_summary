@@ -105,6 +105,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="3.1" data-path="nonparametric-density-estimation.html"><a href="nonparametric-density-estimation.html#the-histogramm"><i class="fa fa-check"></i><b>3.1</b> The Histogramm</a></li>
 <li class="chapter" data-level="3.2" data-path="nonparametric-density-estimation.html"><a href="nonparametric-density-estimation.html#kernels"><i class="fa fa-check"></i><b>3.2</b> Kernels</a><ul>
 <li class="chapter" data-level="3.2.1" data-path="nonparametric-density-estimation.html"><a href="nonparametric-density-estimation.html#the-naive-estimator"><i class="fa fa-check"></i><b>3.2.1</b> The naive Estimator</a></li>
+<li class="chapter" data-level="3.2.2" data-path="nonparametric-density-estimation.html"><a href="nonparametric-density-estimation.html#the-bandwidth"><i class="fa fa-check"></i><b>3.2.2</b> The bandwidth</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="nonparametric-regression.html"><a href="nonparametric-regression.html"><i class="fa fa-check"></i><b>4</b> Nonparametric Regression</a></li>
@@ -352,7 +353,7 @@ oob &lt;-<span class="st"> </span><span class="kw">map2_dbl</span>(test, train, 
 
 <span class="kw">ggplot</span>(out, <span class="kw">aes</span>(<span class="dt">y =</span> value, <span class="dt">x =</span> key)) +<span class="st"> </span>
 <span class="st">  </span><span class="kw">geom_boxplot</span>()</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 <div id="parameter-tuning" class="section level3">
 <h3><span class="header-section-number">5.7.2</span> Parameter Tuning</h3>
@@ -378,7 +379,7 @@ find_lambda_kfold &lt;-<span class="st"> </span>function(seq, k, .data) {
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">find_lambda_kfold</span>(<span class="dt">seq =</span> <span class="kw">seq</span>(<span class="dv">5</span>, <span class="dv">30</span>, <span class="dt">by =</span> <span class="dv">3</span>), <span class="dv">100</span>, ozone) %&gt;%
 <span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> lambda, <span class="dt">y =</span> cv_score)) +<span class="st"> </span>
 <span class="st">  </span><span class="kw">geom_line</span>()</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <p>That looks reasonable. We could improve on that by also showing the distribution of the test set error at various lambadas. This could by done by altering <code>find_lambda_kfold_one()</code> to not return the mean, but also the upper and lower 95% confidence interval.</p>
 
 </div>

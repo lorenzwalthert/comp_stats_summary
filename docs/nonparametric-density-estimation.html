@@ -105,6 +105,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="3.1" data-path="nonparametric-density-estimation.html"><a href="nonparametric-density-estimation.html#the-histogramm"><i class="fa fa-check"></i><b>3.1</b> The Histogramm</a></li>
 <li class="chapter" data-level="3.2" data-path="nonparametric-density-estimation.html"><a href="nonparametric-density-estimation.html#kernels"><i class="fa fa-check"></i><b>3.2</b> Kernels</a><ul>
 <li class="chapter" data-level="3.2.1" data-path="nonparametric-density-estimation.html"><a href="nonparametric-density-estimation.html#the-naive-estimator"><i class="fa fa-check"></i><b>3.2.1</b> The naive Estimator</a></li>
+<li class="chapter" data-level="3.2.2" data-path="nonparametric-density-estimation.html"><a href="nonparametric-density-estimation.html#the-bandwidth"><i class="fa fa-check"></i><b>3.2.2</b> The bandwidth</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="nonparametric-regression.html"><a href="nonparametric-regression.html"><i class="fa fa-check"></i><b>4</b> Nonparametric Regression</a></li>
@@ -252,6 +253,66 @@ multiple &lt;-<span class="st"> </span><span class="kw">map_df</span>(h_seq, nai
 <span class="st">  </span><span class="kw">scale_color_gradient2</span>(<span class="dt">trans =</span> <span class="st">&quot;log10&quot;</span>)</code></pre></div>
 <p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <p>It seems that with <span class="math inline">\(h \rightarrow \infty\)</span>, we are approaching the true distribution. The nice thing about this estimator is that there is no need to set the tuning parameter <span class="math inline">\(x_0\)</span> anymore.</p>
+You can represent the naive kernel differently, namely as a kernel. We have
+<span class="math display">\[\begin{equation}
+\begin{split}
+f(x) = &amp; \frac{1}{2nh}\#\{X_i \in [x- d, x+ d)\} \\
+     = &amp; \frac{1}{2nh} \sum\limits_{i = 1}^n 1_{[x_i \in [x- d, x+ d)]} \\
+     = &amp; \frac{1}{2nh} \sum\limits_{i = 1}^n 1_{[(x_i - x)/h \in [-1, 1)]} \\
+     = &amp; \frac{1}{2nh} \sum\limits_{i = 1}^n 1_{[(x - x_i)/h \in [-1, 1)]} | \text{You can flip signs} \\
+     = &amp; \frac{1}{2nh} \sum\limits_{i = 1}^n w&#39;\big(\frac{x -x_i}{h}\big) \\
+\end{split}
+\end{equation}\]</span>
+<span class="math display">\[\begin{equation}
+w&#39;\big(\frac{x - x_i}{h}\big) = \begin{cases}
+      1 \;\;\ \text{if} \;\;\ | \frac{x - x_i}{h} | &gt; 1
+      \\
+      0 \;\;\ \text{else}.
+      \end{cases}
+\end{equation}\]</span>
+<p>Where we can collapse <span class="math inline">\(2\)</span> and our weight function <span class="math inline">\(w&#39;(x)\)</span>, so we end up with the following.</p>
+<span class="math display">\[\begin{equation}
+\begin{split}
+f(x) = &amp; \frac{1}{nh} \sum\limits_{i = 1}^n w\big(\frac{x - x_i}{h}\big) \\
+\end{split}
+\end{equation}\]</span>
+<span class="math display">\[\begin{equation}
+w\big(\frac{x - x_i}{h}\big) = \begin{cases}
+      \frac{1}{2} \;\;\ \text{if} \;\;\ | \frac{x - x_i}{h} | &gt; 1
+      \\
+      0 \;\;\ \text{else}.
+      \end{cases}
+\end{equation}\]</span>
+<p>The function <span class="math inline">\(w\)</span> is an example of a kernel function since it satifsfies the condition of a kernel, which are</p>
+<ul>
+<li>integrates to one, <span class="math inline">\(\int\limits_{-\infty}^\infty K(X)dx = 1\)</span></li>
+<li>is symmetric, <span class="math inline">\(K(x) = K(-X)\)</span></li>
+<li>is strictly positive, <span class="math inline">\(K(X)\geqslant 0\)</span></li>
+</ul>
+<p><span class="math inline">\(w(\cdot)\)</span> is the rectangular kernel, which becomes obvious when plotting it.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rectangular &lt;-<span class="st"> </span>function(x) {
+  <span class="kw">if_else</span>(<span class="kw">abs</span>(x) &lt;<span class="st"> </span><span class="dv">1</span>/<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">0</span>)
+}
+
+normal &lt;-<span class="st"> </span>function(x) {
+  (<span class="dv">2</span>*pi)^(-<span class="dv">1</span>/<span class="dv">2</span>)*<span class="kw">exp</span>(-x^<span class="dv">2</span>/<span class="dv">2</span>)
+}
+
+cosine &lt;-<span class="st"> </span>function(x) {
+  <span class="kw">if_else</span>(<span class="kw">abs</span>(x) &lt;<span class="st"> </span><span class="dv">1</span>, pi /<span class="st"> </span><span class="dv">4</span> *<span class="st"> </span><span class="kw">cos</span>(pi /<span class="st"> </span><span class="dv">2</span> *<span class="st"> </span>x), <span class="dv">0</span>)
+}
+
+<span class="kw">ggplot</span>(<span class="kw">data_frame</span>(<span class="dt">x =</span> <span class="dv">0</span>), <span class="kw">aes</span>(<span class="dt">x =</span> x)) +
+<span class="st">  </span><span class="kw">stat_function</span>(<span class="dt">fun =</span> rectangular, <span class="kw">aes</span>(<span class="dt">color =</span> <span class="st">&quot;rectangular&quot;</span>)) +
+<span class="st">  </span><span class="kw">stat_function</span>(<span class="dt">fun =</span> normal, <span class="kw">aes</span>(<span class="dt">color =</span> <span class="st">&quot;normal&quot;</span>)) +
+<span class="st">  </span><span class="kw">stat_function</span>(<span class="dt">fun =</span> cosine, <span class="kw">aes</span>(<span class="dt">color =</span> <span class="st">&quot;cosine&quot;</span>)) +
+<span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">limits =</span> <span class="kw">c</span>(-<span class="dv">2</span>, <span class="dv">2</span>))</code></pre></div>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>It is <em>piece-wise</em> constant, since evyer point is either in or out of the interval. The density estimate is not smoth since the kernel is not smoth. <span class="math inline">\(\hat{f}(x)\)</span> inherits also other properties from the kernel, e.g. it is strictly positive if the kernel is strictly positive and it integrates to one if the kernel does so. Therefore, to obtain a smooth density estimate, we need to choose a smooth kernel. The gaussian kernel seems to be a natural choice. Instead of giving an observation a weight of either one or zero, values in between are also possible, depending on the distance of the point relative to the point for which we want to obtain a density esimate and depending on <span class="math inline">\(h\)</span>. Some kernels such as the normal kernel have the drawback that they their weights are never getting to zero, which implies computational cost at limited gain. We can instead choose a kernel like the cosine kernel, which also smooth but reaches zero relatively quickly, which speeds up calculations.</p>
+</div>
+<div id="the-bandwidth" class="section level3">
+<h3><span class="header-section-number">3.2.2</span> The bandwidth</h3>
+<p>More important than the kernel is the bandwidth. A small bandwidth yields a very wiggly function (since only the points in the very close neighbourhood are given a signicifant weight), a large bandwidth will produce a function that is varying slowly as a function of x. The bandwidth is closely related to the</p>
 
 </div>
 </div>

@@ -70,3 +70,93 @@ It seems that with $h \rightarrow \infty$, we are approaching the true
 distribution.
 The nice thing about this estimator is that there is no need to set the 
 tuning parameter $x_0$ anymore.
+
+You can represent the naive kernel differently, namely as a kernel.
+We have 
+\begin{equation}
+\begin{split}
+f(x) = & \frac{1}{2nh}\#\{X_i \in [x- d, x+ d)\} \\
+     = & \frac{1}{2nh} \sum\limits_{i = 1}^n 1_{[x_i \in [x- d, x+ d)]} \\
+     = & \frac{1}{2nh} \sum\limits_{i = 1}^n 1_{[(x_i - x)/h \in [-1, 1)]} \\
+     = & \frac{1}{2nh} \sum\limits_{i = 1}^n 1_{[(x - x_i)/h \in [-1, 1)]} | \text{You can flip signs} \\
+     = & \frac{1}{2nh} \sum\limits_{i = 1}^n w'\big(\frac{x -x_i}{h}\big) \\
+\end{split}
+\end{equation}
+
+ \begin{equation}
+w'\big(\frac{x - x_i}{h}\big) = \begin{cases}
+      1 \;\;\ \text{if} \;\;\ | \frac{x - x_i}{h} | > 1
+      \\
+      0 \;\;\ \text{else}.
+      \end{cases}
+\end{equation}
+Where we can collapse $2$ and our weight function $w'(x)$, so we end up with the 
+following.
+
+\begin{equation}
+\begin{split}
+f(x) = & \frac{1}{nh} \sum\limits_{i = 1}^n w\big(\frac{x - x_i}{h}\big) \\
+\end{split}
+\end{equation}
+
+
+ \begin{equation}
+w\big(\frac{x - x_i}{h}\big) = \begin{cases}
+      \frac{1}{2} \;\;\ \text{if} \;\;\ | \frac{x - x_i}{h} | > 1
+      \\
+      0 \;\;\ \text{else}.
+      \end{cases}
+\end{equation}
+
+
+The function $w$ is an example of a kernel function since it satifsfies the 
+condition of a kernel, which are
+
+* integrates to one, $\int\limits_{-\infty}^\infty K(X)dx = 1$
+* is symmetric, $K(x) = K(-X)$
+* is strictly positive, $K(X)\geqslant 0$
+
+$w(\cdot)$ is the rectangular kernel, which becomes obvious when plotting 
+it.
+```{r}
+rectangular <- function(x) {
+  if_else(abs(x) < 1/2, 1, 0)
+}
+
+normal <- function(x) {
+  (2*pi)^(-1/2)*exp(-x^2/2)
+}
+
+cosine <- function(x) {
+  if_else(abs(x) < 1, pi / 4 * cos(pi / 2 * x), 0)
+}
+
+ggplot(data_frame(x = 0), aes(x = x)) +
+  stat_function(fun = rectangular, aes(color = "rectangular")) +
+  stat_function(fun = normal, aes(color = "normal")) +
+  stat_function(fun = cosine, aes(color = "cosine")) +
+  scale_x_continuous(limits = c(-2, 2))
+```
+
+It is *piece-wise* constant, since evyer point is either in or out of the 
+interval. The density estimate is not smoth since the kernel is not smoth. 
+$\hat{f}(x)$ inherits also other properties from the kernel, e.g. it is strictly
+positive if the kernel is strictly positive and it integrates to one if the 
+kernel does so. Therefore, to obtain a smooth density estimate, we need to 
+choose a smooth kernel. The gaussian kernel seems to be a natural choice. 
+Instead of giving an observation a weight of either one or zero, values in 
+between are also possible, depending on the distance of the point relative
+to the point for which we want to obtain a density esimate and depending on 
+$h$. Some kernels such as the normal kernel have the drawback that they their
+weights are never getting to zero, which implies computational cost at limited
+gain. We can instead choose a kernel like the cosine kernel, which also smooth
+but reaches zero relatively quickly, which speeds up calculations.
+
+
+### The bandwidth
+
+More important than the kernel is the bandwidth. A small bandwidth yields
+a very wiggly function (since only the points in the very close neighbourhood
+are given a signicifant weight), a large bandwidth will produce a function 
+that is varying slowly as a function of x.
+The bandwidth is closely related to the 

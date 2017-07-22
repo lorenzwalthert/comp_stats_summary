@@ -105,6 +105,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="3.1" data-path="nonparametric-density-estimation.html"><a href="nonparametric-density-estimation.html#the-histogramm"><i class="fa fa-check"></i><b>3.1</b> The Histogramm</a></li>
 <li class="chapter" data-level="3.2" data-path="nonparametric-density-estimation.html"><a href="nonparametric-density-estimation.html#kernels"><i class="fa fa-check"></i><b>3.2</b> Kernels</a><ul>
 <li class="chapter" data-level="3.2.1" data-path="nonparametric-density-estimation.html"><a href="nonparametric-density-estimation.html#the-naive-estimator"><i class="fa fa-check"></i><b>3.2.1</b> The naive Estimator</a></li>
+<li class="chapter" data-level="3.2.2" data-path="nonparametric-density-estimation.html"><a href="nonparametric-density-estimation.html#the-bandwidth"><i class="fa fa-check"></i><b>3.2.2</b> The bandwidth</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="nonparametric-regression.html"><a href="nonparametric-regression.html"><i class="fa fa-check"></i><b>4</b> Nonparametric Regression</a></li>
@@ -245,7 +246,7 @@ With all variables having a mean of zero. Hence we got rid of the intercept. In 
 )</code></pre></div>
 <p>We can plot the coefficients for different values of <span class="math inline">\(\lambda\)</span> in a so-called trace plot.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(fitted)</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-34-1.png" width="672" /></p>
 <p>We can also get the coeficients for each lamda we estimated and select the best model and get the usual <code>lm</code> summary for it.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">coef</span>(fitted) %&gt;%
 <span class="st">  </span><span class="kw">as_data_frame</span>()</code></pre></div>
