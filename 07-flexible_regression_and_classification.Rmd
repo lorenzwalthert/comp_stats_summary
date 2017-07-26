@@ -3,7 +3,7 @@
 library("gridExtra")
 ```
 
-The curse of dimensionality makes it very hard to estimate fully nonparametric 
+The curse of dimensionality makes it very hard to estimate fully non-parametric 
 regression function $\hat{m} = \mathbb{E}[Y|X = x]$ or classification function 
 $\hat{\pi}_j = \mathbb{P}[Y = j | X = x]$. Hence, by making some (reasonable) 
 structural assumptions, we can improve our models significantly. Generally, we 

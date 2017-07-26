@@ -1,1 +1,103 @@
-# Nonparametric Regression
+# Non-parametric Regression
+
+We assume a model of the form 
+
+$$ E[Y|X = x] = m(x)$$ 
+which is more general than assuming $Y_i = m)(x_i) + \epsilon_i$ since in the 
+former, the noise does not have to be additive.
+We can use the Bayes Theorem to deduce such an estimator $\hat{m}$ using 
+density estimates of our predictor and response variable. In that sense,
+non-parametric regression really builds on top of non-parametric density
+estimation.
+
+\begin{equation}
+\begin{split}
+P[Y|X] &=  \frac{\mathbb{P}[X|Y]}{\mathbb{P}[Y]}\mathbb{P}[Y] \\ 
+f_{Y|X} & = \frac{f_{X|Y}}{f_X}f_Y \\
+f_{Y|X} & = \frac{f_{X, Y}}{f_X}   \;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\; \text{|} \times y\\
+f_{Y|X}y & = \frac{f_{X, Y}}{f_X}y \;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\; \text{| taking the integral}\\
+E[X|Y] & = \int \frac{f_{X, Y}}{f_X}ydy
+\end{split}
+\end{equation}
+Whereas for $\hat{f}_{x, y}$, we can use a product kernel. This formula 
+simplifies quite a bit and yields the Nadaraja-Watson Kernel, which
+is essentially just a weighted mean of response values.
+$$\hat{m}(x) = \frac{\sum\limits_{i = 1}^n K\Big(\frac{x-X_i}{h}\Big)Y_i}{\sum\limits_{i = 1}^nK\Big(\frac{x-X_i}{h}\Big)} = \frac{\sum\mathcal{w}_i Y_i}{\sum\mathcal{w}_i} = \sum\limits_{i = 1}^n \tilde{\mathcal{w}}_i Y_i = \tilde{\mathbf{w}}(x_i)'\mathbf{Y}$$
+The weights $\tilde{\mathcal{w}}_i$ are normalized weights, i.e. 
+$\tilde{\mathcal{w}}_i = \mathcal{w}_i / \sum\limits_{k = 1}^n \mathcal{w}_k$
+
+### Alternative Interpretation
+It can be easily shown that the solution corresponds to the following minimization
+problem:
+$$ \arg\min\limits_{m_x} \sum\limits_{i = 1}^nK\Big(\frac{x-X_i}{h}\Big)\big(Y_i-m_x\big)^2 $$
+
+We can interpret this as a weighted (local) regression. For a given
+$x$, search for the best local constant $m_x$ that minimizes the 
+weighted residual sum of squares the most. Residuals of data points close to 
+$x$ get a high value in this sum (via the kernel).
+
+### The Bandwidth
+The bandwidth parameter $h$ has a similar role as in non-parametric density 
+estimation. Large $h$ implies very smooth functions, low variance, high bias.
+Small $h$ on the other hand imply (more) erratic functions, high variance, 
+low bias.
+
+An interesting case is $h \rightarrow \infty$, for which all weights become 
+equal. This corresponds to an estimator $m(x) = \bar{y}$, with one degree of 
+freedom (see below). 
+
+
+### Hat Matrix
+As in chapter 1, we can also obtain a smoother matrix $S$ that maps the 
+observed response values to the fitted values.
+From above, we have:
+$$y_i = \tilde{\mathbf{w}}(x_i)'\mathbf{Y}$$
+
+
+$$\mathbf{\hat{Y}} = \mathcal{S} \mathbf{Y} = 
+\begin{pmatrix}\hat{y}_1 \\\vdots\\\hat{y}_n\end{pmatrix} =
+\begin{pmatrix}\tilde{\mathbf{w}}(x_1)'\\\vdots\\\tilde{\mathbf{w}}(x_n)'\end{pmatrix} 
+\times \begin{pmatrix}y_1 \\\vdots\\y_n\end{pmatrix}$$
+Where $\tilde{\mathbf{w}}(x_1)'$ is a row vector of length $n$ with the
+normalized kernel weights.
+
+** here: How to compute S and why**
+
+### Degrees of Freedom
+Note that we need a different measurement of degrees of freedom than 
+we used in the *parametric* case in chapter 1, where the degrees of freedom 
+simply corresponded to the number of parameters used. As this is non-parametric
+regression, we don't have parameters and hence cant sum up the number of 
+parameters to calculate the degree of freedom. Recall from chapter 1 that 
+the trace of the smoothing matrix was equal to the number of parameters used:
+$$tr(P) = \textbf{tr}(X(X'X)^{-1}X') = \textbf{tr}((X'X)^{-1}X'X) = \textbf{tr}(I_{p\times p}) = p$$
+Hence, we can generalize the concept of degrees of freedom from number of 
+parameters to the trace of the smoother matrix. For regression, the two 
+coincide, for non-parametric methods, we get an estimate of the degrees of 
+freedom only via the trace.
+
+Degrees of freedom are essential to compare two smoothing methods with regard
+to their flexibility.
+
+### Inference 
+
+As with parametric regression, we want to do inference. Not on any parameters
+(since there are none), but on the fitted values. First and foremost, we want to
+obtain confidence intervals for the regression, that is, obtaining lower 
+and upper bounds of the confidence internal
+
+$$ I_i = \hat{m}(x_i) ± 1.96 *\hat{sd(m(x))} $$
+We know already how to obtain $\hat{m}(x)$, now we need to find the standard
+deviation of the fitted values.
+
+From the fundamental equation $Cov(\mathbf{A}x) = \mathbf{A} Cov(x) \mathbf{A}'$,
+we get
+$$ \text{Cov}(\hat{m}(x)) = \text{Cov}(\mathcal{S}\mathbf{y}) = 
+\mathcal{S} \text{Cov}(y) \mathcal{S}' = \sigma_\epsilon^2\mathcal{SS}'$$ 
+Because in regression $\text{Cov}(y) = \text{Cov}(\epsilon)$
+
+Now, we only need to estimate $\sigma^2_\epsilon$. Using the generalized 
+method to compute degrees of freedom, we can use the following estimator:
+
+$$ \hat{\sigma}_\epsilon^2 = \frac{1}{n-\textbf{tr}(\mathcal{S})}\sum\limits_{i = 1}^n (Y_i - \hat{m}(x_i))^2$$
+

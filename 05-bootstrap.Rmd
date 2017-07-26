@@ -13,7 +13,7 @@ $$ \hat{\theta} = g(Z_1, ..., Z_n) $$
 $g(\cdot)$ can be a point estimator for a regression coefficient, a 
 non-parametric curve estimator or a generalization error estimator based on 
 one new observation, e.g.
-$$ \hat{\theta}_{n+1} = g(Z_1, ..., Z_{n}, Z_{new}) = (Y_{new} - m_{Z_1, ..., Z_{n}}(X_{new})^2 $$
+$$ \hat{\theta}_{n+1} = g(Z_1, ..., Z_{n}, Z_{new}) = (Y_{new} - m_{Z_1, ..., Z_{n}}(X_{new}))^2 $$
 To make inference, we want to know the distribution of $\hat{\theta}$. For some
 cases, we can derive the distribution analytically if we know the distribution
 $P$. The central limit theorem states that the sum of random variables 
@@ -36,9 +36,10 @@ each draw.
 
 The problem is that we don't know $P$. But we have a data sample
 that was generated from $P$. Hence, we can instead take the **empirical** 
-distribution $\hat{P}$that places probability mass of $1/n$ on each observation, draw a
-sample from this distribution (which is simply drawing uniformly from our 
-sample with replacement) and compute our estimate of interest from this sample.
+distribution $\hat{P}$ that places probability mass of $1/n$ on each observation, draw a
+sample from this distribution (which is simply drawing uniformly at random from
+our sample with replacement) and compute our estimate of interest from this 
+sample.
 $$ \hat{\theta}^{*} = g({Z_1}^{*}, ..., {Z_{new}}^{*})$$
 We can do that many times to get an approximate distribution for $\hat{\theta}$.
 A crucial assumption is that $\hat{P}$ reassembles $P$. If our data is not 

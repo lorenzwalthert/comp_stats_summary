@@ -21,7 +21,7 @@ perform as well with new data, that is, will not generalize well to other
 data sets, since we essentially modeled also a lot of noise. 
 To estimate the performance of an algorithm on a new sample, we introduce the 
 following notation:
-$$ l^{-1}\sum\limits_{i = 1}^l\rho(Y_{new, i}, \hat{g}(X_{new, l}))$$
+$$ l^{-1}\sum\limits_{i = 1}^l\rho(Y_{new, i}, \hat{g}(X_{new, i}))$$
 Where $\rho$ is a loss function to be evaluated on the new data points 
 $(Y_{new, 1}, ..., Y_{new, l})$ and the prediction made for 
 $(X_{new, 1}, ..., X_{new, l})$ with the function $\hat{g}$, which was estimated
@@ -48,7 +48,7 @@ one can imagine different loss-functions. For example the squared deviance from
 the *true* value is often used, i.e. 
 $$n^{-1}\sum\limits_{i = 1}^n\rho(Y_i, \hat{m}(X_i)) = n^{-1}\sum\limits_{i = 1}^n(Y_i - \hat{m}(X_i))^2$$ Hence, larger deviance is penalized over-proportionally.
 For classification, one often uses the zero-one error, i.e. 
-$$n^{-1}\sum\limits_{i = 1}^n1_{\hat{m}(X_i) = Y_i}$$
+$$n^{-1}\sum\limits_{i = 1}^n1_{\hat{m}(X_i) \neq Y_i}$$
 However, it might also be appropriate to use asymmetric loss functions if
 false negatives are worse than false positives (i.e. for cancer tests).
 
@@ -70,10 +70,11 @@ And use that as an approximation of the *generalization error*.
 
 ## K-fold Cross-Validation
 This method is best explained with a picture.
-```{r, out.width = "650px"}
+```{r, echo = FALSE, out.width = "650px"}
 knitr::include_graphics("figures/k_fold_cv.png")
 ```
-Here, one splits the data set into k equally sized folds. Then, the idea is
+
+Here, one splits the data set into k equally (or as equal as possible) sized folds. Then, the idea is
 to use all $k-1$ folds to build a model and the remaining fold to evaluate the 
 model. Then, we average the $k$ estimates of the generalization error. Or in 
 mathematical notation:
@@ -101,6 +102,8 @@ leave-d-out can be even smaller than for leave-one-out if $B < n$.
 
 ## Properties of the different schemes
 
+We can try to say something about both bias and variance of the cv schemes introduced above.
+
 * **leave-one-out** is an asymptotically **unbiased** estimator for the generalization 
   error and the true prediction. However, we use a sample size $n-1$ instead of 
   $n$, which causes a slight bias (meaning we have less data as we do in a real 
@@ -118,7 +121,7 @@ Leave-one-out cv score for some linear fitting procedures such as least squares
 or smoothing spline can be computed via a shortcut when our loss function is
 $\rho(y, \hat{y}) = |y-\hat{y}|^2$. In particular, we can compute the estimator
 for such a linear fitting procedure **once**, compute the linear fitting operator
-$S$, which satisfies $\mathbf{Y} = \mathbf{SY}$ and plug it in this formula:
+$S$, which satisfies $\mathbf{\hat{Y}} = \mathbf{SY}$ and plug it in this formula:
 $$n^{-1}\sum\limits_{i = 1}^n \Bigg(\frac{Y_i - \hat{m}(X_i)}{1-S_{ii}}\Bigg)^2$$
 Computing $\mathbf{S}$ requires $O(n)$ operations (see exercises).
 
@@ -135,7 +138,11 @@ Key concepts to do CV are
 
 * Do not split the data, split the indices of the data and work with them if 
   ever possible and subset the data. `sample()` is your friend.
-* use `purrr::map()` and friends to "loop" over data. 
+* use `purrr::map()`, `purrr::map_df()` and friends to "loop" over data. This is
+  preferred over base R `lapply` / `mapply` / `Map` since it has a more coherent 
+  argument structure (consistent argument positioning, no strange `MoreArgs` 
+  arguments, pipable etc.)
+* you can simplify structures with `purr::flatten_dbl()` and friends.
 * Always work with lists, never work with data frames of indices. The reason is
   that data frames have structural constrains (all columns must have same number
   of elements) that are not natural in some situations. For example, 
@@ -181,13 +188,13 @@ get_complement <- function(mat, n){
   map(mat, ~setdiff(1:n, .x))
 }
 
-get_k_fold <- function(k, n) {
+get_k_fold_test <- function(k, n) {
   step <- trunc(n/k)
   current <- list()
   for (i in (0:(k-1) * step + 1))  {
-    current <- append(current, list(
-      (i:(i+step-1))
-    )
+    current <- append(
+      current, 
+      list(i:(i+step-1))
     )
   }
   current
@@ -209,7 +216,7 @@ bs <- map2_dbl(test, train, ge_ridge, .data = ozone, lambda = 5)
 
 ##  ............................................................................
 ##  10-fold                                                                 ####
-test <- get_k_fold(10, n)
+test <- get_k_fold_test(10, n)
 train <- map(test, ~setdiff(1:n, .x))
 kfold <- map2_dbl(test, train, ge_ridge, .data = ozone, lambda = 5)
 
@@ -249,7 +256,7 @@ model that is within one standard error of the best model).
 ```{r}
 #' Given lambda, compute the test set error with k folds
 find_lambda_kfold_one <- function(lambda, k, n, .data, ...) {
-  x_test <- get_k_fold(k, n)
+  x_test <- get_k_fold_test(k, n)
   x_train  <- get_complement(x_test, n)
   map2_dbl(x_test, x_train, ge_ridge, lambda = lambda, .data = .data, ...) %>%
     mean()
