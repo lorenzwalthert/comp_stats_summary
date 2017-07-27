@@ -14,4 +14,8 @@ knitr::opts_chunk$set(cache = TRUE, message = FALSE)
 library("tidyverse")
 ```
 
-This is a summary of the class computational statistics at ETH Zurich.
+This is a summary (or rather rephrased version) of the class computational
+statistics at ETH Zurich, enriched with notes from the lecture, examples and R
+code. The main source is the
+[script](https://polybox.ethz.ch/index.php/s/q3NaRdR7K6Xrfkd/download) of the
+course.

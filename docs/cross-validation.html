@@ -115,11 +115,14 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html"><i class="fa fa-check"></i><b>4</b> Non-parametric Regression</a><ul>
-<li class="chapter" data-level="4.0.1" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#alternative-interpretation"><i class="fa fa-check"></i><b>4.0.1</b> Alternative Interpretation</a></li>
-<li class="chapter" data-level="4.0.2" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#the-bandwidth-1"><i class="fa fa-check"></i><b>4.0.2</b> The Bandwidth</a></li>
-<li class="chapter" data-level="4.0.3" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#hat-matrix"><i class="fa fa-check"></i><b>4.0.3</b> Hat Matrix</a></li>
-<li class="chapter" data-level="4.0.4" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#degrees-of-freedom"><i class="fa fa-check"></i><b>4.0.4</b> Degrees of Freedom</a></li>
-<li class="chapter" data-level="4.0.5" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#inference"><i class="fa fa-check"></i><b>4.0.5</b> Inference</a></li>
+<li class="chapter" data-level="4.1" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#alternative-interpretation"><i class="fa fa-check"></i><b>4.1</b> Alternative Interpretation</a></li>
+<li class="chapter" data-level="4.2" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#the-bandwidth-1"><i class="fa fa-check"></i><b>4.2</b> The Bandwidth</a></li>
+<li class="chapter" data-level="4.3" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#hat-matrix"><i class="fa fa-check"></i><b>4.3</b> Hat Matrix</a></li>
+<li class="chapter" data-level="4.4" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#degrees-of-freedom"><i class="fa fa-check"></i><b>4.4</b> Degrees of Freedom</a><ul>
+<li class="chapter" data-level="4.4.1" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#applications"><i class="fa fa-check"></i><b>4.4.1</b> Applications</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#inference"><i class="fa fa-check"></i><b>4.5</b> Inference</a></li>
+<li class="chapter" data-level="4.6" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#local-polynomial-estimator"><i class="fa fa-check"></i><b>4.6</b> Local Polynomial Estimator</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="cross-validation.html"><a href="cross-validation.html"><i class="fa fa-check"></i><b>5</b> Cross Validation</a><ul>
 <li class="chapter" data-level="5.1" data-path="cross-validation.html"><a href="cross-validation.html#motivation-and-core-idea"><i class="fa fa-check"></i><b>5.1</b> Motivation and Core Idea</a></li>
@@ -366,7 +369,7 @@ oob &lt;-<span class="st"> </span><span class="kw">map2_dbl</span>(test, train, 
 
 <span class="kw">ggplot</span>(out, <span class="kw">aes</span>(<span class="dt">y =</span> value, <span class="dt">x =</span> key)) +<span class="st"> </span>
 <span class="st">  </span><span class="kw">geom_boxplot</span>()</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 </div>
 <div id="parameter-tuning" class="section level3">
 <h3><span class="header-section-number">5.7.2</span> Parameter Tuning</h3>
@@ -392,7 +395,7 @@ find_lambda_kfold &lt;-<span class="st"> </span>function(seq, k, .data) {
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">find_lambda_kfold</span>(<span class="dt">seq =</span> <span class="kw">seq</span>(<span class="dv">5</span>, <span class="dv">30</span>, <span class="dt">by =</span> <span class="dv">3</span>), <span class="dv">100</span>, ozone) %&gt;%
 <span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> lambda, <span class="dt">y =</span> cv_score)) +<span class="st"> </span>
 <span class="st">  </span><span class="kw">geom_line</span>()</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <p>That looks reasonable. We could improve on that by also showing the distribution of the test set error at various lambadas. This could by done by altering <code>find_lambda_kfold_one()</code> to not return the mean, but also the upper and lower 95% confidence interval.</p>
 
 </div>

@@ -115,11 +115,14 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html"><i class="fa fa-check"></i><b>4</b> Non-parametric Regression</a><ul>
-<li class="chapter" data-level="4.0.1" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#alternative-interpretation"><i class="fa fa-check"></i><b>4.0.1</b> Alternative Interpretation</a></li>
-<li class="chapter" data-level="4.0.2" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#the-bandwidth-1"><i class="fa fa-check"></i><b>4.0.2</b> The Bandwidth</a></li>
-<li class="chapter" data-level="4.0.3" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#hat-matrix"><i class="fa fa-check"></i><b>4.0.3</b> Hat Matrix</a></li>
-<li class="chapter" data-level="4.0.4" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#degrees-of-freedom"><i class="fa fa-check"></i><b>4.0.4</b> Degrees of Freedom</a></li>
-<li class="chapter" data-level="4.0.5" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#inference"><i class="fa fa-check"></i><b>4.0.5</b> Inference</a></li>
+<li class="chapter" data-level="4.1" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#alternative-interpretation"><i class="fa fa-check"></i><b>4.1</b> Alternative Interpretation</a></li>
+<li class="chapter" data-level="4.2" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#the-bandwidth-1"><i class="fa fa-check"></i><b>4.2</b> The Bandwidth</a></li>
+<li class="chapter" data-level="4.3" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#hat-matrix"><i class="fa fa-check"></i><b>4.3</b> Hat Matrix</a></li>
+<li class="chapter" data-level="4.4" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#degrees-of-freedom"><i class="fa fa-check"></i><b>4.4</b> Degrees of Freedom</a><ul>
+<li class="chapter" data-level="4.4.1" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#applications"><i class="fa fa-check"></i><b>4.4.1</b> Applications</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#inference"><i class="fa fa-check"></i><b>4.5</b> Inference</a></li>
+<li class="chapter" data-level="4.6" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#local-polynomial-estimator"><i class="fa fa-check"></i><b>4.6</b> Local Polynomial Estimator</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="cross-validation.html"><a href="cross-validation.html"><i class="fa fa-check"></i><b>5</b> Cross Validation</a><ul>
 <li class="chapter" data-level="5.1" data-path="cross-validation.html"><a href="cross-validation.html#motivation-and-core-idea"><i class="fa fa-check"></i><b>5.1</b> Motivation and Core Idea</a></li>
@@ -252,7 +255,7 @@ fit &lt;-<span class="st"> </span>mgcv::<span class="kw">gam</span>(upo3 ~<span 
            <span class="dt">data =</span> ozone) 
 
 <span class="kw">plot</span>(fit, <span class="dt">pages =</span> <span class="dv">1</span>) </code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
 <p>You can see that vdht enters the model almost linearly. That is, with an increase of one unit of vdht, the predicted 03 value increases linearly. sbtp is different. Depending on the value of sbtp, the increase in the predicted value is different. Low sbtp values hardly have an impact on the response, higher values do.</p>
 
 </div>
@@ -306,7 +309,7 @@ sim2 &lt;-<span class="st"> </span>fitted %&gt;%<span class="st"> </span>
 <span class="kw">ggplot</span>(sim2) +<span class="st"> </span>
 <span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y)) +<span class="st"> </span>
 <span class="st">  </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> value, <span class="dt">color =</span> key)) </code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(fitted$nk3) </code></pre></div>
 <pre><code>## Call: earth(formula=y~x, data=sim, nk=3)
 ## 
@@ -404,7 +407,7 @@ all &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span cla
 
 
 <span class="kw">grid.arrange</span>(all, x1y)</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
 <p>How about using the aforementioned projection?</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data &lt;-<span class="st"> </span>data %&gt;%
 <span class="st">  </span><span class="kw">mutate</span>(
@@ -436,7 +439,7 @@ fitted &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span 
 <span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color =</span> fitted), <span class="dt">size =</span> <span class="dv">3</span>) +<span class="st"> </span>
 <span class="st">  </span><span class="kw">scale_color_gradient2</span>()
 <span class="kw">grid.arrange</span>(projected_all, projected_x1, projected_x2, fitted, <span class="dt">nrow =</span> <span class="dv">2</span>)</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
 <p>The bottom right picture shows the predictions with the projection pursuit approach, which resembles the original data pretty well. Again, the idea is to use an additive model to account for the interactions properly by first projecting the predictors optimally.</p>
 
 </div>
@@ -468,7 +471,7 @@ Figure 8.1: Partition with <code>rpart()</code>. Color indicate result of the ma
 <ul>
 <li>assume partitions that are <strong>axes parallel rectangles</strong>, just as depicted in the pictuer above. Note that this is a stronger limitation than just assuming linear (decision) boundaries since these boundaries also need to be parallel to the axis. For example, decision trees would not do well on a classification problem like this (unless there is a lot of data and we can have many splits:</li>
 </ul>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
 <ul>
 <li>we use a <strong>greedy</strong> algorithm since the space of possible partitioning schemes is still huge.</li>
 </ul>
@@ -504,7 +507,7 @@ Figure 8.1: Partition with <code>rpart()</code>. Color indicate result of the ma
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rpart::<span class="kw">prune</span>(tree, <span class="dt">cp =</span> <span class="fl">0.05</span>) %&gt;%<span class="st"> </span><span class="co"># prune tree for illustrative purposes</span>
 rpart.plot::<span class="kw">prp</span>(<span class="dt">extra =</span> <span class="dv">1</span>,
     <span class="dt">box.col=</span><span class="kw">c</span>(<span class="st">&#39;pink&#39;</span>, <span class="st">&#39;palegreen3&#39;</span>, <span class="st">&#39;lightsteelblue 2&#39;</span>,<span class="st">&#39;lightgoldenrod 1&#39;</span>)[tree$frame$yval])</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-32-1.png" width="650px" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-33-1.png" width="650px" /></p>
 The idea is now to subsequently remove the leaves from the tree such that the negative log-likeihood increases the least. If we do that until no leaf is left, we end up with a sequence of trees.
 <span class="math display" id="eq:treeset">\[\begin{equation}
 \mathcal{T}_M \supset \mathcal{T}_{M-1} \;\;...\;\;\supset \mathcal{T}_{\emptyset}
@@ -514,7 +517,7 @@ The idea is now to subsequently remove the leaves from the tree such that the ne
 <p><span class="math display">\[R_{\alpha}(\mathcal{T}) = R(\mathcal{T}) + \alpha \times \text{size}(\mathcal{T})\]</span></p>
 <p>Now, we only need to find the right alpha. We can set a few alpha values, then find the best tree for this alpha <span class="math inline">\(\mathcal{T}(\alpha) = \arg\min\limits_{\mathcal{T} \subset \mathcal{T}_M}R_{\alpha}(\mathcal{T})\)</span> and then do cross-validation for these alpha values to find the optimal alpha. It can be shown that the set <span class="math inline">\(\{\mathcal{T}(\alpha)| \alpha \in (0, \infty]\}\)</span> is <em>nested</em> and the same or a subeset of the set in equation <a href="flexible-regression-and-classification-methods.html#eq:treeset">(8.1)</a>. Use <code>rpart::plotcp()</code> to plot the size of the optimal trees for each alpha against the cross-validation score. Then, use the one-standard error rule to select the idal tree size. That is first find the tree with the lowest relative error. Then add one standard error to it’s error and find the smallest tree that does not execced this relative error. The idea behind this approach is to choose good model that performs similar to the best (and potentially complex) model but is as simple as possible.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rpart::<span class="kw">plotcp</span>(tree)</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-33-1.png" width="650px" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-34-1.png" width="650px" /></p>
 </div>
 <div id="pros-and-cons-of-trees" class="section level3">
 <h3><span class="header-section-number">8.5.5</span> Pros and Cons of Trees</h3>
