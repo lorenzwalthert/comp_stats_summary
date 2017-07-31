@@ -52,7 +52,7 @@ $$n^{-1}\sum\limits_{i = 1}^n1_{\hat{m}(X_i) \neq Y_i}$$
 However, it might also be appropriate to use asymmetric loss functions if
 false negatives are worse than false positives (i.e. for cancer tests).
 
-## Implementation
+## Implementations
 
 There are different ways to do cross validation while adhering to the principles
 introduced above.
@@ -130,9 +130,27 @@ $\mathbf{S}$ so there is also a quantity called generalized cross validation
 (which is a misleading terminology), 
 which coincides with the formula above in certain cases.
 
-## Examples
 
-### Practical CV in R
+## Isolation of each cross validation sample
+
+Note that it is very important to re-estimate all parameters relevant for the
+cross validation within every sample. Otherwise, our estimates will be too
+optimistic. This problem was mentioned in the exercise series 10.
+Specifically, the taks was to train a tree algorithm. For every sample, we had
+to determine the optimal cp individually (via cross validation in the cross
+validation so to speak). Why not using the cp estimated from the whole data
+set? Because then, we would use information from samples other than the
+current cv batch and then evaluating the performance of the model based on the
+cv batch and the *global* parameter to evaluate our model performance. This
+contradicts the idea of cross validation and is similar to using the training
+sample to estimate the performance of a model. 
+
+## Examples with R
+
+In the remainder of this chapter, we will discuss the two important applications
+of cross validation: Estimation of the GE and parameter tuning.
+
+### Application 1: Estimating the generalization error
 
 Key concepts to do CV are
 
@@ -150,6 +168,8 @@ Key concepts to do CV are
   training set, but not in the test set. 
 * In conjunction with `sample()`, you can use `purrr::rerun` or `replicate` to
   create lists of indices.
+* To get *the other part of the sample*, you can use negative indices or 
+  `setdiff()`.
 * use helper function to solve "the small problems in the big problem".
 
 Let's first declare our functions.
@@ -238,7 +258,7 @@ ggplot(out, aes(y = value, x = key)) +
 ```
 
 
-### Parameter Tuning
+### Application 2: Parameter Tuning
 We want to use the scheme k-fold cross validation for parameter tuning with a
 lasso. We first calculate the test set error for *one* value of lamda (as we
 did above). Then, change the value of lamda and recompute the model and then
