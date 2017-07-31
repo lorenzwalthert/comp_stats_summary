@@ -25,7 +25,7 @@ And it is similar neural nets because
   index since you will have just one ouput layer.] we don't make any assumption
   on the form of the function, that is, let $f_k$ be fully non-parametric.
 
-Probably fot that very reason, the model requires much smaller $q$ than a neural
+Probably for that very reason, the model requires much smaller $q$ than a neural
 net requires hidden units, at the expense of estimating the ridge functions 
 (which is not necessary for neural nets).
 
@@ -43,14 +43,14 @@ arbitrary *smooth* functions $f_k$, we can easily fit the quadratic terms in the
 equation above, so the problem to solve becomes
 $$Y = \mu + f_1(X_1 + X_2) - f_2(X_1 - X_2)$$
 Therefore, the remaining question is how can we choose the two vectors
-$\mathbf{\alpha}_1$ and $\mathbf{\alpha}_1$ such that the result of the projection
+$\mathbf{\alpha}_1$ and $\mathbf{\alpha}_2$ such that the result of the projection
 is $X_1 + X_2 \;\text{and}\;X_1 - X_2$.
 With the restriction $|\alpha| = 1$, it turns out we can proceed as follows:
-We project the first predictor onto $(\alpha_{11}, \alpha_{12}) = (0.7, 0.7)$
-and the second predictor onto $(\alpha_{11}, \alpha_{12}) = (0.7, -0.7)$. This
+We first project predictor onto $(\alpha_{11}, \alpha_{12}) = (0.7, 0.7)$
+and then onto $(\alpha_{11}, \alpha_{12}) = (0.7, -0.7)$. This
 yields $0.7(X_1 + X_2)$ and $0.7(X_1 - X_2)$.
 
-Let's implement that with R
+Let's implement that in R
 ```{r}
 data <- data_frame(
   x1 = runif(500, -1, 1),
@@ -62,8 +62,6 @@ all <- ggplot(data, aes(x = x1, y = x2)) +
   scale_color_gradient2()
 ```
 
-We can see the obvious pattern, but we can also see that an additive model would 
-not do well on that.
 ```{r}
 x1y <- ggplot(data, aes(x = x1, y = y)) + 
   geom_point(aes(color = y), size = 3) + 
@@ -73,6 +71,8 @@ x1y <- ggplot(data, aes(x = x1, y = y)) +
 
 grid.arrange(all, x1y)
 ```
+We can see the obvious pattern, but we can also see that an additive model would 
+not do well on that.
 
 How about using the aforementioned projection?
 

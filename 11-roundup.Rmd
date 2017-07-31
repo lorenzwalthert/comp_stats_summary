@@ -1,0 +1,83 @@
+# Round up
+
+This chapter consists of some thoughts I considered relevant for this course 
+but which did not seem to fit well in any of the other chapters.
+
+## Comparing models
+
+The package plotmo provides nice functionality to plot diffent classes of models. 
+We use it to compare a few models introduced in the previous chapters:
+```{r, echo = FALSE, out.width = "650px"}
+knitr::include_graphics("figures/plotmo.png")
+```
+
+```{r, echo = FALSE, eval = FALSE}
+
+##  ............................................................................
+library("earth") # for ozone1 data
+data(ozone1)
+oz <- ozone1[, c("O3", "humidity", "temp", "ibt")]
+lm.mod <- lm(O3 ~ humidity + temp*ibt, data=oz)
+plotmo(lm.mod)
+library(rpart)
+rpart.mod <- rpart(O3 ~ ., data=oz)
+plotmo(rpart.mod)
+library("randomForest")
+rf.mod <- randomForest(O3 ~ ., data=oz)
+plotmo(rf.mod)
+
+##  ............................................................................
+
+library("gbm")                                              
+gbm.mod <- gbm(O3 ~ ., data=oz, dist="gaussian", inter=2, n.trees=1000)
+plotmo(gbm.mod)
+
+
+##  ............................................................................
+
+library("gam")
+gam.mod <- gam(O3 ~ s(humidity) + s(temp) + s(ibt), data=oz)
+plotmo(gam.mod, all2=TRUE)
+library("nnet")
+set.seed(4)
+nnet.mod <- nnet(O3 ~ ., data=scale(oz), size=2, decay=0.01, trace=FALSE)
+plotmo(nnet.mod, type="raw", all2=T)  # type="raw" gets passed to predict
+```
+
+I think this graph is a nice summary of what we leared in this course. We can 
+characterize the models by:
+
+- **How smooth the fitted surface is**. Linear models are smooth by nature (if there
+  are no dummy variables involved), random forest (rpart) are just piecewise
+  constant. Random forest are smoother than trees because they are aggregated
+  trees. Ignore gbm for now and note that neural nets are also rather smooth.
+- **How flexible they are**: Linear models are not very flexible, gams are only 
+  additive, so no interaction effects, trees can have interaction effects, 
+  so do random forests.
+
+This is a rough classification, but it grasps the general pattern.
+
+## Exercises Take-aways
+
+**Creating Formulas**
+Task (Series 11): Generate a R-formula for a cubic penalized regression model 
+that accounts for all 3-way interactions.
+
+From `?formula` 
+
+> The ^ operator indicates crossing to the specified degree. For example 
+> (a+b+c)^2 is identical to (a+b+c)*(a+b+c) which in turn expands to a formula 
+> containing the main effects for a, b and c together with their second-order 
+> interactions.
+
+```{r, eval = FALSE}
+library(sfsmisc)
+formula <- wrapFormula(
+  logO3 ~., 
+  data = data, 
+  wrapString = "poly(*, degree = 3" # polynomial
+) 
+update(formula, logO3 ~ .^3) # three way interaction
+
+```
+

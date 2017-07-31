@@ -32,8 +32,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   
   
-<link rel="prev" href="cross-validation.html">
-<link rel="next" href="classification.html">
+<link rel="prev" href="bagging-and-boosting.html">
+<link rel="next" href="intro.html">
 
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -228,139 +228,33 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="bootstrap" class="section level1">
-<h1><span class="header-section-number">Chapter 6</span> Bootstrap</h1>
+<div id="round-up" class="section level1">
+<h1><span class="header-section-number">Chapter 11</span> Round up</h1>
+<p>This chapter consists of some thoughts I considered relevant for this course but which did not seem to fit well in any of the other chapters.</p>
+<div id="comparing-models" class="section level2">
+<h2><span class="header-section-number">11.1</span> Comparing models</h2>
+<p>The package plotmo provides nice functionality to plot diffent classes of models. We use it to compare a few models introduced in the previous chapters: <img src="figures/plotmo.png" width="650px" /></p>
+<p>I think this graph is a nice summary of what we leared in this course. We can characterize the models by:</p>
 <ul>
-<li>Bootstrap can be summarized as “simulating from an estimated model”</li>
-<li>It is used for inference (confidence intervals / hypothesis testing)</li>
-<li>It can also be used for estimating the predictive power of a model (similarly to cross validation) via out-of-bootstrap generalization error</li>
+<li><strong>How smooth the fitted surface is</strong>. Linear models are smooth by nature (if there are no dummy variables involved), random forest (rpart) are just piecewise constant. Random forest are smoother than trees because they are aggregated trees. Ignore gbm for now and note that neural nets are also rather smooth.</li>
+<li><strong>How flexible they are</strong>: Linear models are not very flexible, gams are only additive, so no interaction effects, trees can have interaction effects, so do random forests.</li>
 </ul>
-<div id="motivation" class="section level2">
-<h2><span class="header-section-number">6.1</span> Motivation</h2>
-<p>Consider i.i.d. data. <span class="math display">\[ Z_1, .. Z_n \sim\ P \;\; with \; \;Z_i = (X_i, Y_i)\]</span> And assume a statistical procedure <span class="math display">\[ \hat{\theta} = g(Z_1, ..., Z_n) \]</span> <span class="math inline">\(g(\cdot)\)</span> can be a point estimator for a regression coefficient, a non-parametric curve estimator or a generalization error estimator based on one new observation, e.g. <span class="math display">\[ \hat{\theta}_{n+1} = g(Z_1, ..., Z_{n}, Z_{new}) = (Y_{new} - m_{Z_1, ..., Z_{n}}(X_{new}))^2 \]</span> To make inference, we want to know the distribution of <span class="math inline">\(\hat{\theta}\)</span>. For some cases, we can derive the distribution analytically if we know the distribution <span class="math inline">\(P\)</span>. The central limit theorem states that the sum of random variables approximates a normal distribution with <span class="math inline">\(n \rightarrow \infty\)</span>. Therefore, we know that the an estimator for the mean of the random variables follows the normal distribution. <span class="math display">\[ \hat{\theta}_{n} = n^{-1}\sum x_i \sim N(\mu_x, \sigma_x^2 / n) \; \; \; n \rightarrow \infty \]</span> for <em>any</em> <span class="math inline">\(P\)</span>. However, if <span class="math inline">\(\hat{\theta}\)</span> does not involve the sum of random variables, and the CLT does not apply, it’s not as straightforward to obtain the distribution of <span class="math inline">\(\hat{\theta}\)</span>. Also, if <span class="math inline">\(P\)</span> is not the normal distribution, but some other distribution, we can’t find the distribution of <span class="math inline">\(\hat{\theta}\)</span> easily. The script mentions the median estimator as an example for which the variance already depends on the density of <span class="math inline">\(P\)</span>. Hence, deriving properties of estimators analytically, even the asymptotic ones only, is a pain. Therefore, if we knew <span class="math inline">\(P\)</span>, we could simply simulate many times and get the distribution of <span class="math inline">\(\hat{\theta}\)</span> this way. That is, draw many <span class="math inline">\(({X_i}^*, {Y_i}^*)\)</span> from that distribution and compute <span class="math inline">\(\hat{\theta}\)</span> for each draw.</p>
-<p>The problem is that we don’t know <span class="math inline">\(P\)</span>. But we have a data sample that was generated from <span class="math inline">\(P\)</span>. Hence, we can instead take the <strong>empirical</strong> distribution <span class="math inline">\(\hat{P}\)</span> that places probability mass of <span class="math inline">\(1/n\)</span> on each observation, draw a sample from this distribution (which is simply drawing uniformly at random from our sample with replacement) and compute our estimate of interest from this sample. <span class="math display">\[ \hat{\theta}^{*} = g({Z_1}^{*}, ..., {Z_{new}}^{*})\]</span> We can do that many times to get an approximate distribution for <span class="math inline">\(\hat{\theta}\)</span>. A crucial assumption is that <span class="math inline">\(\hat{P}\)</span> reassembles <span class="math inline">\(P\)</span>. If our data is not i.i.d, this may not be the case and hence bootstrapping might be misleading. Below, we can see that i.i.d. sampling (red line) reassembles the true distribution (black line) quite well, whereas biased sampling (blue line) obviously does not. We produce a sample that places higher probability mass on the large (absolute) values.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;tidyverse&quot;</span>)
-pop &lt;-<span class="st"> </span><span class="kw">data_frame</span>(<span class="dt">pop =</span> <span class="kw">rnorm</span>(<span class="dv">10000</span>) *<span class="st"> </span><span class="dv">1</span>:<span class="dv">10000</span>) 
-iid &lt;-<span class="st"> </span><span class="kw">sample</span>(pop$pop, <span class="dv">1000</span>) <span class="co"># sample iid</span>
-
-<span class="co"># sample non-iid: sample is biased towards high absolute values</span>
-ind &lt;-<span class="st"> </span><span class="kw">rbinom</span>(<span class="dv">10000</span>, <span class="dt">size =</span> <span class="dv">1</span>, <span class="dt">prob =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dt">length.out =</span> <span class="dv">10000</span>)) 
-not_iid &lt;-<span class="st"> </span>pop$pop[<span class="kw">as.logical</span>(ind)] <span class="co"># get sample</span>
-not_iid &lt;-<span class="st"> </span><span class="kw">sample</span>(not_iid, <span class="dv">1000</span>) <span class="co"># reduce sample size to 1000</span>
-
-out &lt;-<span class="st"> </span><span class="kw">data_frame</span>(<span class="dt">iid =</span> iid, <span class="dt">not_iid =</span> not_iid) %&gt;%
-<span class="st">  </span><span class="kw">gather</span>(type, value, iid, not_iid)
-<span class="kw">ggplot</span>(out, <span class="kw">aes</span>(<span class="dt">x =</span> value, <span class="dt">color =</span> type)) +<span class="st"> </span>
-<span class="st">  </span><span class="kw">geom_density</span>() +<span class="st"> </span>
-<span class="st">  </span><span class="kw">geom_density</span>(<span class="kw">aes</span>(<span class="dt">x =</span> pop, <span class="dt">color =</span> <span class="ot">NULL</span>), <span class="dt">data =</span> pop)</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
-<p>We can summarize the bootstrap procedure as follows.</p>
-<ul>
-<li>draw a bootstrap sample <span class="math inline">\({Z_1}^{*}, ..., {Z_{n}}^{*}\)</span></li>
-<li>compute your estimator <span class="math inline">\({\hat{\theta}}^*\)</span> based on that sample.</li>
-<li>repeat the first two steps <span class="math inline">\(B\)</span> times to get bootstrap estimators <span class="math inline">\({\hat{\theta}_1}^*, ..., {\hat{\theta}_B}^*\)</span> and therefore an estimate of the distribution of <span class="math inline">\(\hat{\theta}\)</span>.</li>
-</ul>
-<p>Use the <span class="math inline">\(B\)</span> estimated bootstrap estimators as approximations for the bootstrap expectation, quantiles and so on. <span class="math inline">\(\mathbb{E}[\hat{\theta}^*_n] \approx B^{-1}\sum\limits_{j = 1}^n \hat{\theta}^{* j}_n\)</span></p>
+<p>This is a rough classification, but it grasps the general pattern.</p>
 </div>
-<div id="the-bootstrap-distribution" class="section level2">
-<h2><span class="header-section-number">6.2</span> The Bootstrap Distribution</h2>
-<p>With <span class="math inline">\(P^*\)</span>, we denote the bootstrap distribution, which is the conditional probability distribution introduced by sampling i.i.d. from the empirical distribution <span class="math inline">\(\hat{P}\)</span>. Hence, <span class="math inline">\(P^*\)</span> of <span class="math inline">\({\hat{\theta}}^*\)</span> is the distribution that arises from sampling i.i.d. from <span class="math inline">\(\hat{P}\)</span> and applying the transformation <span class="math inline">\(g(\cdot)\)</span> to the data. Conditioning on the data allows us to treat <span class="math inline">\(\hat{P}\)</span> as fixed.</p>
-</div>
-<div id="bootstrap-consistency" class="section level2">
-<h2><span class="header-section-number">6.3</span> Bootstrap Consistency</h2>
-<p>The bootstrap is is called consistent if <span class="math display">\[ \mathbb{P}[a_n(\hat{\theta} - \theta) \leq x ] - \mathbb{P}[a_n(\hat{\theta}^* - \hat{\theta}) \leq x ] \rightarrow 0 \;\; (n \rightarrow \infty)\]</span> Consistency of the bootstrap typically holds if the limiting distribution is normal and the samples <span class="math inline">\(Z_1, .., Z_n\)</span> are i.i.d. Consistency of the bootstrap implies consistent variance and bias estimation:</p>
-<p><span class="math display">\[ \frac{Var^* (\hat{\theta}^*)}{Var(\hat{\theta})} \rightarrow 1\]</span> <span class="math display">\[ \frac{\mathbb{E}^* (\hat{\theta}^*) - \hat{\theta}}{\mathbb{E}(\hat{\theta}) - \theta} \rightarrow 1\]</span> You can think of <span class="math inline">\(\theta\)</span> as the real parameter and <span class="math inline">\(\hat{\theta}\)</span> as the estimate based on a sample. Similarly, in the bootstrap world, <span class="math inline">\(\hat{\theta}\)</span> is the <em>real</em> parameter, and <span class="math inline">\(\hat{\theta}^*_i\)</span> as an estimator of the <em>real</em> parameter <span class="math inline">\(\hat{\theta}\)</span>. The bootstrap world is an analogue of the real world. So in our bootstrap simulation, we know the <em>true</em> parameter <span class="math inline">\(\hat{\theta}\)</span>. From our simulation, we get many <span class="math inline">\(\hat{\theta}^*_i\)</span> and can find the bootstrap expectation <span class="math inline">\(\mathbb{E}[\hat{\theta}^*_n] \approx B^{-1}\sum\limits_{j = 1}^n \hat{\theta}^{* j}_n\)</span>. The idea is now to generalize from the <em>boostrap</em> world to the <em>real</em> world, i.e. by saying that the relationship between <span class="math inline">\(\hat{\theta}^*\)</span> and <span class="math inline">\(\hat{\theta}\)</span> is similar to the one between <span class="math inline">\(\hat{\theta}\)</span> and <span class="math inline">\(\theta\)</span>.</p>
-<p>A simple trick to remember all of this is:</p>
-<ul>
-<li>if there is no hat, add one</li>
-<li>if there is a hat, add a star.</li>
-</ul>
-</div>
-<div id="boostrap-confidence-intervals" class="section level2">
-<h2><span class="header-section-number">6.4</span> Boostrap Confidence Intervals</h2>
-<p><img src="figures/pivot_ci.png" width="579" /></p>
-<p>Note that there confidence intervals are not simply taking the quantiles of the bootstrap distribution. The trick is really to make use of the analogy between the <em>real</em> world and the <em>boostrap</em> world. So when we see our bootstrap expectation <span class="math inline">\(\mathbb{E}[\hat{\theta}^*_n]\)</span> is way higher than <span class="math inline">\(\hat{\theta}\)</span>, then we also should believe that our <span class="math inline">\(\hat{\theta}\)</span> is higher than <span class="math inline">\(\theta\)</span>. The above procedure accounts for that.</p>
-</div>
-<div id="boostrap-estimator-of-the-generalization-error" class="section level2">
-<h2><span class="header-section-number">6.5</span> Boostrap Estimator of the Generalization Error</h2>
-<p>We can also use the bootstrap to estimate the generalization error. <span class="math display">\[ \mathbb{E}[\rho(Y_{new}, m^*(X_{new}))] \]</span></p>
-<ul>
-<li>We draw a sample <span class="math inline">\(({Z_1}^*, ..., {Z_n}^*, Z_{new})\)</span> from <span class="math inline">\(\hat{P}\)</span></li>
-<li>We compute the bootstrapped estimator <span class="math inline">\({m(\cdot)}^*\)</span> based on the sample</li>
-<li>We estimate <span class="math inline">\(\mathbb{E}[\rho(Y_{new}, {m^*(X_{new})}^*)]\)</span>, which is with respect to both training and test data.</li>
-</ul>
-<p>We can rewrite the generalization error as follows: <span class="math display">\[ \mathbb{E}[\rho(Y_{new}, m^*({X_{new}}^*))] = \mathbb{E}_{train}[E_{test}[\rho({Y_{new}}^*, m^*({X_{new}}^*))| train]]\]</span> Conditioning on the training data in the inner expectation, <span class="math inline">\(m(\cdot)\)</span> is non-random / fixed. The only random component is <span class="math inline">\({Y_{new}}^*\)</span>. Since we draw from the empirical distribution and place a probability mass of <span class="math inline">\(1/n\)</span> on every data point. we can calculate the inner (discrete) expectation easily via <span class="math inline">\(\mathbb{E}(X) = \sum\limits_{j = 1}^n p_j * x_j = n^{-1} \sum\limits_{j = 1}^n x_j\)</span>. The expectation becomes <span class="math display">\[ \mathbb{E}_{train}[n^{-1}\sum\rho(Y_{i}, m^*(X_{i}))] =  n^{-1}\sum\mathbb{E}[\rho(Y_{i}, m^*(X_{i}))]\]</span></p>
-<p>We can see that there is no need to draw <span class="math inline">\(Z_{new}\)</span> from the data. The final algorithm looks as follows:</p>
-<ul>
-<li>Draw <span class="math inline">\(({Z_1}^*, ..., {Z_n}^*)\)</span></li>
-<li>compute bootstrap estimator <span class="math inline">\({\hat{\theta}}^*\)</span></li>
-<li>Evaluate this estimator on all data points and average over them, i.e <span class="math inline">\(err^* = n^{-1} \sum \rho(Y_i, m^*(X_i))\)</span></li>
-<li>Repeat steps above B times and average all error estimates to get the bootstrap GE estimate, i.e. <span class="math inline">\(GE^* = B^{-1} \sum {err_i}^*\)</span></li>
-</ul>
-</div>
-<div id="out-of-boostrap-sample-for-estimating-the-ge" class="section level2">
-<h2><span class="header-section-number">6.6</span> Out-of-Boostrap sample for estimating the GE</h2>
-<p>One can criticize the GE estimate above because some samples are used in the <strong>test as well as in the training set</strong>. This leads to <strong>over-optimistic estimations</strong> and can be avoided by using the out-of-bootstrap approach. With this technique, we first generate a bootstrap sample to compute our estimator and then use the remaining observations not used in the bootstrap sample to evaluate the estimator. We do that <span class="math inline">\(B\)</span> times and the size of the test set may vary. You can see this as some kind of cross-validation with about 30% of the data used as the test set. The difference is that some observations were used multiple times in the training data, yielding a <strong>training set always of size n</strong> (instead of - for example <span class="math inline">\(n*0.9\)</span> for 10-fold-CV).</p>
-</div>
-<div id="double-boostrap-confidence-intervals" class="section level2">
-<h2><span class="header-section-number">6.7</span> Double Boostrap Confidence Intervals</h2>
-<p>Confidence intervals are almost never exact, meaning that <span class="math display">\[\mathbb{P}[\theta \in I^{**}(1-\alpha)] = 1-\alpha + \Delta\]</span> Where <span class="math inline">\(I^{**}(1-\alpha)\)</span> is a <span class="math inline">\(\alpha\)</span>-confidence interval. However, by changing the <em>nominal</em> coverage of the confidence interval, it is possible to make the actual coverage equal to an arbitrary value, i.e</p>
-<p><span class="math display">\[ \mathbb{P}[\theta \in I^{**}(1-\alpha&#39;)] = 1-\alpha\]</span> The problem is that <span class="math inline">\(\alpha&#39;\)</span> is unknown. But another level of bootstrap can be used to <strong>estimate</strong> <span class="math inline">\(\alpha\)</span>, denoted by <span class="math inline">\(\hat{\alpha}\)</span>, which typically achieves <span class="math display">\[\mathbb{P}[\theta \in I^{**}(1-\hat{\alpha}&#39;)] = 1- \alpha + \Delta&#39;\]</span> with <span class="math inline">\(\Delta&#39; &lt; \Delta\)</span></p>
-<p>To implement a double bootstrap confidence interval, proceed as follows:</p>
-<ol style="list-style-type: decimal">
-<li>Draw a bootstrap sample <span class="math inline">\(({Z_1}^*, ..., {Z_n}^*)\)</span>.
-<ol style="list-style-type: lower-alpha">
-<li>From this sample, draw B second-level bootstrap samples and compute the estimator of interest and <em>one</em> confidence interval <span class="math inline">\(I^{**}(1-\alpha)\)</span> based on B second-level bootstrap samples.</li>
-<li>evaluate whether <span class="math inline">\(\hat{\theta}\)</span> lays within the bootstrap confidence interval from a. <span class="math inline">\(cover^*(1-\alpha) = 1_{[\hat{\theta} \in I^{**}(1-\alpha)]}\)</span></li>
-</ol></li>
-<li>Repeat the above M times to get <span class="math inline">\(cover^{* 1}, ..., cover^{* M}\)</span> and hence approximate <span class="math inline">\(\mathbb{P}[\theta \in I^{**}(1-\alpha)]\)</span> with <span class="math display">\[ p^*(\alpha) = M^{-1} \sum\limits_{m = 1}^M cover^{* m}\]</span></li>
-<li>Vary <span class="math inline">\(\alpha\)</span> in all of the steps above to find <span class="math inline">\(\alpha&#39;\)</span> so that <span class="math inline">\(p^*(\alpha&#39;) = 1- \alpha\)</span></li>
-</ol>
-<p>Question here (see Google docs)</p>
-</div>
-<div id="three-versions-of-boostrap" class="section level2">
-<h2><span class="header-section-number">6.8</span> Three Versions of Boostrap</h2>
-<ul>
-<li>So far, we discussed the <strong>fully non-parametric</strong> bootstrap, which is simulating from the empirical distribution.</li>
-<li>On the other extreme of the scale, there is the <strong>parametric bootstrap</strong>.</li>
-<li>The middle way is the model-based bootstrap</li>
-</ul>
-<div id="non-parametric-regression-1" class="section level3">
-<h3><span class="header-section-number">6.8.1</span> Non-parametric Regression</h3>
-<p>We draw a bootstrap sample <span class="math inline">\(({Z_1}^*, ..., {Z_n}^*) \sim \hat{P}\)</span>, i.e. we sample from the <em>empirical distribution</em> data with replacement.</p>
-</div>
-<div id="parametric-boostrap" class="section level3">
-<h3><span class="header-section-number">6.8.2</span> Parametric Boostrap</h3>
-<p>Here, we assume the data are realizations from a <em>known</em> distribution <span class="math inline">\(P\)</span>, which is is determined up to some unknown parameter (vector) <span class="math inline">\(\theta\)</span>. That means we sample <span class="math inline">\((Z_1, ..., Z_n) \sim P_{\hat{\theta}}\)</span>. For example, take the following regression model <span class="math inline">\(y = X\beta + \epsilon\)</span> where we know the errors are Gaussian.</p>
-<ol style="list-style-type: decimal">
-<li>We can estimate our regression model, obtain residuals and compute the mean (which is zero) and the standard deviation of them.</li>
-<li>To generate a bootstrap sample, we simulate residuals <span class="math inline">\(\epsilon^*\)</span> from <span class="math inline">\(N(0, \hat{\mu})\)</span> and</li>
-<li>Add them to our observed data, i.e. we obtain <span class="math inline">\(({Y_1}^*, ..., {Y_n}^*)\)</span> from <span class="math inline">\(X\beta + \epsilon^*\)</span>. Hence, the final bootstrap sample we use is <span class="math inline">\((x_1, {Y_1}^*), ..., (x_1, {Y_n}^*))\)</span> where the <span class="math inline">\(x_i\)</span> are just the observed data.</li>
-<li>We can compute bootstrap estimates <span class="math inline">\(\hat{\beta}^*\)</span>, the bootstrap expectation <span class="math inline">\(\mathbb{E}^*[\beta*]\)</span> as well as confidence intervals for the regression coefficients or generalization errors just as shown in detail above. The difference is only <em>how</em> the bootstrap sample is obtained.</li>
-</ol>
-<p>Similarly, for time series data, we may assume an AR(p) model.</p>
-<ol style="list-style-type: decimal">
-<li>Initializing <span class="math inline">\({X_0}^*, ..., {X_{-p+1}}^*\)</span> with <span class="math inline">\(0\)</span>.</li>
-<li>Generate random noise <span class="math inline">\({\epsilon_1}^*, ..., {\epsilon_{n+m}}^*\)</span> according to <span class="math inline">\(P_{\hat{\theta}}\)</span>.</li>
-<li>Construct our time series <span class="math inline">\({X_t}^* = \sum\limits_{j = 1}^p \hat{\theta}{X_{t-j}}^* + {\epsilon_t}^*\)</span> <span class="math inline">\((X_1, ..., X_{n+m})\)</span></li>
-<li>Throw away the first <span class="math inline">\(M\)</span> observations that were used as fade-in.</li>
-<li>Proceed with the B bootstrap samples <span class="math inline">\(({X_1}^*, ..., {X_n}^*)\)</span> as outlined above for the non-parametric bootstrap to obtain coefficient estimates for <span class="math inline">\(\theta\)</span>, confidence intervals or estimating the generalization error of the model.</li>
-</ol>
-</div>
-<div id="model-based-bootstrap" class="section level3">
-<h3><span class="header-section-number">6.8.3</span> Model-Based Bootstrap</h3>
-<p>The middle way is the model based bootstrap. As with the parametric bootstrap, we assume to know the model, e.g. <span class="math inline">\(y = m(x) + \epsilon\)</span> (where <span class="math inline">\(m(\cdot)\)</span> might be a non-parametric curve estimator), but we do not make an assumption about the error distribution. Instead of generating <span class="math inline">\(\epsilon^*\)</span> from the known distribution with unknown parameters (<span class="math inline">\(\epsilon^* \sim P_{\hat{\theta}}\)</span>, as in the parametric bootstrap)), we draw them with replacement from the <em>empirical</em> distribution. To sum it up, these are the steps necessary:</p>
-<ol style="list-style-type: decimal">
-<li>Estimate <span class="math inline">\(\hat{m(\cdot)}\)</span> from all data.</li>
-<li>Simulate <span class="math inline">\({\epsilon_1}^*, ..., {\epsilon_n}^*\)</span> by drawing from <span class="math inline">\(\hat{P}\)</span> with replacement.</li>
-<li>Obtain <span class="math inline">\(({Y_1}^*, ..., {Y_n}^*)\)</span> from <span class="math inline">\(\hat{m}(x) + \epsilon^*\)</span>. As for the parametric bootstrap, the final bootstrap sample we use is <span class="math inline">\((x_1, {Y_1}^*), ..., (x_n, {Y_n}^*))\)</span> where the <span class="math inline">\(x_i\)</span> are just the observed data.</li>
-<li>Again, you can use the bootstrap samples as for the other two methods.</li>
-</ol>
-</div>
-</div>
-<div id="conclusion" class="section level2">
-<h2><span class="header-section-number">6.9</span> Conclusion</h2>
-<p>Which version of the bootstrap should I use? The answer is classical. If the parametric model fits the data very well, there is no need to estimate the distribution explicitly. Also, if there is very little data, it might be very difficult to estimate <span class="math inline">\(P\)</span>. On the other hand, the non-parametric bootstrap is less sensitive to model-misspecification and can deal with arbitrary distributions (? is that true?).</p>
+<div id="exercises-take-aways" class="section level2">
+<h2><span class="header-section-number">11.2</span> Exercises Take-aways</h2>
+<p><strong>Creating Formulas</strong> Task (Series 11): Generate a R-formula for a cubic penalized regression model that accounts for all 3-way interactions.</p>
+<p>From <code>?formula</code></p>
+<blockquote>
+<p>The ^ operator indicates crossing to the specified degree. For example (a+b+c)^2 is identical to (a+b+c)*(a+b+c) which in turn expands to a formula containing the main effects for a, b and c together with their second-order interactions.</p>
+</blockquote>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(sfsmisc)
+formula &lt;-<span class="st"> </span><span class="kw">wrapFormula</span>(
+  logO3 ~., 
+  <span class="dt">data =</span> data, 
+  <span class="dt">wrapString =</span> <span class="st">&quot;poly(*, degree = 3&quot;</span> <span class="co"># polynomial</span>
+) 
+<span class="kw">update</span>(formula, logO3 ~<span class="st"> </span>.^<span class="dv">3</span>) <span class="co"># three way interaction</span></code></pre></div>
 
 </div>
 </div>
@@ -369,8 +263,8 @@ out &lt;-<span class="st"> </span><span class="kw">data_frame</span>(<span class
           </div>
         </div>
       </div>
-<a href="cross-validation.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="classification.html" class="navigation navigation-next " aria-label="Next page""><i class="fa fa-angle-right"></i></a>
+<a href="bagging-and-boosting.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="intro.html" class="navigation navigation-next " aria-label="Next page""><i class="fa fa-angle-right"></i></a>
 
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/lunr.js"></script>

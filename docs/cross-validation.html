@@ -124,7 +124,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="5" data-path="cross-validation.html"><a href="cross-validation.html"><i class="fa fa-check"></i><b>5</b> Cross Validation</a><ul>
 <li class="chapter" data-level="5.1" data-path="cross-validation.html"><a href="cross-validation.html#motivation-and-core-idea"><i class="fa fa-check"></i><b>5.1</b> Motivation and Core Idea</a></li>
 <li class="chapter" data-level="5.2" data-path="cross-validation.html"><a href="cross-validation.html#loss-function"><i class="fa fa-check"></i><b>5.2</b> Loss Function</a></li>
-<li class="chapter" data-level="5.3" data-path="cross-validation.html"><a href="cross-validation.html#implementation"><i class="fa fa-check"></i><b>5.3</b> Implementation</a><ul>
+<li class="chapter" data-level="5.3" data-path="cross-validation.html"><a href="cross-validation.html#implementations"><i class="fa fa-check"></i><b>5.3</b> Implementations</a><ul>
 <li class="chapter" data-level="5.3.1" data-path="cross-validation.html"><a href="cross-validation.html#leave-one-out"><i class="fa fa-check"></i><b>5.3.1</b> Leave-one-out</a></li>
 </ul></li>
 <li class="chapter" data-level="5.4" data-path="cross-validation.html"><a href="cross-validation.html#k-fold-cross-validation"><i class="fa fa-check"></i><b>5.4</b> K-fold Cross-Validation</a><ul>
@@ -132,9 +132,10 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul></li>
 <li class="chapter" data-level="5.5" data-path="cross-validation.html"><a href="cross-validation.html#properties-of-the-different-schemes"><i class="fa fa-check"></i><b>5.5</b> Properties of the different schemes</a></li>
 <li class="chapter" data-level="5.6" data-path="cross-validation.html"><a href="cross-validation.html#shortcuts-for-some-linear-fitting-operators"><i class="fa fa-check"></i><b>5.6</b> Shortcuts for (some) linear fitting operators</a></li>
-<li class="chapter" data-level="5.7" data-path="cross-validation.html"><a href="cross-validation.html#examples"><i class="fa fa-check"></i><b>5.7</b> Examples</a><ul>
-<li class="chapter" data-level="5.7.1" data-path="cross-validation.html"><a href="cross-validation.html#practical-cv-in-r"><i class="fa fa-check"></i><b>5.7.1</b> Practical CV in R</a></li>
-<li class="chapter" data-level="5.7.2" data-path="cross-validation.html"><a href="cross-validation.html#parameter-tuning"><i class="fa fa-check"></i><b>5.7.2</b> Parameter Tuning</a></li>
+<li class="chapter" data-level="5.7" data-path="cross-validation.html"><a href="cross-validation.html#isolation-of-each-cross-validation-sample"><i class="fa fa-check"></i><b>5.7</b> Isolation of each cross validation sample</a></li>
+<li class="chapter" data-level="5.8" data-path="cross-validation.html"><a href="cross-validation.html#examples-with-r"><i class="fa fa-check"></i><b>5.8</b> Examples with R</a><ul>
+<li class="chapter" data-level="5.8.1" data-path="cross-validation.html"><a href="cross-validation.html#application-1-estimating-the-generalization-error"><i class="fa fa-check"></i><b>5.8.1</b> Application 1: Estimating the generalization error</a></li>
+<li class="chapter" data-level="5.8.2" data-path="cross-validation.html"><a href="cross-validation.html#application-2-parameter-tuning"><i class="fa fa-check"></i><b>5.8.2</b> Application 2: Parameter Tuning</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="6" data-path="bootstrap.html"><a href="bootstrap.html"><i class="fa fa-check"></i><b>6</b> Bootstrap</a><ul>
@@ -204,7 +205,11 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="10.3" data-path="bagging-and-boosting.html"><a href="bagging-and-boosting.html#l_2-boosting"><i class="fa fa-check"></i><b>10.3</b> <span class="math inline">\(L_2\)</span>-Boosting</a></li>
 <li class="chapter" data-level="10.4" data-path="bagging-and-boosting.html"><a href="bagging-and-boosting.html#some-unfinished-stuff"><i class="fa fa-check"></i><b>10.4</b> Some unfinished stuff</a></li>
 </ul></li>
-<li class="chapter" data-level="11" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>11</b> Introduction</a></li>
+<li class="chapter" data-level="11" data-path="round-up.html"><a href="round-up.html"><i class="fa fa-check"></i><b>11</b> Round up</a><ul>
+<li class="chapter" data-level="11.1" data-path="round-up.html"><a href="round-up.html#comparing-models"><i class="fa fa-check"></i><b>11.1</b> Comparing models</a></li>
+<li class="chapter" data-level="11.2" data-path="round-up.html"><a href="round-up.html#exercises-take-aways"><i class="fa fa-check"></i><b>11.2</b> Exercises Take-aways</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>12</b> Introduction</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 </ul>
 
@@ -240,8 +245,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h2><span class="header-section-number">5.2</span> Loss Function</h2>
 <p>Depending on the application, one can imagine different loss-functions. For example the squared deviance from the <em>true</em> value is often used, i.e. <span class="math display">\[n^{-1}\sum\limits_{i = 1}^n\rho(Y_i, \hat{m}(X_i)) = n^{-1}\sum\limits_{i = 1}^n(Y_i - \hat{m}(X_i))^2\]</span> Hence, larger deviance is penalized over-proportionally. For classification, one often uses the zero-one error, i.e. <span class="math display">\[n^{-1}\sum\limits_{i = 1}^n1_{\hat{m}(X_i) \neq Y_i}\]</span> However, it might also be appropriate to use asymmetric loss functions if false negatives are worse than false positives (i.e. for cancer tests).</p>
 </div>
-<div id="implementation" class="section level2">
-<h2><span class="header-section-number">5.3</span> Implementation</h2>
+<div id="implementations" class="section level2">
+<h2><span class="header-section-number">5.3</span> Implementations</h2>
 <p>There are different ways to do cross validation while adhering to the principles introduced above.</p>
 <div id="leave-one-out" class="section level3">
 <h3><span class="header-section-number">5.3.1</span> Leave-one-out</h3>
@@ -278,10 +283,15 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>Leave-one-out cv score for some linear fitting procedures such as least squares or smoothing spline can be computed via a shortcut when our loss function is <span class="math inline">\(\rho(y, \hat{y}) = |y-\hat{y}|^2\)</span>. In particular, we can compute the estimator for such a linear fitting procedure <strong>once</strong>, compute the linear fitting operator <span class="math inline">\(S\)</span>, which satisfies <span class="math inline">\(\mathbf{\hat{Y}} = \mathbf{SY}\)</span> and plug it in this formula: <span class="math display">\[n^{-1}\sum\limits_{i = 1}^n \Bigg(\frac{Y_i - \hat{m}(X_i)}{1-S_{ii}}\Bigg)^2\]</span> Computing <span class="math inline">\(\mathbf{S}\)</span> requires <span class="math inline">\(O(n)\)</span> operations (see exercises).</p>
 <p>Historically, it has been computationally easier to compute the trace of <span class="math inline">\(\mathbf{S}\)</span> so there is also a quantity called generalized cross validation (which is a misleading terminology), which coincides with the formula above in certain cases.</p>
 </div>
-<div id="examples" class="section level2">
-<h2><span class="header-section-number">5.7</span> Examples</h2>
-<div id="practical-cv-in-r" class="section level3">
-<h3><span class="header-section-number">5.7.1</span> Practical CV in R</h3>
+<div id="isolation-of-each-cross-validation-sample" class="section level2">
+<h2><span class="header-section-number">5.7</span> Isolation of each cross validation sample</h2>
+<p>Note that it is very important to re-estimate all parameters relevant for the cross validation within every sample. Otherwise, our estimates will be too optimistic. This problem was mentioned in the exercise series 10. Specifically, the taks was to train a tree algorithm. For every sample, we had to determine the optimal cp individually (via cross validation in the cross validation so to speak). Why not using the cp estimated from the whole data set? Because then, we would use information from samples other than the current cv batch and then evaluating the performance of the model based on the cv batch and the <em>global</em> parameter to evaluate our model performance. This contradicts the idea of cross validation and is similar to using the training sample to estimate the performance of a model.</p>
+</div>
+<div id="examples-with-r" class="section level2">
+<h2><span class="header-section-number">5.8</span> Examples with R</h2>
+<p>In the remainder of this chapter, we will discuss the two important applications of cross validation: Estimation of the GE and parameter tuning.</p>
+<div id="application-1-estimating-the-generalization-error" class="section level3">
+<h3><span class="header-section-number">5.8.1</span> Application 1: Estimating the generalization error</h3>
 <p>Key concepts to do CV are</p>
 <ul>
 <li>Do not split the data, split the indices of the data and work with them if ever possible and subset the data. <code>sample()</code> is your friend.</li>
@@ -289,6 +299,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li>you can simplify structures with <code>purr::flatten_dbl()</code> and friends.</li>
 <li>Always work with lists, never work with data frames of indices. The reason is that data frames have structural constrains (all columns must have same number of elements) that are not natural in some situations. For example, out-of-bootstrap cv <em>does</em> have the same number of observations in the training set, but not in the test set.</li>
 <li>In conjunction with <code>sample()</code>, you can use <code>purrr::rerun</code> or <code>replicate</code> to create lists of indices.</li>
+<li>To get <em>the other part of the sample</em>, you can use negative indices or <code>setdiff()</code>.</li>
 <li>use helper function to solve “the small problems in the big problem”.</li>
 </ul>
 <p>Let’s first declare our functions.</p>
@@ -368,8 +379,8 @@ oob &lt;-<span class="st"> </span><span class="kw">map2_dbl</span>(test, train, 
 <span class="st">  </span><span class="kw">geom_boxplot</span>()</code></pre></div>
 <p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>
-<div id="parameter-tuning" class="section level3">
-<h3><span class="header-section-number">5.7.2</span> Parameter Tuning</h3>
+<div id="application-2-parameter-tuning" class="section level3">
+<h3><span class="header-section-number">5.8.2</span> Application 2: Parameter Tuning</h3>
 <p>We want to use the scheme k-fold cross validation for parameter tuning with a lasso. We first calculate the test set error for <em>one</em> value of lamda (as we did above). Then, change the value of lamda and recompute the model and then test set error, so that the test set error becomes a function of lamda, as depicted below.</p>
 <p><img src="figures/lasso_cv.png" width="650px" /></p>
 <p>Then pick an optimal lamda, e.g. the one with the lowest test error (a bit arbitrary) or one according to some other rule (e.g. pick the least complex model that is within one standard error of the best model).</p>

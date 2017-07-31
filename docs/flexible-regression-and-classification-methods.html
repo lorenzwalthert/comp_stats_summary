@@ -124,7 +124,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="5" data-path="cross-validation.html"><a href="cross-validation.html"><i class="fa fa-check"></i><b>5</b> Cross Validation</a><ul>
 <li class="chapter" data-level="5.1" data-path="cross-validation.html"><a href="cross-validation.html#motivation-and-core-idea"><i class="fa fa-check"></i><b>5.1</b> Motivation and Core Idea</a></li>
 <li class="chapter" data-level="5.2" data-path="cross-validation.html"><a href="cross-validation.html#loss-function"><i class="fa fa-check"></i><b>5.2</b> Loss Function</a></li>
-<li class="chapter" data-level="5.3" data-path="cross-validation.html"><a href="cross-validation.html#implementation"><i class="fa fa-check"></i><b>5.3</b> Implementation</a><ul>
+<li class="chapter" data-level="5.3" data-path="cross-validation.html"><a href="cross-validation.html#implementations"><i class="fa fa-check"></i><b>5.3</b> Implementations</a><ul>
 <li class="chapter" data-level="5.3.1" data-path="cross-validation.html"><a href="cross-validation.html#leave-one-out"><i class="fa fa-check"></i><b>5.3.1</b> Leave-one-out</a></li>
 </ul></li>
 <li class="chapter" data-level="5.4" data-path="cross-validation.html"><a href="cross-validation.html#k-fold-cross-validation"><i class="fa fa-check"></i><b>5.4</b> K-fold Cross-Validation</a><ul>
@@ -132,9 +132,10 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul></li>
 <li class="chapter" data-level="5.5" data-path="cross-validation.html"><a href="cross-validation.html#properties-of-the-different-schemes"><i class="fa fa-check"></i><b>5.5</b> Properties of the different schemes</a></li>
 <li class="chapter" data-level="5.6" data-path="cross-validation.html"><a href="cross-validation.html#shortcuts-for-some-linear-fitting-operators"><i class="fa fa-check"></i><b>5.6</b> Shortcuts for (some) linear fitting operators</a></li>
-<li class="chapter" data-level="5.7" data-path="cross-validation.html"><a href="cross-validation.html#examples"><i class="fa fa-check"></i><b>5.7</b> Examples</a><ul>
-<li class="chapter" data-level="5.7.1" data-path="cross-validation.html"><a href="cross-validation.html#practical-cv-in-r"><i class="fa fa-check"></i><b>5.7.1</b> Practical CV in R</a></li>
-<li class="chapter" data-level="5.7.2" data-path="cross-validation.html"><a href="cross-validation.html#parameter-tuning"><i class="fa fa-check"></i><b>5.7.2</b> Parameter Tuning</a></li>
+<li class="chapter" data-level="5.7" data-path="cross-validation.html"><a href="cross-validation.html#isolation-of-each-cross-validation-sample"><i class="fa fa-check"></i><b>5.7</b> Isolation of each cross validation sample</a></li>
+<li class="chapter" data-level="5.8" data-path="cross-validation.html"><a href="cross-validation.html#examples-with-r"><i class="fa fa-check"></i><b>5.8</b> Examples with R</a><ul>
+<li class="chapter" data-level="5.8.1" data-path="cross-validation.html"><a href="cross-validation.html#application-1-estimating-the-generalization-error"><i class="fa fa-check"></i><b>5.8.1</b> Application 1: Estimating the generalization error</a></li>
+<li class="chapter" data-level="5.8.2" data-path="cross-validation.html"><a href="cross-validation.html#application-2-parameter-tuning"><i class="fa fa-check"></i><b>5.8.2</b> Application 2: Parameter Tuning</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="6" data-path="bootstrap.html"><a href="bootstrap.html"><i class="fa fa-check"></i><b>6</b> Bootstrap</a><ul>
@@ -204,7 +205,11 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="10.3" data-path="bagging-and-boosting.html"><a href="bagging-and-boosting.html#l_2-boosting"><i class="fa fa-check"></i><b>10.3</b> <span class="math inline">\(L_2\)</span>-Boosting</a></li>
 <li class="chapter" data-level="10.4" data-path="bagging-and-boosting.html"><a href="bagging-and-boosting.html#some-unfinished-stuff"><i class="fa fa-check"></i><b>10.4</b> Some unfinished stuff</a></li>
 </ul></li>
-<li class="chapter" data-level="11" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>11</b> Introduction</a></li>
+<li class="chapter" data-level="11" data-path="round-up.html"><a href="round-up.html"><i class="fa fa-check"></i><b>11</b> Round up</a><ul>
+<li class="chapter" data-level="11.1" data-path="round-up.html"><a href="round-up.html#comparing-models"><i class="fa fa-check"></i><b>11.1</b> Comparing models</a></li>
+<li class="chapter" data-level="11.2" data-path="round-up.html"><a href="round-up.html#exercises-take-aways"><i class="fa fa-check"></i><b>11.2</b> Exercises Take-aways</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>12</b> Introduction</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 </ul>
 
@@ -328,7 +333,7 @@ sim2 &lt;-<span class="st"> </span>fitted %&gt;%<span class="st"> </span>
 <p>Neural networks are high-dimensional non-linear regression models. The way it works is best illustrated with a picture.</p>
 <p><img src="figures/nn.png" width="605" /></p>
 <p>This is a neural network with one hidden layer, <span class="math inline">\(p\)</span> input layers and <span class="math inline">\(q\)</span> output layers. Mathematically speaking, the model is: <span class="math display">\[ g_k(x) = f_0\Big(\alpha_k +
-\sum\limits_{h = 1}^q w_{ij} \phi(\tilde{\alpha}_h + \sum\limits_{j = 1}^p
+\sum\limits_{h = 1}^q w_{hk} \phi(\tilde{\alpha}_h + \sum\limits_{j = 1}^p
 w_{jh}x_j)\Big)\]</span> Where <span class="math inline">\(\phi(x)\)</span> is the sigmoid function <span class="math inline">\(\frac{exp(x)}{1 + exp(x)}\)</span>, <span class="math inline">\(f_0\)</span> is the sigmoid function for classification and the identity for regression. In the case of regression <span class="math inline">\(k = 1\)</span> is used, for classification we use <span class="math inline">\(g_0, ..., g_{J-1}\)</span> and then use the Bayes classifier <span class="math inline">\(\mathcal{\hat{C}(x)} = \arg\max\limits_{0&lt;j&lt;J-1} g_j(x)\)</span> (is that correct?), which is called the softmax in the neural network literature.</p>
 <div id="fitting-neural-networks-in-r" class="section level3">
 <h3><span class="header-section-number">8.3.1</span> Fitting Neural Networks (in R)</h3>
@@ -382,12 +387,12 @@ fit &lt;-<span class="st"> </span>nnet::<span class="kw">nnet</span>( log_upo3 ~
 <ul>
 <li>if you assume the identity for <span class="math inline">\(f_0\)</span> in the neral net (which you typically do for regression) the models become very similar up to the term <span class="math inline">\(w_{hk} \phi\)</span>, which is just <span class="math inline">\(f_k\)</span> in projection pursuit regression. Hence, instead of assuming a parapetric form (the sigmoid function) and multiplying that transformation with a weight <span class="math inline">\(w_{hk}\)</span><a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> we don’t make any assumption on the form of the function, that is, let <span class="math inline">\(f_k\)</span> be fully non-parametric.</li>
 </ul>
-<p>Probably fot that very reason, the model requires much smaller <span class="math inline">\(q\)</span> than a neural net requires hidden units, at the expense of estimating the ridge functions (which is not necessary for neural nets).</p>
+<p>Probably for that very reason, the model requires much smaller <span class="math inline">\(q\)</span> than a neural net requires hidden units, at the expense of estimating the ridge functions (which is not necessary for neural nets).</p>
 <div id="proejction-pursuit-example" class="section level3">
 <h3><span class="header-section-number">8.4.1</span> Proejction Pursuit Example</h3>
 <p>In the following, we illustrate how optimal projections of the initial predictor space can allow us to use an additive functional form to deal with interaction terms. Let us consider the following data-generating model <span class="math display">\[ Y = X_1 \times X_2 + \epsilon \; \text{with} \;\epsilon \sim N(0, 1) \; \text{and}\; X_1, X_2 \sim \text{Unif}(-1,1)\]</span></p>
-<p>Where <span class="math inline">\(X \in \mathbb{R}^2\)</span>, i.e. a two-dimensional predictor space with the predictors <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span>. Using elementary calculus, this can be rewritten as <span class="math display">\[ Y = \frac{1}{4} (X_1 + X_2)^2  - \frac{1}{4}(X_1 - X_2)^2\]</span> Hence, we rewrote a multiplicative model as an additive model. As we are using arbitrary <em>smooth</em> functions <span class="math inline">\(f_k\)</span>, we can easily fit the quadratic terms in the equation above, so the problem to solve becomes <span class="math display">\[Y = \mu + f_1(X_1 + X_2) - f_2(X_1 - X_2)\]</span> Therefore, the remaining question is how can we choose the two vectors <span class="math inline">\(\mathbf{\alpha}_1\)</span> and <span class="math inline">\(\mathbf{\alpha}_1\)</span> such that the result of the projection is <span class="math inline">\(X_1 + X_2 \;\text{and}\;X_1 - X_2\)</span>. With the restriction <span class="math inline">\(|\alpha| = 1\)</span>, it turns out we can proceed as follows: We project the first predictor onto <span class="math inline">\((\alpha_{11}, \alpha_{12}) = (0.7, 0.7)\)</span> and the second predictor onto <span class="math inline">\((\alpha_{11}, \alpha_{12}) = (0.7, -0.7)\)</span>. This yields <span class="math inline">\(0.7(X_1 + X_2)\)</span> and <span class="math inline">\(0.7(X_1 - X_2)\)</span>.</p>
-<p>Let’s implement that with R</p>
+<p>Where <span class="math inline">\(X \in \mathbb{R}^2\)</span>, i.e. a two-dimensional predictor space with the predictors <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span>. Using elementary calculus, this can be rewritten as <span class="math display">\[ Y = \frac{1}{4} (X_1 + X_2)^2  - \frac{1}{4}(X_1 - X_2)^2\]</span> Hence, we rewrote a multiplicative model as an additive model. As we are using arbitrary <em>smooth</em> functions <span class="math inline">\(f_k\)</span>, we can easily fit the quadratic terms in the equation above, so the problem to solve becomes <span class="math display">\[Y = \mu + f_1(X_1 + X_2) - f_2(X_1 - X_2)\]</span> Therefore, the remaining question is how can we choose the two vectors <span class="math inline">\(\mathbf{\alpha}_1\)</span> and <span class="math inline">\(\mathbf{\alpha}_2\)</span> such that the result of the projection is <span class="math inline">\(X_1 + X_2 \;\text{and}\;X_1 - X_2\)</span>. With the restriction <span class="math inline">\(|\alpha| = 1\)</span>, it turns out we can proceed as follows: We first project predictor onto <span class="math inline">\((\alpha_{11}, \alpha_{12}) = (0.7, 0.7)\)</span> and then onto <span class="math inline">\((\alpha_{11}, \alpha_{12}) = (0.7, -0.7)\)</span>. This yields <span class="math inline">\(0.7(X_1 + X_2)\)</span> and <span class="math inline">\(0.7(X_1 - X_2)\)</span>.</p>
+<p>Let’s implement that in R</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data &lt;-<span class="st"> </span><span class="kw">data_frame</span>(
   <span class="dt">x1 =</span> <span class="kw">runif</span>(<span class="dv">500</span>, -<span class="dv">1</span>, <span class="dv">1</span>),
   <span class="dt">x2 =</span> <span class="kw">runif</span>(<span class="dv">500</span>, -<span class="dv">1</span>, <span class="dv">1</span>),
@@ -396,7 +401,6 @@ fit &lt;-<span class="st"> </span>nnet::<span class="kw">nnet</span>( log_upo3 ~
 all &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x =</span> x1, <span class="dt">y =</span> x2)) +<span class="st"> </span>
 <span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color =</span> y), <span class="dt">size =</span> <span class="dv">3</span>) +<span class="st"> </span>
 <span class="st">  </span><span class="kw">scale_color_gradient2</span>()</code></pre></div>
-<p>We can see the obvious pattern, but we can also see that an additive model would not do well on that.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x1y &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x =</span> x1, <span class="dt">y =</span> y)) +<span class="st"> </span>
 <span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color =</span> y), <span class="dt">size =</span> <span class="dv">3</span>) +<span class="st"> </span>
 <span class="st">  </span><span class="kw">geom_smooth</span>() +<span class="st"> </span>
@@ -404,7 +408,7 @@ all &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span cla
 
 
 <span class="kw">grid.arrange</span>(all, x1y)</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-25-1.png" width="672" /> We can see the obvious pattern, but we can also see that an additive model would not do well on that.</p>
 <p>How about using the aforementioned projection?</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data &lt;-<span class="st"> </span>data %&gt;%
 <span class="st">  </span><span class="kw">mutate</span>(
