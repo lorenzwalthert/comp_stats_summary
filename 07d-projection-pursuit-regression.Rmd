@@ -113,3 +113,21 @@ The bottom right picture shows the predictions with the projection pursuit appro
 which resembles the original data pretty well. Again, the idea is to use an
 additive model to account for the interactions properly by first projecting the 
 predictors optimally.
+
+Suppose we did not know the optimal projection. We could use the build-in
+`ppr()` command to fit a projection pursuit regression and then show us 
+the projections used. 
+
+First, we fit the model and check out the projections
+```{r}
+fit <- ppr(y~ x1+x2, nterms = 2, data = data)
+sfsmisc::mult.fig(2)
+plot(fit)
+```
+
+Now, let us look at the $\alpha$s.
+```{r}
+fit$alpha
+```
+
+It's pretty much the model we came up with before.
