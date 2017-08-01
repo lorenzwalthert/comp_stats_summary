@@ -1,161 +1,238 @@
 # Non-parametric Density Estimation
 
-We assume a model of the form 
+## The Histogramm
+The simplest density estimator is the histogram. The drawback is that we need
+to specify two parameters. The origin $x_0$ and the bandwidth $h$. At least
+the former is highly arbitrary and both affect the resulting histogram 
+remarkably.
+```{r}
+data_frame(x = rnorm(1000)) %>%
+  ggplot(aes(x = x)) + 
+  geom_histogram(bins = 30, center = 0) # center is what we called x_0
+```
 
-$$ E[Y|X = x] = m(x)$$ 
-which is more general than assuming $Y_i = m(x_i) + \epsilon_i$ since in the 
-former, the noise does not have to be additive.
-We can use Bayes' Theorem to deduce such an estimator $\hat{m}$ using 
-density estimates of our predictor and response variable. In that sense,
-non-parametric regression really builds on top of non-parametric density
-estimation.
+
+
+## Kernels
+### The naive Estimator
+
+We can compute the relative frequency of observations falling into some region
+and use these frequencies as estimators for the probabilities.
+
+Let's consider some example data distributed uniformly at random between
+$-0.5$ and $+0.5$. Let us try to estimate the densities via the relative
+frequencies. We consider three points in x: $-0.5, 0$ and $+0.5$. We set $h$
+to 1/2 for now. For x equal zero, we know that all points are comprised in the
+range, so the relative frequency is one, for the two other x values, it is a
+half each. We can interpolate and then the a triangle.
+```{r}
+x <- runif(10000, min = -1/2, max = 1/2)
+dens <- density(x, kernel = "rectangular", bw = 1/2)
+
+
+eval_one <- function(e_eval_one, x, h) {
+  1/(2*h)* mean(e_eval_one + h > x & e_eval_one - h < x)
+}
+
+naive_density <- function(x, h, x_eval) {
+  data_frame(
+    x_eval = x_eval, 
+    y_est = map_dbl(x_eval, eval_one, x = x, h = h),
+    h = h
+  )
+}
+
+one_est <- naive_density(x, 1/2, seq(-1, 1, length.out = 3))
+
+ggplot(one_est, aes(x = x_eval, y = y_est)) + geom_path()
+```
+
+We don't need to normalize anything since the area has size one
+already, which we need for it to be a density. However, if we use a larger
+$h$, for example $h = 1$, we need to divide by $2$ to get an area of size one
+since at all three points, the relative frequency is one and it becomes zero
+only when the absolute value of x is larger than 3/2.
+Hence, we found the formula to obtain densities.
+$$ f(x) = \frac{1}{2h}\mathbb{P}[x-h< X < x+h] \;\;\; \text{for}\;\; h \rightarrow 0$$
+Which translates into frequencies for our estimator
+$$ \hat{f}(x) = \frac{1}{2hn}\#(X_i \in [x-h, x+h))$$
+This is quite wrong, as we know the true distribution is uniform between 
+minus one and one.
+However, as you can see by playing around with the shiny app further down the
+page, it seems that with $h \rightarrow \infty$, we are approaching the true 
+distribution.
+The nice thing about this estimator is that there is no need to set the 
+tuning parameter $x_0$ anymore.
+
+You can represent the naive kernel differently, namely as a kernel.
+We have 
+\begin{equation}
+\begin{split}
+f(x) = & \frac{1}{2nh}\#\{X_i \in [x- d, x+ d)\} \\
+     = & \frac{1}{2nh} \sum\limits_{i = 1}^n 1_{[x_i \in [x- d, x+ d)]} \\
+     = & \frac{1}{2nh} \sum\limits_{i = 1}^n 1_{[(x_i - x)/h \in [-1, 1)]} \\
+     = & \frac{1}{2nh} \sum\limits_{i = 1}^n 1_{[(x - x_i)/h \in [-1, 1)]} | \text{You can flip signs} \\
+     = & \frac{1}{2nh} \sum\limits_{i = 1}^n w'\big(\frac{x -x_i}{h}\big) \\
+\end{split}
+\end{equation}
+
+ \begin{equation}
+w'\big(\frac{x - x_i}{h}\big) = \begin{cases}
+      1 \;\;\ \text{if} \;\;\ | \frac{x - x_i}{h} | > 1
+      \\
+      0 \;\;\ \text{else}.
+      \end{cases}
+\end{equation}
+Where we can collapse $2$ and our weight function $w'(x)$, so we end up with the 
+following.
 
 \begin{equation}
 \begin{split}
-P[Y|X] &=  \frac{\mathbb{P}[X|Y]}{\mathbb{P}[Y]}\mathbb{P}[Y] \\ 
-f_{Y|X} & = \frac{f_{X|Y}}{f_X}f_Y \\
-f_{Y|X} & = \frac{f_{X, Y}}{f_X}   \;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\; \text{|} \times y\\
-f_{Y|X}y & = \frac{f_{X, Y}}{f_X}y \;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\; \text{| taking the integral}\\
-E[X|Y] & = \int \frac{f_{X, Y}}{f_X}ydy
+f(x) = & \frac{1}{nh} \sum\limits_{i = 1}^n w\big(\frac{x - x_i}{h}\big) \\
 \end{split}
 \end{equation}
-Whereas for $\hat{f}_{X, Y}$, we can use a product kernel. This formula 
-simplifies quite a bit and yields the Nadaraja-Watson Kernel, which
-is essentially just a weighted mean of response values.
-$$\hat{m}(x) = \frac{\sum\limits_{i = 1}^n K\Big(\frac{x-X_i}{h}\Big)Y_i}{\sum\limits_{i = 1}^nK\Big(\frac{x-X_i}{h}\Big)} = \frac{\sum\mathcal{w}_i Y_i}{\sum\mathcal{w}_i} = \sum\limits_{i = 1}^n \tilde{\mathcal{w}}_i Y_i = \tilde{\mathbf{w}}(x_i)'\mathbf{Y}$$
-The weights $\tilde{\mathcal{w}}_i$ are normalized weights, i.e. 
-$\tilde{\mathcal{w}}_i = \mathcal{w}_i / \sum\limits_{k = 1}^n \mathcal{w}_k$
-
-## Alternative Interpretation
-It can be easily shown that the solution corresponds to the following minimization
-problem:
-
-$$ m(x) = \arg\min\limits_{m_x} \sum\limits_{i = 1}^nK\Big(\frac{x-X_i}{h}\Big)\big(Y_i-m_x\big)^2 $$
-
-We can interpret this as a weighted (local) regression. For a given
-$x$, search for the best local constant $m_x$ that minimizes the 
-weighted residual sum of squares the most. Residuals of data points close to 
-$x$ get a high weight in this sum (via the kernel).
-
-## The Bandwidth
-The bandwidth parameter $h$ has a similar role as in non-parametric density 
-estimation. Large $h$ implies very smooth functions, low variance, high bias.
-Small $h$ on the other hand imply (more) erratic functions, high variance, 
-low bias.
-
-An interesting case is $h \rightarrow \infty$, for which all weights become 
-equal. This corresponds to an estimator $m(x) = \bar{y}$, with one degree of 
-freedom (see below). 
 
 
-## Hat Matrix
-As in chapter 1, we can also obtain a smoother matrix $S$ that maps the 
-observed response values to the fitted values.
-From above, we have:
-$$\hat{y}_i = \tilde{\mathbf{w}}(x_i)'\mathbf{Y}$$
+ \begin{equation}
+w\big(\frac{x - x_i}{h}\big) = \begin{cases}
+      \frac{1}{2} \;\;\ \text{if} \;\;\ | \frac{x - x_i}{h} | > 1
+      \\
+      0 \;\;\ \text{else}.
+      \end{cases}
+\end{equation}
 
+### Other Kernels
+The function $w$ from above is an example of a kernel function since it
+satisfies the condition of a kernel, which are
 
-$$\mathbf{\hat{Y}} = \mathcal{S} \mathbf{Y} = 
-\begin{pmatrix}\hat{y}_1 \\\vdots\\\hat{y}_n\end{pmatrix} =
-\begin{pmatrix}\tilde{\mathbf{w}}(x_1)'\\\vdots\\\tilde{\mathbf{w}}(x_n)'\end{pmatrix} 
-\times \begin{pmatrix}y_1 \\\vdots\\y_n\end{pmatrix}$$
-Where $\tilde{\mathbf{w}}(x_1)'$ is a row vector of length $n$ with the
-normalized kernel weights.
+* integrates to one, $\int\limits_{-\infty}^\infty K(X)dx = 1$
+* is symmetric, $K(x) = K(-X)$
+* is strictly positive, $K(X)\geqslant 0$
 
-** here: How to compute S and why**
+$w(\cdot)$ is the rectangular kernel, which becomes obvious when plotting 
+it.
+```{r}
+rectangular <- function(x) {
+  if_else(abs(x) < 1/2, 1, 0)
+}
 
-## Degrees of Freedom
-Note that we need a different measurement of degrees of freedom than the one
-we used in the *parametric* case in chapter 1, where the degrees of freedom 
-simply corresponded to the number of parameters used. As this is non-parametric
-regression, we don't have parameters and hence cannot sum up the number of 
-parameters to calculate the degree of freedom. Recall from chapter 1 that 
-the trace of the smoothing matrix was equal to the number of parameters used:
-$$tr(P) = \textbf{tr}(X(X'X)^{-1}X') = \textbf{tr}((X'X)^{-1}X'X) = \textbf{tr}(I_{p\times p}) = p$$
-Hence, we can generalize the concept of degrees of freedom from number of 
-parameters to the trace of the smoother matrix. For regression, the two 
-coincide, for non-parametric methods, we get an estimate of the degrees of 
-freedom only via the trace.
+normal <- function(x) {
+  (2*pi)^(-1/2)*exp(-x^2/2)
+}
 
-There is a one-to-one relationship between the degrees of freedom and the 
-bandwidth parameter $h$, which we can show in a diagram:
+cosine <- function(x) {
+  if_else(abs(x) < 1, pi / 4 * cos(pi / 2 * x), 0)
+}
 
-```{r, echo = FALSE, out.width = "650px"}
-knitr::include_graphics("figures/relationship-h-df.png")
+ggplot(data_frame(x = 0), aes(x = x)) +
+  stat_function(fun = rectangular, aes(color = "rectangular")) +
+  stat_function(fun = normal, aes(color = "normal")) +
+  stat_function(fun = cosine, aes(color = "cosine")) +
+  scale_x_continuous(limits = c(-2, 2))
 ```
 
-This can be derived from the two extreme cases:
-
-* $h \rightarrow \infty$ means all weights are equal, which means for each data
-  point $x_i$, the fitted value $\hat{m}(x_i)$ is just the grand mean of $y$.
-  This corresponds to one degree of freedom.
-  
-$$\hat{m}(x) = \bar{y} $$
-  
-* $h \rightarrow 0$. If we assume $n$ distinct, equi-spaced $x_i$ values, then
-  the fitted values in the neighborhood of  $\hat{m}(x_i)$ are just the 
-  observed response value $y_i$, since all weights for points other than $y_i$ 
-  are zero. Or to be more precise: If the distance between
-  neighboring points is $\eta$, then, for  $h \leqslant \eta$ :
-  $$ \hat{m}(x) = y_{i^*} \;\;\ \text{with} \;\; i^* =  
-  \arg\min\limits_{0 \leqslant i \leqslant n} |x - x_i| $$
-  This corresponds to $n$ degrees of freedom.
-* We can interpolate between these two extreme cases in a monotone way.
+It is *piece-wise* constant, since every point is either in or out of the 
+interval. The density estimate is not smooth since the kernel is not smooth. 
+$\hat{f}(x)$ inherits also other properties from the kernel, e.g. it is strictly
+positive if the kernel is strictly positive and it integrates to one if the 
+kernel does so. Therefore, to obtain a smooth density estimate, we need to 
+choose a smooth kernel. The Gaussian kernel seems to be a natural choice. 
+Instead of giving an observation a weight of either one or zero, values in 
+between are also possible, depending on the distance of the point relative
+to the point for which we want to obtain a density estimate and depending on 
+$h$. Some kernels such as the normal kernel have the drawback that they their
+weights are never getting to zero, which implies computational cost at limited
+gain. We can instead choose a kernel like the cosine kernel, which also smooth
+but reaches zero relatively quickly, which speeds up calculations.
 
 
-### Applications
+## The Bandwidth
 
-There are two main applications for the degree of freedom:
+More important than the kernel is the bandwidth. A small bandwidth yields
+a very wiggly function (since only the points in the very close neighborhood
+are given a significant weight), a large bandwidth will produce a function 
+that is varying slowly as a function of x.
+The bandwidth is closely related to the bias-variance trade-off. 
 
-- **As a tuning parameter**. For every $h$, we can find the corresponding degrees of 
-  freedom or more interestingly - for every(desired) degree of freedom, we can 
-  find an $h$. Instead of varying $h$ directly, we can vary the degrees of 
-  freedom, which are directly **comparable** accross different techniques.
-  We can compare OLS with different 
-  kernel smoothers, splines etc. (see below), which is not possible with $h$ 
-  alone. 
-- **For inference**. For unbiased estimators (such as the variance of the 
-  residuals), we need the degrees of freedom (see below).
+**A large bandwidth means a large bias and a low variance, a small bandwidth
+the opposite.**
 
-## Inference 
+For the extreme cases of h, we have:
 
-As with parametric regression, we want to do inference. Not on any parameters
-(since there are none), but on the fitted values. First and foremost, we want
-to obtain confidence intervals for the regression line, that is, obtaining
-point-wise lower and upper bounds of the confidence internal
-$$ I_i = \hat{m}(x_i) ± 1.96 *\hat{sd}(\hat{m}(x)) $$
-Which holds because the fitted value is asymtotically normally distributed.
-We know already how to obtain $\hat{m}(x)$, now we need to find the standard
-deviation of the fitted values.
+* For a very large bandwidth, the curve estimate becomes the kernel. 
+* For a very small bandwidth, the deity takes the shape of many small kernels. 
+  Around each point, a kernel with density $1/n$ forms. Hence, they integrate 
+  to one. Points may be close to each other, so the mini kernels overlap.
+ 
+We can also use locally varying bandwidths. In regions where data is sparse
+we want to use larger bandwidths. A simple approach is to use 
+the **k nearest neighbour** of each x as the local bandwidth for each x. Note 
+that with such bandwidths the density will **not necessarily integrate to one** 
+anymore.
 
-From the fundamental equation $Cov(\mathbf{A}x) = \mathbf{A} Cov(x) \mathbf{A}'$,
-we get
-$$ \text{Cov}(\hat{m}(x)) = \text{Cov}(\mathcal{S}\mathbf{y}) = 
-\mathcal{S} \text{Cov}(y) \mathcal{S}' = \sigma_\epsilon^2\mathcal{SS}'
-\;\;\;\;\;|\;\; \text{since Cov}(y) = \text{Cov}(\epsilon)$$ 
-Which is a $p\times p$ matrix. For a specific data point $x_i$, we have
-$$ \text{Var}(\hat{m}(x_i))= \text{Cov}(\hat{m}(x_i),  \hat{m}(x_i)) = \sigma_\epsilon^2 (\mathcal{S} \mathcal{S}')_{ii} $$
+We can decompose the mean squared error of an estimator evaluated at a point x
+similar to the one of a random variable (since the estimator is derived from
+realizations of random variables).
 
-Now, we only need to estimate $\sigma^2_\epsilon$. Using the generalized 
-method to compute degrees of freedom, we can use the following estimator:
+\begin{equation}
+\begin{split}
 
-$$ \hat{\sigma}_\epsilon^2 = \frac{1}{n-\textbf{tr}(\mathcal{S})} 
-\sum\limits_{i = 1}^n (Y_i - \hat{m}(x_i))^2 $$
+Var(\hat{f(x)}) & = Var(\hat{f(x)} - f(x)) \\
+             & = \mathbb{E}[(\hat{f(x)} - f(x))^2] - \mathbb{E}[(\hat{f(x)} - f(x))]^2 \\
+             & = \text{MSE(f(x))} - \text{bias}^2 \\
+\text{MSE(f(x))} & = \text{bias}^2 + Var(\hat{f(x)}) \\
+\end{split}
+\end{equation}
+
+Instead of minimizing the mean squared error at *one* point, we minimize the 
+integrated mean square error over the support of x.
+
+$$ \text{IMSE}(x)  = \int \text{MSE}(x)dx$$
+
+## Bringing it all together
+Here is a shiny app that lets you try different parameters.
+```{r, echo = FALSE}
+knitr::include_app("https://lorenzwalthert.shinyapps.io/naive_density/", 
+  height = "1000px")
+```
+
+## Other Density Estimators
+In regions where data is sparse, your estimate will typically be close to zero,
+but it cannot become negative. This constraint is a bit nasty.
+If you take logs, you no longer have such  constraints. The constraint is just
+that the exp of your estimate has to integrate to one. So you estimate the 
+log of $f$ and exponentiate to get $f$.
 
 
-## Local Polynomial Estimator
 
-Expanding on the formulation of the Nadaraya-Watson Kernel as a weighted
-least square problem, we can use centered polynomials to approximate $y_i$
-instead of a local constant $\hat{m}_x$. That is, computing our estimator as
+## Higher Dimensions
 
-$$\hat{m}(x) = \arg\min\limits_{m_x} \sum\limits_{i = 1}^nK\Big(\frac{x-X_i}{h}\Big)
-\big(Y_i-\beta_0 + \beta_1 (x_i -x) + ... \beta_{p-1} (x_i-x)^{p-1}\big)^2 $$ 
+Very similar to one-dimensional density estimation, you can estimate densities
+of multi-dimensional data. The main difference is that the kernel is now 
+multivariate.
 
-This has the advantage of yielding a *lolcal linear* regression curve at the
-borders, whereas the Nadaraya-Watson Kernel yields *local constant* regression
-curves in these regions (since at the border, no new points are are taken into
-account).
+$$ \hat{f}(\mathbf{x}) = \frac{1}{nh^d}\sum\limits_{j = 1}^n 
+K\Big(\frac{\mathbf{x}- \mathbf{X_i}}{h}\Big)$$
 
-Another advantage is that we can find derivaties of the regression estimate at
-each point easily.
+A simple multivariate kernel is the product of uni-variate kernels.
+$$K(\mathbf{u}) = \prod\limits_{j = 1}^dK_{univ}(u_j)$$
+
+If in addition, the kernel should be *radially symmetric* (which means a
+function that is constant in circles around the origin, which also means that
+the the value the kernel takes only depends on the distance to the origin), it
+can be shown that the only kernel that meets this two conditions, i.e. that is
+
+* is a product kernel
+* is radially symmetric
+
+is the Gaussian kernel $K(\mathbf{u}) = ce^{-\frac{1}{2}u_1^2} * ce^{-\frac{1}{2}u_2^2} ... =
+ce^{-\frac{1}{2}\mathbf{u}'\mathbf{u}} =
+ce^{-\frac{1}{2}\|u\|^2}$
+
+
+### The Curse of Dimensionality
+
+The curse of dimensionality is the phenomena that data becomes sparse if 
+the number of dimensions increase. That means that for every other dimension
+we add, we must add over-proportionally many data points to keep the distance 
+between the data points at a reasonable (low) level.
