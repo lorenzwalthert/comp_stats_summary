@@ -22,7 +22,7 @@ E[X|Y] & = \int \frac{f_{X, Y}}{f_X}ydy
 Whereas for $\hat{f}_{X, Y}$, we can use a product kernel. This formula 
 simplifies quite a bit and yields the Nadaraja-Watson Kernel, which
 is essentially just a weighted mean of response values.
-$$\hat{m}(x) = \frac{\sum\limits_{i = 1}^n K\Big(\frac{x-X_i}{h}\Big)Y_i}{\sum\limits_{i = 1}^nK\Big(\frac{x-X_i}{h}\Big)} = \frac{\sum\mathcal{w}_i Y_i}{\sum\mathcal{w}_i} = \sum\limits_{i = 1}^n \tilde{\mathcal{w}}_i Y_i = \tilde{\mathbf{w}}(x_i)'\mathbf{Y}$$
+$$\hat{m}(x) = \frac{\sum\limits_{i = 1}^n K\Big(\frac{x-X_i}{h}\Big)Y_i}{\sum\limits_{i = 1}^nK\Big(\frac{x-X_i}{h}\Big)} = \frac{\sum\mathcal{w}(x)_i Y_i}{\sum\mathcal{w}(x)_i} = \sum\limits_{i = 1}^n \tilde{\mathcal{w}}(x)_i Y_i = \tilde{\mathbf{w}}(x)'\mathbf{Y}$$
 The weights $\tilde{\mathcal{w}}_i$ are normalized weights, i.e. 
 $\tilde{\mathcal{w}}_i = \mathcal{w}_i / \sum\limits_{k = 1}^n \mathcal{w}_k$
 

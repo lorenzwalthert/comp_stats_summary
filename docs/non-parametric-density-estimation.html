@@ -239,7 +239,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data_frame</span>(<span class="dt">x =</span> <span class="kw">rnorm</span>(<span class="dv">1000</span>)) %&gt;%
 <span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> x)) +<span class="st"> </span>
 <span class="st">  </span><span class="kw">geom_histogram</span>(<span class="dt">bins =</span> <span class="dv">30</span>, <span class="dt">center =</span> <span class="dv">0</span>) <span class="co"># center is what we called x_0</span></code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 </div>
 <div id="kernels" class="section level2">
 <h2><span class="header-section-number">3.2</span> Kernels</h2>
@@ -266,7 +266,7 @@ naive_density &lt;-<span class="st"> </span>function(x, h, x_eval) {
 one_est &lt;-<span class="st"> </span><span class="kw">naive_density</span>(x, <span class="dv">1</span>/<span class="dv">2</span>, <span class="kw">seq</span>(-<span class="dv">1</span>, <span class="dv">1</span>, <span class="dt">length.out =</span> <span class="dv">3</span>))
 
 <span class="kw">ggplot</span>(one_est, <span class="kw">aes</span>(<span class="dt">x =</span> x_eval, <span class="dt">y =</span> y_est)) +<span class="st"> </span><span class="kw">geom_path</span>()</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <p>We don’t need to normalize anything since the area has size one already, which we need for it to be a density. However, if we use a larger <span class="math inline">\(h\)</span>, for example <span class="math inline">\(h = 1\)</span>, we need to divide by <span class="math inline">\(2\)</span> to get an area of size one since at all three points, the relative frequency is one and it becomes zero only when the absolute value of x is larger than 3/2. Hence, we found the formula to obtain densities. <span class="math display">\[ f(x) = \frac{1}{2h}\mathbb{P}[x-h&lt; X &lt; x+h] \;\;\; \text{for}\;\; h \rightarrow 0\]</span> Which translates into frequencies for our estimator <span class="math display">\[ \hat{f}(x) = \frac{1}{2hn}\#(X_i \in [x-h, x+h))\]</span> This is quite wrong, as we know the true distribution is uniform between minus one and one. However, as you can see by playing around with the shiny app further down the page, it seems that with <span class="math inline">\(h \rightarrow \infty\)</span>, we are approaching the true distribution. The nice thing about this estimator is that there is no need to set the tuning parameter <span class="math inline">\(x_0\)</span> anymore.</p>
 You can represent the naive kernel differently, namely as a kernel. We have
 <span class="math display">\[\begin{equation}
@@ -325,7 +325,7 @@ cosine &lt;-<span class="st"> </span>function(x) {
 <span class="st">  </span><span class="kw">stat_function</span>(<span class="dt">fun =</span> normal, <span class="kw">aes</span>(<span class="dt">color =</span> <span class="st">&quot;normal&quot;</span>)) +
 <span class="st">  </span><span class="kw">stat_function</span>(<span class="dt">fun =</span> cosine, <span class="kw">aes</span>(<span class="dt">color =</span> <span class="st">&quot;cosine&quot;</span>)) +
 <span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">limits =</span> <span class="kw">c</span>(-<span class="dv">2</span>, <span class="dv">2</span>))</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>It is <em>piece-wise</em> constant, since every point is either in or out of the interval. The density estimate is not smooth since the kernel is not smooth. <span class="math inline">\(\hat{f}(x)\)</span> inherits also other properties from the kernel, e.g. it is strictly positive if the kernel is strictly positive and it integrates to one if the kernel does so. Therefore, to obtain a smooth density estimate, we need to choose a smooth kernel. The Gaussian kernel seems to be a natural choice. Instead of giving an observation a weight of either one or zero, values in between are also possible, depending on the distance of the point relative to the point for which we want to obtain a density estimate and depending on <span class="math inline">\(h\)</span>. Some kernels such as the normal kernel have the drawback that they their weights are never getting to zero, which implies computational cost at limited gain. We can instead choose a kernel like the cosine kernel, which also smooth but reaches zero relatively quickly, which speeds up calculations.</p>
 </div>
 </div>
