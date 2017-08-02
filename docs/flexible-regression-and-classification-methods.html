@@ -457,6 +457,19 @@ sfsmisc::<span class="kw">mult.fig</span>(<span class="dv">2</span>)
 ## x1  0.7795395 -0.7788790
 ## x2 -0.6263530 -0.6271742</code></pre>
 <p>It’s pretty much the model we came up with before.</p>
+<p>There is also an interpretation of the projection vectors. Since the above example is not particularly interesting, we will look at the output of exercise series 9, problem 1g.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit_from_series9$alpha
+##          term 1 term 2 term 3 term 4
+## vdht       0.48  -0.09  -0.06  -0.02
+## wind      -0.25  -0.11   0.09   0.12
+## humidity  -0.03  -0.54   0.16   0.22
+## temp       0.48   0.43  -0.04  -0.37
+## ibht      -0.06  -0.17  -0.05   0.01
+## dgpg       0.47  -0.45  -0.11  -0.66
+## ibtp       0.07  -0.10  -0.10   0.32
+## vsty      -0.44  -0.10   0.05   0.26
+## day       -0.23  -0.49  -0.97   0.44</code></pre></div>
+<p>If you take the mean over the absolute valeus in the rows, you can see that the variable <code>ibht</code> has relatively low average weights over the four terms. That means the variable does not get a high weight in general. You can also look at colums individually to find out which varialbes were important for a certain term, almost like in principle component analysis. You can see that term 3 is dominated by <code>day</code>.</p>
 
 </div>
 </div>
@@ -487,7 +500,7 @@ Figure 8.1: Partition with <code>rpart()</code>. Color indicate result of the ma
 <ul>
 <li>assume partitions that are <strong>axes parallel rectangles</strong>, just as depicted in the pictuer above. Note that this is a stronger limitation than just assuming linear (decision) boundaries since these boundaries also need to be parallel to the axis. For example, decision trees would not do well on a classification problem like this (unless there is a lot of data and we can have many splits:</li>
 </ul>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-34-1.png" width="672" /></p>
 <ul>
 <li>we use a <strong>greedy</strong> algorithm since the space of possible partitioning schemes is still huge.</li>
 </ul>
@@ -523,7 +536,7 @@ Figure 8.1: Partition with <code>rpart()</code>. Color indicate result of the ma
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rpart::<span class="kw">prune</span>(tree, <span class="dt">cp =</span> <span class="fl">0.05</span>) %&gt;%<span class="st"> </span><span class="co"># prune tree for illustrative purposes</span>
 rpart.plot::<span class="kw">prp</span>(<span class="dt">extra =</span> <span class="dv">1</span>,
     <span class="dt">box.col=</span><span class="kw">c</span>(<span class="st">&#39;pink&#39;</span>, <span class="st">&#39;palegreen3&#39;</span>, <span class="st">&#39;lightsteelblue 2&#39;</span>,<span class="st">&#39;lightgoldenrod 1&#39;</span>)[tree$frame$yval])</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-35-1.png" width="650px" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-36-1.png" width="650px" /></p>
 The idea is now to subsequently remove the leaves from the tree such that the negative log-likeihood increases the least. If we do that until no leaf is left, we end up with a sequence of trees.
 <span class="math display" id="eq:treeset">\[\begin{equation}
 \mathcal{T}_M \supset \mathcal{T}_{M-1} \;\;...\;\;\supset \mathcal{T}_{\emptyset}
@@ -533,7 +546,7 @@ The idea is now to subsequently remove the leaves from the tree such that the ne
 <p><span class="math display">\[R_{\alpha}(\mathcal{T}) = R(\mathcal{T}) + \alpha \times \text{size}(\mathcal{T})\]</span></p>
 <p>Now, we only need to find the right alpha. We can set a few alpha values, then find the best tree for this alpha <span class="math inline">\(\mathcal{T}(\alpha) = \arg\min\limits_{\mathcal{T} \subset \mathcal{T}_M}R_{\alpha}(\mathcal{T})\)</span> and then do cross-validation for these alpha values to find the optimal alpha. It can be shown that the set <span class="math inline">\(\{\mathcal{T}(\alpha)| \alpha \in (0, \infty]\}\)</span> is <em>nested</em> and the same or a subeset of the set in equation <a href="flexible-regression-and-classification-methods.html#eq:treeset">(8.1)</a>. Use <code>rpart::plotcp()</code> to plot the size of the optimal trees for each alpha against the cross-validation score. Then, use the one-standard error rule to select the idal tree size. That is first find the tree with the lowest relative error. Then add one standard error to it’s error and find the smallest tree that does not execced this relative error. The idea behind this approach is to choose good model that performs similar to the best (and potentially complex) model but is as simple as possible.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rpart::<span class="kw">plotcp</span>(tree)</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-36-1.png" width="650px" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-37-1.png" width="650px" /></p>
 </div>
 <div id="pros-and-cons-of-trees" class="section level3">
 <h3><span class="header-section-number">8.5.5</span> Pros and Cons of Trees</h3>

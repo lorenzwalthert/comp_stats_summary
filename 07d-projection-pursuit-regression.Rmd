@@ -131,3 +131,27 @@ fit$alpha
 ```
 
 It's pretty much the model we came up with before.
+
+There is also an interpretation of the projection vectors. Since the above
+example is not particularly interesting, we will look at the output of exercise
+series 9, problem 1g.
+```{r, eval = FALSE}
+fit_from_series9$alpha
+##          term 1 term 2 term 3 term 4
+## vdht       0.48  -0.09  -0.06  -0.02
+## wind      -0.25  -0.11   0.09   0.12
+## humidity  -0.03  -0.54   0.16   0.22
+## temp       0.48   0.43  -0.04  -0.37
+## ibht      -0.06  -0.17  -0.05   0.01
+## dgpg       0.47  -0.45  -0.11  -0.66
+## ibtp       0.07  -0.10  -0.10   0.32
+## vsty      -0.44  -0.10   0.05   0.26
+## day       -0.23  -0.49  -0.97   0.44
+```
+If you take the mean over the absolute valeus in the rows, you can see that the 
+variable `ibht` has relatively low average weights over the four terms. That 
+means the variable does not get a high weight in general. You can also look at
+colums individually to find out which varialbes were important for a certain 
+term, almost like in principle component analysis. You can see that term 3 is
+dominated by `day`.
+
