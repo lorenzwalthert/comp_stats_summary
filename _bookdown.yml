@@ -1,3 +1,6 @@
 book_filename: "comp_stats_summary"
 chapter_name: "Chapter "
 output_dir: "docs"
+language:
+  ui:
+    edit: "Edit"
