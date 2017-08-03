@@ -100,7 +100,16 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <ul class="summary">
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
-<li class="chapter" data-level="2" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html"><i class="fa fa-check"></i><b>2</b> Multiple Linear Regression</a></li>
+<li class="chapter" data-level="2" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html"><i class="fa fa-check"></i><b>2</b> Multiple Linear Regression</a><ul>
+<li class="chapter" data-level="2.1" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#assumptions-of-the-linear-model"><i class="fa fa-check"></i><b>2.1</b> Assumptions of the linear model</a></li>
+<li class="chapter" data-level="2.2" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#geometric-interpretation"><i class="fa fa-check"></i><b>2.2</b> Geometric interpretation</a></li>
+<li class="chapter" data-level="2.3" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#hat-matrix"><i class="fa fa-check"></i><b>2.3</b> Hat matrix</a></li>
+<li class="chapter" data-level="2.4" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#multiple-regression-vs.simple-regression"><i class="fa fa-check"></i><b>2.4</b> Multiple regression vs. simple regression</a></li>
+<li class="chapter" data-level="2.5" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#properties"><i class="fa fa-check"></i><b>2.5</b> Properties</a></li>
+<li class="chapter" data-level="2.6" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#tests"><i class="fa fa-check"></i><b>2.6</b> Tests</a></li>
+<li class="chapter" data-level="2.7" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#diagnostics"><i class="fa fa-check"></i><b>2.7</b> Diagnostics</a></li>
+<li class="chapter" data-level="2.8" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#generalized-least-squares"><i class="fa fa-check"></i><b>2.8</b> Generalized least squares</a></li>
+</ul></li>
 <li class="chapter" data-level="3" data-path="non-parametric-density-estimation.html"><a href="non-parametric-density-estimation.html"><i class="fa fa-check"></i><b>3</b> Non-parametric Density Estimation</a><ul>
 <li class="chapter" data-level="3.1" data-path="non-parametric-density-estimation.html"><a href="non-parametric-density-estimation.html#the-histogramm"><i class="fa fa-check"></i><b>3.1</b> The Histogramm</a></li>
 <li class="chapter" data-level="3.2" data-path="non-parametric-density-estimation.html"><a href="non-parametric-density-estimation.html#kernels"><i class="fa fa-check"></i><b>3.2</b> Kernels</a><ul>
@@ -117,7 +126,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="4" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html"><i class="fa fa-check"></i><b>4</b> Non-parametric Regression</a><ul>
 <li class="chapter" data-level="4.1" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#alternative-interpretation"><i class="fa fa-check"></i><b>4.1</b> Alternative Interpretation</a></li>
 <li class="chapter" data-level="4.2" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#the-bandwidth-1"><i class="fa fa-check"></i><b>4.2</b> The Bandwidth</a></li>
-<li class="chapter" data-level="4.3" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#hat-matrix"><i class="fa fa-check"></i><b>4.3</b> Hat Matrix</a></li>
+<li class="chapter" data-level="4.3" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#hat-matrix-1"><i class="fa fa-check"></i><b>4.3</b> Hat Matrix</a></li>
 <li class="chapter" data-level="4.4" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#degrees-of-freedom"><i class="fa fa-check"></i><b>4.4</b> Degrees of Freedom</a><ul>
 <li class="chapter" data-level="4.4.1" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#applications"><i class="fa fa-check"></i><b>4.4.1</b> Applications</a></li>
 </ul></li>
@@ -258,6 +267,16 @@ formula &lt;-<span class="st"> </span><span class="kw">wrapFormula</span>(
   <span class="dt">wrapString =</span> <span class="st">&quot;poly(*, degree = 3&quot;</span> <span class="co"># polynomial</span>
 ) 
 <span class="kw">update</span>(formula, logO3 ~<span class="st"> </span>.^<span class="dv">3</span>) <span class="co"># three way interaction</span></code></pre></div>
+<p><strong>Matrix Multiplication</strong></p>
+<ul>
+<li>You can’t multiply data frames. No way. Use <code>as.matrix</code> to convert.</li>
+<li>don’t forget the intercept in the model frame.</li>
+</ul>
+<p><strong>Other</strong></p>
+<ul>
+<li><p>R is vectorized. Before writing complicated <code>map()</code> stuff, think about whether it is possible to do all calculations vectorised. Compare exercise series 8.</p></li>
+<li><p>Scaling and Transformations: If the response or in fact any variable is highly skewed, use the log as a first aid transformation to for efficiency. Also, some methods such as neural networks work better with scaled predictors. Another category are methods such as lasso or ridge regression, where it is beneficial for interpretability to scale the variables.</p></li>
+</ul>
 
 </div>
 </div>

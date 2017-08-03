@@ -81,3 +81,18 @@ update(formula, logO3 ~ .^3) # three way interaction
 
 ```
 
+**Matrix Multiplication**
+
+* You can't multiply data frames. No way. Use `as.matrix` to convert.
+* don't forget the intercept in the model frame.
+
+**Other**
+
+* R is vectorized. Before writing complicated `map()` stuff, think about whether
+  it is possible to do all calculations vectorised. Compare exercise series 8.
+
+* Scaling and Transformations: If the response or in fact any variable is highly
+  skewed, use the log as a first aid transformation to for efficiency. Also,
+  some methods such as neural networks work better with scaled predictors.
+  Another category are methods such as lasso or ridge regression, where it is 
+  beneficial for interpretability to scale the variables.

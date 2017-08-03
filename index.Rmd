@@ -18,17 +18,8 @@ This is a summary (or rather rephrased version) of the class computational
 statistics at ETH Zurich, enriched with notes from the lecture, examples and R
 code. The main source is the
 [script](https://polybox.ethz.ch/index.php/s/q3NaRdR7K6Xrfkd/download) of the
-course.
+course. 
 
-\newline
-\newline
-\newline
-\newline
-\newline
-\newline
-\newline
-\newline
-\newline
 One last thing:
 
 ```{r, echo = FALSE, out.width = "650px"}
@@ -36,3 +27,5 @@ knitr::include_graphics("figures/typos.jpg")
 ```
 
 If you find one, you can make pull request or let me know, so we can fix it. 
+
+

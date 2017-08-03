@@ -153,7 +153,7 @@ classifier to choose the class label ($\arg\max_{0 < j < J-1} \pi_j$)
   and estimate the model. There are $\binom{J}{2}$ possible models with all
   models potentially having different number of observations.
 * In the special case of **ordered groups**, the correct model is often 
-  proportional odds model that models
+  a proportional odds model that models
   $$\text{logit}(\mathbb{P}(Y < k |X) = \alpha_k + g(\cdot))$$
   with $\alpha_1 < \alpha_2 < \text{...} < \alpha_{J-1}$. 
   The log odds are proportional, which becomes obvious if we take $e$ to the power

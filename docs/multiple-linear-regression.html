@@ -100,7 +100,16 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <ul class="summary">
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
-<li class="chapter" data-level="2" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html"><i class="fa fa-check"></i><b>2</b> Multiple Linear Regression</a></li>
+<li class="chapter" data-level="2" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html"><i class="fa fa-check"></i><b>2</b> Multiple Linear Regression</a><ul>
+<li class="chapter" data-level="2.1" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#assumptions-of-the-linear-model"><i class="fa fa-check"></i><b>2.1</b> Assumptions of the linear model</a></li>
+<li class="chapter" data-level="2.2" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#geometric-interpretation"><i class="fa fa-check"></i><b>2.2</b> Geometric interpretation</a></li>
+<li class="chapter" data-level="2.3" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#hat-matrix"><i class="fa fa-check"></i><b>2.3</b> Hat matrix</a></li>
+<li class="chapter" data-level="2.4" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#multiple-regression-vs.simple-regression"><i class="fa fa-check"></i><b>2.4</b> Multiple regression vs. simple regression</a></li>
+<li class="chapter" data-level="2.5" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#properties"><i class="fa fa-check"></i><b>2.5</b> Properties</a></li>
+<li class="chapter" data-level="2.6" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#tests"><i class="fa fa-check"></i><b>2.6</b> Tests</a></li>
+<li class="chapter" data-level="2.7" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#diagnostics"><i class="fa fa-check"></i><b>2.7</b> Diagnostics</a></li>
+<li class="chapter" data-level="2.8" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#generalized-least-squares"><i class="fa fa-check"></i><b>2.8</b> Generalized least squares</a></li>
+</ul></li>
 <li class="chapter" data-level="3" data-path="non-parametric-density-estimation.html"><a href="non-parametric-density-estimation.html"><i class="fa fa-check"></i><b>3</b> Non-parametric Density Estimation</a><ul>
 <li class="chapter" data-level="3.1" data-path="non-parametric-density-estimation.html"><a href="non-parametric-density-estimation.html#the-histogramm"><i class="fa fa-check"></i><b>3.1</b> The Histogramm</a></li>
 <li class="chapter" data-level="3.2" data-path="non-parametric-density-estimation.html"><a href="non-parametric-density-estimation.html#kernels"><i class="fa fa-check"></i><b>3.2</b> Kernels</a><ul>
@@ -117,7 +126,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="4" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html"><i class="fa fa-check"></i><b>4</b> Non-parametric Regression</a><ul>
 <li class="chapter" data-level="4.1" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#alternative-interpretation"><i class="fa fa-check"></i><b>4.1</b> Alternative Interpretation</a></li>
 <li class="chapter" data-level="4.2" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#the-bandwidth-1"><i class="fa fa-check"></i><b>4.2</b> The Bandwidth</a></li>
-<li class="chapter" data-level="4.3" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#hat-matrix"><i class="fa fa-check"></i><b>4.3</b> Hat Matrix</a></li>
+<li class="chapter" data-level="4.3" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#hat-matrix-1"><i class="fa fa-check"></i><b>4.3</b> Hat Matrix</a></li>
 <li class="chapter" data-level="4.4" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#degrees-of-freedom"><i class="fa fa-check"></i><b>4.4</b> Degrees of Freedom</a><ul>
 <li class="chapter" data-level="4.4.1" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#applications"><i class="fa fa-check"></i><b>4.4.1</b> Applications</a></li>
 </ul></li>
@@ -233,8 +242,128 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
             <section class="normal" id="section-">
 <div id="multiple-linear-regression" class="section level1">
 <h1><span class="header-section-number">Chapter 2</span> Multiple Linear Regression</h1>
-<p>This chapter has not yet been summarized.</p>
+<p>This chapter has not yet been summarized completely.</p>
+<p>Since liner models are well known (at least to me), the chapter is kept very brief.</p>
+<p>The goal of linear modelling is</p>
+<ul>
+<li>A good fit: Explain a lot of variance and keep the errors small.</li>
+<li>Good parameter estimates.</li>
+<li>Prediction: Predict new values.</li>
+<li>Inference: Say something about whether a variable has <em>an influence</em> or not on the response via significance levels and confidence intervals.</li>
+</ul>
+<p>Note that a good (in-sample) fit conflicts with good prediction out-of-sample.</p>
+<p>Linear models are stochastic, since <span class="math inline">\(\epsilon\)</span> is stochastic and hence the response variable <span class="math inline">\(Y_i\)</span> also. We can assume that the predictors are non-random.</p>
+<p>Linear models are called linear because they are linear in the coefficients, not linear in the predictors The predictors can be transformed arbitrary.</p>
+<p>Note the difference between the residuals <span class="math inline">\(r_i\)</span> and the errors <span class="math inline">\(\epsilon_i\)</span>. The variance of the error can be estimated with</p>
+<p><span class="math display">\[ \hat{\sigma}^2 = \frac{1}{n - p} \sum\limits_{i = 1}^n {r_i}^2\]</span> The solution linear models is computed via ordinary least squares and can be derived analytically.</p>
+<p><span class="math display">\[\hat{\beta} = (X&#39;X)^{-1}X&#39;Y\]</span> For numerical stability reasons, do not compute the inverse of a matrix if possible, but do a QR decomposition instead. Here, we can do that by using the normal equations <span class="math display">\[
+\begin{split}
+\hat{\beta} &amp; = (X&#39;X)^{-1}X&#39;Y\;\;\;\;\, | \times (X&#39;X) \;\; \text{from left} \\
+(X&#39;X)\hat{\beta} &amp;= X&#39;Y \;\;\; \;\;\;  \;\;\; \;\;\; \;\;\;  | X = QR \;\;\; \text{whereas} \;\;Q \;\; \text{is orthogonal} \\
+R&#39;R\hat{\beta} &amp;= X&#39;Y \;\;\; \;\;\;  \;\;\; \;\;\; \;\;\; | \;\; \text{set} \;\; c= R\beta \\
+R&#39;c &amp; = X&#39;Y \\
+\end{split}
+\]</span></p>
+<p>Since <span class="math inline">\(R&#39;\)</span> is a lower triangular matrix, you can now solve for <span class="math inline">\(c\)</span> recursively.</p>
+<p><span class="math display">\[\begin{pmatrix}
+\cdots  &amp; \cdots &amp; \cdots &amp; \cdots &amp; \cdots \\
+  &amp; \cdots &amp; \cdots &amp; \cdots &amp; \cdots \\
+  &amp; &amp; \cdots &amp; \cdots &amp; \cdots \\
+  &amp; &amp; &amp; \cdots &amp; \cdots \\
+  \large 0 &amp; &amp; &amp; &amp; r_{nn}
+ \end{pmatrix} \times 
+ \begin{pmatrix} 
+ c_1 \\
+  \vdots \\
+\vdots \\\vdots \\
+ c_n \\
+ \end{pmatrix} 
+ = (X&#39;Y)_{n \times 1}\]</span> First, solve <span class="math inline">\(c_n\)</span> using <span class="math inline">\(r_{nn} c_n = (X&#39;Y)_{nn}\)</span>, then for <span class="math inline">\(c_{n-1}\)</span> etc. when <span class="math inline">\(c\)</span> is solved, solve <span class="math display">\[ R\beta = c\]</span></p>
+<p>Which has the same structure.</p>
+<div id="assumptions-of-the-linear-model" class="section level2">
+<h2><span class="header-section-number">2.1</span> Assumptions of the linear model</h2>
+<ol style="list-style-type: decimal">
+<li>The functional form of the model is correct <span class="math inline">\(\mathbb{E}[\epsilon_i] = 0\)</span>. If violated, you cannot use linear models.</li>
+<li>The <span class="math inline">\(x_i\)</span>s are exact.</li>
+<li>The variance of the errors is constant (homoskedasticity). If violated, use weighted least squares.</li>
+<li>The errors are uncorrelated. If violated, use generalized least squares (pre-whitening)</li>
+<li>The errors are <em>jointly</em> normally distributed. If violated, use robust methods or variable transformation.</li>
+</ol>
+</div>
+<div id="geometric-interpretation" class="section level2">
+<h2><span class="header-section-number">2.2</span> Geometric interpretation</h2>
+<p>The respone variable is a vector in <span class="math inline">\(\mathbb{R}^n\)</span>. The fitted values <span class="math inline">\(\hat{Y} = X \hat{\beta}\)</span> span are a <span class="math inline">\(p\)</span> dimensional subspace in <span class="math inline">\(\mathbb{R}^n\)</span> when varying <span class="math inline">\(\hat{\beta}\)</span>. The least square solution is the solution for <span class="math inline">\(\hat{\beta}\)</span> such that the eucledian distance between <span class="math inline">\(Y\)</span> and <span class="math inline">\(\hat{Y}\)</span> is minimal. Note that the <em>true</em> <span class="math inline">\(\beta\)</span> (i.e. the one that from the data-generatling process) corresponds to the solution <span class="math inline">\(\mathbb{E}[Y]\)</span>, which also lays within the subspace, but due to the error introduced, in the process, the two do not coincide.</p>
+<p><img src="figures/ols_geometry.png" width="650px" /></p>
+<p>Hence, <span class="math inline">\(X\beta\)</span> is the orthogonal projection of <span class="math inline">\(Y\)</span> onto <span class="math inline">\(\mathcal{X}\)</span>.</p>
+<p>Note that the vector [1, …, 1] is contained in the <span class="math inline">\(p\)</span>-dimensional subspace if our model has an interecept. You can see that if you imagine we only had a model with an intercept. The design matrix would then just be such a [1, …, 1] vector. Setting <span class="math inline">\(\beta\)</span> equal to any number will yield a scaled unit vector as a prediction, i.e. just <span class="math inline">\(\beta \times [1, ..., 1]\)</span>. This subspace contains the vector [1, …, 1], since you can connect any two points in the space with a scaled version of this vector.</p>
+<p>Therefore, the residuals are orthogonal to the vector [1, …, 1] , as one can see from the picture. This means <span class="math inline">\(r&#39;\textbf{1} = 0\)</span> and hence <span class="math display">\[ \frac{1}{n} \sum r&#39;\textbf{1} = \bar{r} = 0\]</span> I.e. the residuals are zero on average.</p>
+</div>
+<div id="hat-matrix" class="section level2">
+<h2><span class="header-section-number">2.3</span> Hat matrix</h2>
+<p>We can also look at another projection or mapping. <span class="math display">\[ P: \; Y \rightarrow \hat{Y}\]</span> Using <span class="math display">\[X\hat{\beta} = X(X&#39;X)^{-1}X&#39;y = Py \;\; \text{with} \;\; P = X(X&#39;X)^{-1}X&#39;\]</span> We call <span class="math inline">\(P\)</span> the hat matrix. The aforementioned projection is an orthogonal projection since:</p>
+<ul>
+<li><span class="math inline">\(P\)</span> is symmetric: <span class="math inline">\(P = P&#39;\)</span></li>
+<li><span class="math inline">\(P\)</span> is idempotent: <span class="math inline">\(P^2 = P\)</span></li>
+<li>The trace of <span class="math inline">\(P_{p\times p}\)</span> is equal to <span class="math inline">\(p\)</span></li>
+</ul>
+<p>The last one can be shown as follows: <span class="math display">\[ tr(X(X&#39;X)^{-1}X&#39;) = tr((X^X)^{-1}X&#39;X) = tr(I_{p \times p}) = p\]</span></p>
+</div>
+<div id="multiple-regression-vs.simple-regression" class="section level2">
+<h2><span class="header-section-number">2.4</span> Multiple regression vs. simple regression</h2>
+<p>Doing many simple regressions instead of one multiple linear regression does not give the same result in general. Let’s consider two predictors. If they are positively correlated and we omit one, we will overestimate the effect of the remaining predictor. If they are negatively correlated, we will underestimate it. Simple regressions only yield the same result as multiple linear regression if the variables are not correlated. This can be seen well algebraically.</p>
+<p>Orthogonal predictors means <span class="math display">\[ (X&#39;X) = diag(\sum\limits_{i = 1}^n {x_{1i}}^2, ..., {x_{pi}}^2)\]</span> Which yields <span class="math display">\[ \beta_j = \sum\limits_{i = 1}^n x_{ij} Y_i / \sum\limits_{i = 1}^n {x_{ij}}^2\]</span> So we can easily see that the coefficient <span class="math inline">\(\beta_j\)</span> only depends on the j-th predictor.</p>
+</div>
+<div id="properties" class="section level2">
+<h2><span class="header-section-number">2.5</span> Properties</h2>
+<p><img src="figures/ols_properties.jpg" width="1224" /></p>
+</div>
+<div id="tests" class="section level2">
+<h2><span class="header-section-number">2.6</span> Tests</h2>
+<p>We know that, if $_p(0, ^2) the distribution of our coefficients is as follows: <span class="math inline">\(\hat{\beta} \sim \mathcal{N}_p(\beta, \sigma^2(X&#39;X)^{-1})\)</span>. Hence, we know that the standardized versions of the coefficients, i.e. <span class="math display">\[\frac{\hat{\beta}_j - \beta_j}{\sigma^2(X&#39;X)_{jj}} \sim \mathcal{N}_p(0, 1)\]</span></p>
+<p>If our Null Hypothesis is <span class="math inline">\(\beta_j = 0\)</span> the above becomes <span class="math display">\[\frac{\hat{\beta}_j}{\sigma^2(X&#39;X)_{jj}} \sim \mathcal{N}_p(0, 1)\]</span> We can plug in our estimate for <span class="math inline">\(\sigma^2\)</span>,</p>
+<p><span class="math display">\[\frac{\hat{\beta}_j}{\hat{\sigma}^2(X&#39;X)_{jj}} \sim \mathcal{t}_{n-p}(0, 1)\]</span></p>
+<p>Individual tests measure the significance of a variable given all the other variables in the model. If you want to look at whether a group of variables is significant, i.e. your Null Hypothesis is <span class="math inline">\(H_0: \beta_1 = ... = \beta_k = 0\)</span></p>
+<p>If you recall the picture from above, we can see that we can decompose the total sum of squares into <span class="math display">\[ SST = SSR + SSE\]</span></p>
+<p>The F-ratio is nothing else than the share of variance we can explain with our mode, scaled by some degree of freedom related stuff.</p>
+<p><span class="math display">\[F = \frac{\|\hat{Y} - \bar{Y}\|^2 / (p-1)}{\|Y - \bar{Y}\|^2/(n-p)}\]</span></p>
+<p>For the goodness of fit measure <span class="math inline">\(R^2\)</span> drop those scaling factors.</p>
+<p><span class="math display">\[R^2 = \frac{\|\hat{Y} - \bar{Y}\|^2}{\|Y - \bar{Y}\|^2}\]</span></p>
+<p>Similarly to t-tests derived above, we can construct confidence intervals. <span class="math display">\[\hat{\beta}_j ± \sqrt{\hat{\sigma}^2 {(X&#39;X)_{jj}}^{-1}} * t_{n-p, 1-\alpha/2}\]</span></p>
+</div>
+<div id="diagnostics" class="section level2">
+<h2><span class="header-section-number">2.7</span> Diagnostics</h2>
+<p>The Tuskey-Anscombe plot is a good tool to detect model violations. It takes advantage of the fact that the residuals are never correlated with the predictors and we can display the response versus the residuals also for <span class="math inline">\(p&gt;1\)</span>, which is not possible if we plot against the predictors (at least not in one plot). Ideally, the points fluctuate randomly around the horizontal zero-line.</p>
+<p>The Normal-plot helps to identify violations of the normality assumption.</p>
+<p>You can also plot the residuals against time or calculate auto-correlation to detect serial dependency in the residuals.</p>
+</div>
+<div id="generalized-least-squares" class="section level2">
+<h2><span class="header-section-number">2.8</span> Generalized least squares</h2>
+<p>Applies to the situation where</p>
+<p><span class="math display">\[ Y = X\beta + \epsilon \;\;\; |\; \epsilon \sim \mathcal{N}(0, \Sigma)\]</span> Where <span class="math inline">\(\Sigma\)</span> takes a more general form than previously:</p>
+<ul>
+<li>The errors can be correlated (so <span class="math inline">\(\Sigma\)</span> does not have to be diagonal matrix)</li>
+<li>The errors do not need to have identical variance (homoscedasticity)</li>
+</ul>
+<p>We can transform the data with a matrix <span class="math inline">\(A\)</span> such that we end up with <span class="math display">\[ \tilde{Y} = \tilde{X}\beta + \tilde{\epsilon} \;\;\; |\; \tilde{\epsilon} \sim \mathcal{N}(0, \bf{1_{p \times p}})\]</span> The following must hold</p>
+<p><span class="math display">\[ 
+\begin{split}
+Cov(A \epsilon) &amp;:= \bf{1_{n \times n}} \\
+\mathbb{E}[A\epsilon \epsilon&#39; A&#39;] &amp; = A \Sigma A&#39; \;\; \;\;\;\;| \;\text{decomposing} \; \Sigma \; \text{e.g. with Cholesky} \;\; \\
+&amp;= ACC&#39;A&#39; \;\; | \text{now choosing}\; A = C^{-1} \\
+&amp; = \bf{1_{n \times n}} \\
+\end{split}
+\]</span> Hence, we transform the data with the inverse of the (for example) lower triangular matrix resulting from the Cholesky decomposition and we will get uncorrelated errors.</p>
+<p>A special case is when we have uncorrelated errors, but heteroskedasticity. Choose the weight <span class="math inline">\(\tilde{w}\)</span> such that <span class="math inline">\(Var(\tilde{w}_i x_i) = 1\)</span>. If <span class="math inline">\(Var(x_i) = {\sigma_i}^2\)</span> set <span class="math inline">\(\tilde{w}_i = 1 / {\sigma_i}\)</span> to fulfill the above equation. The optimization problem becomes</p>
+<p><span class="math display">\[
+\begin{split}
+\hat{\beta} &amp;= \arg\min\limits_{\beta} \sum {\tilde{r}_i}^2 =
+\arg\min\limits_{\beta} \sum (\tilde{w}_i r_i)^2 \\
+&amp;=\arg\min\limits_{\beta} \sum w {r_i}^2 = 
+\arg\min\limits_{\beta} \sum w {(y_i - {x_i}&#39;\beta)}^2
+\end{split}
+\]</span> So <span class="math inline">\(w_i = \tilde{w_i}^2 = 1/ \sigma_i^2\)</span> is just a weighted regression.</p>
 
+</div>
 </div>
             </section>
 
