@@ -96,3 +96,26 @@ update(formula, logO3 ~ .^3) # three way interaction
   some methods such as neural networks work better with scaled predictors.
   Another category are methods such as lasso or ridge regression, where it is 
   beneficial for interpretability to scale the variables.
+
+**Accessing model parameters**
+
+When calculating the degrees of freedom, e.g. for the mallows cp, never use
+someghing like `length(coef(fit))`` as $p$, since this will only work for 
+linear models. For additive models for example, this will give you the 
+number of soothing terms used, which is **not** equivalent to the degrees of 
+freedom. Instead, use
+
+```{r, eval = FALSE}
+fit$df.residual
+```
+
+Which is available for many classes of fitted models, i.e. also GAMs.  Also,
+often it is not necessary to compute something like the residual standard 
+error, since you can conveniently access it via
+```{r, eval = FALSE}
+fit$sigma
+```
+
+Also, do sanity checks for your results. A qick `plot(unlist(cps))` for example
+can show you the various values cp takes for different model vs. their index.
+As with cross validation, you know that the curve must be somehow convex.

@@ -19,9 +19,10 @@ Linear models are stochastic, since $\epsilon$ is stochastic and hence the
 response variable $Y_i$ also. We can assume that the predictors are non-random.
 
 Linear models are called linear because they are linear in the coefficients, 
-not linear in the predictors The predictors can be transformed arbitrary.
+not linear in the predictors. The predictors can be transformed arbitrary.
 
 Note the difference between the residuals $r_i$ and the errors $\epsilon_i$. 
+The residuals are the estimates of the errors.
 The variance of the error can be estimated with 
 
 $$ \hat{\sigma}^2 = \frac{1}{n - p} \sum\limits_{i = 1}^n {r_i}^2$$
@@ -56,8 +57,9 @@ $$\begin{pmatrix}
 \vdots \\\vdots \\
  c_n \\
  \end{pmatrix} 
- = (X'Y)_{n \times 1}$$
-First, solve $c_n$ using $r_{nn} c_n = (X'Y)_{nn}$, then for $c_{n-1}$ etc.
+ = (X'Y)_{n \times 1}
+ $$
+First, solve $c_n$ using $r_{nn} c_n = (X'Y)_{n}$, then for $c_{n-1}$ etc.
 when $c$ is solved, solve 
 $$ R\beta = c$$
 
@@ -111,7 +113,7 @@ I.e. the residuals are zero on average.
 We can also look at another projection or mapping.
 $$ P: \; Y \rightarrow \hat{Y}$$
 Using
-$$X\hat{\beta} = X(X'X)^{-1}X'y = Py \;\; \text{with} \;\; P = X(X'X)^{-1}X'$$
+$$X \hat{\beta} = X(X'X)^{-1}X'y = Py \;\; \text{with} \;\; P = X(X'X)^{-1}X'$$
 We call $P$ the hat matrix. The aforementioned projection is an orthogonal 
 projection since:
 
@@ -120,7 +122,7 @@ projection since:
 * The trace of $P_{p\times p}$ is equal to $p$
 
 The last one can be shown as follows:
-$$ tr(X(X'X)^{-1}X') = tr((X^X)^{-1}X'X) = tr(I_{p \times p}) = p$$
+$$ tr(X(X'X)^{-1}X') = tr((X'X)^{-1}X'X) = tr(I_{p \times p}) = p$$
 
 ## Multiple regression vs. simple regression
 
@@ -133,7 +135,7 @@ Simple regressions only yield the same result as multiple linear regression
 if the variables are not correlated. This can be seen well algebraically.
 
 Orthogonal predictors means 
-$$ (X'X) = diag(\sum\limits_{i = 1}^n {x_{1i}}^2, ..., {x_{pi}}^2)$$
+$$ (X'X) = diag(\sum\limits_{i = 1}^n {x_{1i}}^2, ..., \sum\limits_{i = 1}^n{x_{pi}}^2)$$
 Which yields
 $$ \beta_j = \sum\limits_{i = 1}^n x_{ij} Y_i / \sum\limits_{i = 1}^n {x_{ij}}^2$$
 So we can easily see that the coefficient $\beta_j$ only depends on the j-th 
@@ -147,7 +149,7 @@ knitr::include_graphics("figures/ols_properties.jpg")
 
 ## Tests
 
-We know that, if $\epsilon \sim \mathcal{N}_p(0, \sigma^2) the distribution
+We know that, if $\epsilon \sim \mathcal{N}_p(0, \sigma^2)$ the distribution
 of our coefficients is as follows:
 $\hat{\beta} \sim \mathcal{N}_p(\beta, \sigma^2(X'X)^{-1})$.
 Hence, we know that the standardized versions of the coefficients, i.e. 
@@ -235,3 +237,84 @@ $$
 \end{split}
 $$
 So $w_i = \tilde{w_i}^2 = 1/ \sigma_i^2$ is just a weighted regression.
+
+
+## Model Selection
+
+If we have a set of $\mathcal{M}$ predictors, which ones should we use in our 
+model? Every variable we add to the model adds a bit of variability to the 
+estimated hyper plane. Hence, having irrelevant predictors in the model is
+not desirable. 
+In fact, we face a bias-variance trade-off, which we can derive more formally.
+The mean square error of  a model is
+
+$$ 
+\begin{split}
+MSE(x) &= n^{-1} \sum\limits_{i = 1}^n \mathbb{E}[(m(x_i) - \hat{m}(x_i))^2] \\
+&= n^{-1} \sum\limits_{i = 1}^n \mathbb{E}[\hat{m}(x_i) - (m(x_i) )^2] \\
+\end{split}
+$$
+
+Due to the fundamental law $Var(x) = \mathbb{E}[x^2] - \mathbb{E}[x]^2$, we
+can rewrite this as 
+
+$$ 
+\begin{split}
+MSE(x) &= n^{-1} \sum\limits_{i = 1}^n Var[\hat{m}(x_i) - m(x_i)] + n^{-1} \sum\limits_{i = 1}^n \mathbb{E}[\hat{m}(x_i) - m(x_i)]^2 \\
+\end{split}
+$$
+Since $m(x)$ is constant but unknown, it drops out of the variance expression. 
+The bias is the expected deviation of our estimate from the true value, so
+$\mathbb{E}[(\hat{m}(x_i) - m(x_i))]^2$ is the squared bias. We can plug in 
+our the regression model for our estimator $\hat{m}(x)$  end we end up with
+
+$$ 
+\begin{split}
+MSE(x) &= n^{-1} \sum\limits_{i = 1}^n Var[\sum\limits_{j = 1}^q \hat{\beta}_j x_{ij}] + n^{-1} \sum\limits_{i = 1}^n \mathbb{E}[\sum\limits_{j = 1}^q \hat{\beta}_j x_{ij} - m(x_i)]^2 \\
+&= Var(\cdot) + bias(\cdot)^2
+\end{split}
+$$
+
+The bias is decreasing exponentially with growing $q$, the variance 
+decreases linearly. This means there will be a unique minimum.
+
+### Mallow's cp statistic
+
+The problem with the above equation is that since $m(x)$ is unknown, there is no
+way we can estimate (and hence optimize) the mean squared error. However, you
+can estimate the mean squared error indirectly by the following quantity
+
+$$ n^{-1} SSE(\mathcal{M}) - \hat{\sigma}^2 + 2 \hat{\sigma}^2|\mathcal{M}| / n$$
+
+Since $\hat{\sigma}^2$ and $n$ are constants for each sub-model, we can also 
+optimize the well-known cp statistic
+$$\mathcal{C}_p = \frac{SSE(\mathcal{M})}{\hat{\sigma}^2} - n + 2 |\mathcal{M}| $$
+
+### Search strategies
+
+Note that there are $2^p-1$ possible models (every variable is in the model or
+not, and the empty model is not considered). You can use forward or backward 
+search. 
+
+**Forward Search**
+
+1. Start with the model that contains only an intercept.
+2. Add the predictor variable to the model that decreases the residual sum 
+   of squares the most.
+3. Proceed until a *large* number of predictors is chosen.
+4. Select the model that has the lowest cp statistic.
+
+**Backward selection**
+
+1. Start with the full model that contains all variables.
+2. Remove the variable from the model such that the residual sum of squares
+   increases the least.
+3. Continue until you reached the empty model
+4. Among those models, select the one that has the smallest cp score.
+
+
+Note that the algorithm is **greedy** so it is for example not possible to add 
+a variable to the model once it has been removed in the backward selection.
+Also, backward selection is typically a bit better, but also way more expensive.
+Note that for $p>n$, backward selection is not possible. Also, p-values are 
+not honest anymore.

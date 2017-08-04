@@ -109,6 +109,10 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="2.6" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#tests"><i class="fa fa-check"></i><b>2.6</b> Tests</a></li>
 <li class="chapter" data-level="2.7" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#diagnostics"><i class="fa fa-check"></i><b>2.7</b> Diagnostics</a></li>
 <li class="chapter" data-level="2.8" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#generalized-least-squares"><i class="fa fa-check"></i><b>2.8</b> Generalized least squares</a></li>
+<li class="chapter" data-level="2.9" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#model-selection"><i class="fa fa-check"></i><b>2.9</b> Model Selection</a><ul>
+<li class="chapter" data-level="2.9.1" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#mallows-cp-statistic"><i class="fa fa-check"></i><b>2.9.1</b> Mallow’s cp statistic</a></li>
+<li class="chapter" data-level="2.9.2" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#search-strategies"><i class="fa fa-check"></i><b>2.9.2</b> Search strategies</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="non-parametric-density-estimation.html"><a href="non-parametric-density-estimation.html"><i class="fa fa-check"></i><b>3</b> Non-parametric Density Estimation</a><ul>
 <li class="chapter" data-level="3.1" data-path="non-parametric-density-estimation.html"><a href="non-parametric-density-estimation.html#the-histogramm"><i class="fa fa-check"></i><b>3.1</b> The Histogramm</a></li>
@@ -277,6 +281,12 @@ formula &lt;-<span class="st"> </span><span class="kw">wrapFormula</span>(
 <li><p>R is vectorized. Before writing complicated <code>map()</code> stuff, think about whether it is possible to do all calculations vectorised. Compare exercise series 8.</p></li>
 <li><p>Scaling and Transformations: If the response or in fact any variable is highly skewed, use the log as a first aid transformation to for efficiency. Also, some methods such as neural networks work better with scaled predictors. Another category are methods such as lasso or ridge regression, where it is beneficial for interpretability to scale the variables.</p></li>
 </ul>
+<p><strong>Accessing model parameters</strong></p>
+<p>When calculating the degrees of freedom, e.g. for the mallows cp, never use someghing like `length(coef(fit))`` as <span class="math inline">\(p\)</span>, since this will only work for linear models. For additive models for example, this will give you the number of soothing terms used, which is <strong>not</strong> equivalent to the degrees of freedom. Instead, use</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit$df.residual</code></pre></div>
+<p>Which is available for many classes of fitted models, i.e. also GAMs. Also, often it is not necessary to compute something like the residual standard error, since you can conveniently access it via</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit$sigma</code></pre></div>
+<p>Also, do sanity checks for your results. A qick <code>plot(unlist(cps))</code> for example can show you the various values cp takes for different model vs. their index. As with cross validation, you know that the curve must be somehow convex.</p>
 
 </div>
 </div>

@@ -109,6 +109,10 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="2.6" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#tests"><i class="fa fa-check"></i><b>2.6</b> Tests</a></li>
 <li class="chapter" data-level="2.7" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#diagnostics"><i class="fa fa-check"></i><b>2.7</b> Diagnostics</a></li>
 <li class="chapter" data-level="2.8" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#generalized-least-squares"><i class="fa fa-check"></i><b>2.8</b> Generalized least squares</a></li>
+<li class="chapter" data-level="2.9" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#model-selection"><i class="fa fa-check"></i><b>2.9</b> Model Selection</a><ul>
+<li class="chapter" data-level="2.9.1" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#mallows-cp-statistic"><i class="fa fa-check"></i><b>2.9.1</b> Mallow’s cp statistic</a></li>
+<li class="chapter" data-level="2.9.2" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#search-strategies"><i class="fa fa-check"></i><b>2.9.2</b> Search strategies</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="non-parametric-density-estimation.html"><a href="non-parametric-density-estimation.html"><i class="fa fa-check"></i><b>3</b> Non-parametric Density Estimation</a><ul>
 <li class="chapter" data-level="3.1" data-path="non-parametric-density-estimation.html"><a href="non-parametric-density-estimation.html#the-histogramm"><i class="fa fa-check"></i><b>3.1</b> The Histogramm</a></li>
@@ -253,8 +257,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul>
 <p>Note that a good (in-sample) fit conflicts with good prediction out-of-sample.</p>
 <p>Linear models are stochastic, since <span class="math inline">\(\epsilon\)</span> is stochastic and hence the response variable <span class="math inline">\(Y_i\)</span> also. We can assume that the predictors are non-random.</p>
-<p>Linear models are called linear because they are linear in the coefficients, not linear in the predictors The predictors can be transformed arbitrary.</p>
-<p>Note the difference between the residuals <span class="math inline">\(r_i\)</span> and the errors <span class="math inline">\(\epsilon_i\)</span>. The variance of the error can be estimated with</p>
+<p>Linear models are called linear because they are linear in the coefficients, not linear in the predictors. The predictors can be transformed arbitrary.</p>
+<p>Note the difference between the residuals <span class="math inline">\(r_i\)</span> and the errors <span class="math inline">\(\epsilon_i\)</span>. The residuals are the estimates of the errors. The variance of the error can be estimated with</p>
 <p><span class="math display">\[ \hat{\sigma}^2 = \frac{1}{n - p} \sum\limits_{i = 1}^n {r_i}^2\]</span> The solution linear models is computed via ordinary least squares and can be derived analytically.</p>
 <p><span class="math display">\[\hat{\beta} = (X&#39;X)^{-1}X&#39;Y\]</span> For numerical stability reasons, do not compute the inverse of a matrix if possible, but do a QR decomposition instead. Here, we can do that by using the normal equations <span class="math display">\[
 \begin{split}
@@ -278,7 +282,8 @@ R&#39;c &amp; = X&#39;Y \\
 \vdots \\\vdots \\
  c_n \\
  \end{pmatrix} 
- = (X&#39;Y)_{n \times 1}\]</span> First, solve <span class="math inline">\(c_n\)</span> using <span class="math inline">\(r_{nn} c_n = (X&#39;Y)_{nn}\)</span>, then for <span class="math inline">\(c_{n-1}\)</span> etc. when <span class="math inline">\(c\)</span> is solved, solve <span class="math display">\[ R\beta = c\]</span></p>
+ = (X&#39;Y)_{n \times 1}
+ \]</span> First, solve <span class="math inline">\(c_n\)</span> using <span class="math inline">\(r_{nn} c_n = (X&#39;Y)_{n}\)</span>, then for <span class="math inline">\(c_{n-1}\)</span> etc. when <span class="math inline">\(c\)</span> is solved, solve <span class="math display">\[ R\beta = c\]</span></p>
 <p>Which has the same structure.</p>
 <div id="assumptions-of-the-linear-model" class="section level2">
 <h2><span class="header-section-number">2.1</span> Assumptions of the linear model</h2>
@@ -300,18 +305,18 @@ R&#39;c &amp; = X&#39;Y \\
 </div>
 <div id="hat-matrix" class="section level2">
 <h2><span class="header-section-number">2.3</span> Hat matrix</h2>
-<p>We can also look at another projection or mapping. <span class="math display">\[ P: \; Y \rightarrow \hat{Y}\]</span> Using <span class="math display">\[X\hat{\beta} = X(X&#39;X)^{-1}X&#39;y = Py \;\; \text{with} \;\; P = X(X&#39;X)^{-1}X&#39;\]</span> We call <span class="math inline">\(P\)</span> the hat matrix. The aforementioned projection is an orthogonal projection since:</p>
+<p>We can also look at another projection or mapping. <span class="math display">\[ P: \; Y \rightarrow \hat{Y}\]</span> Using <span class="math display">\[X \hat{\beta} = X(X&#39;X)^{-1}X&#39;y = Py \;\; \text{with} \;\; P = X(X&#39;X)^{-1}X&#39;\]</span> We call <span class="math inline">\(P\)</span> the hat matrix. The aforementioned projection is an orthogonal projection since:</p>
 <ul>
 <li><span class="math inline">\(P\)</span> is symmetric: <span class="math inline">\(P = P&#39;\)</span></li>
 <li><span class="math inline">\(P\)</span> is idempotent: <span class="math inline">\(P^2 = P\)</span></li>
 <li>The trace of <span class="math inline">\(P_{p\times p}\)</span> is equal to <span class="math inline">\(p\)</span></li>
 </ul>
-<p>The last one can be shown as follows: <span class="math display">\[ tr(X(X&#39;X)^{-1}X&#39;) = tr((X^X)^{-1}X&#39;X) = tr(I_{p \times p}) = p\]</span></p>
+<p>The last one can be shown as follows: <span class="math display">\[ tr(X(X&#39;X)^{-1}X&#39;) = tr((X&#39;X)^{-1}X&#39;X) = tr(I_{p \times p}) = p\]</span></p>
 </div>
 <div id="multiple-regression-vs.simple-regression" class="section level2">
 <h2><span class="header-section-number">2.4</span> Multiple regression vs. simple regression</h2>
 <p>Doing many simple regressions instead of one multiple linear regression does not give the same result in general. Let’s consider two predictors. If they are positively correlated and we omit one, we will overestimate the effect of the remaining predictor. If they are negatively correlated, we will underestimate it. Simple regressions only yield the same result as multiple linear regression if the variables are not correlated. This can be seen well algebraically.</p>
-<p>Orthogonal predictors means <span class="math display">\[ (X&#39;X) = diag(\sum\limits_{i = 1}^n {x_{1i}}^2, ..., {x_{pi}}^2)\]</span> Which yields <span class="math display">\[ \beta_j = \sum\limits_{i = 1}^n x_{ij} Y_i / \sum\limits_{i = 1}^n {x_{ij}}^2\]</span> So we can easily see that the coefficient <span class="math inline">\(\beta_j\)</span> only depends on the j-th predictor.</p>
+<p>Orthogonal predictors means <span class="math display">\[ (X&#39;X) = diag(\sum\limits_{i = 1}^n {x_{1i}}^2, ..., \sum\limits_{i = 1}^n{x_{pi}}^2)\]</span> Which yields <span class="math display">\[ \beta_j = \sum\limits_{i = 1}^n x_{ij} Y_i / \sum\limits_{i = 1}^n {x_{ij}}^2\]</span> So we can easily see that the coefficient <span class="math inline">\(\beta_j\)</span> only depends on the j-th predictor.</p>
 </div>
 <div id="properties" class="section level2">
 <h2><span class="header-section-number">2.5</span> Properties</h2>
@@ -319,7 +324,7 @@ R&#39;c &amp; = X&#39;Y \\
 </div>
 <div id="tests" class="section level2">
 <h2><span class="header-section-number">2.6</span> Tests</h2>
-<p>We know that, if $_p(0, ^2) the distribution of our coefficients is as follows: <span class="math inline">\(\hat{\beta} \sim \mathcal{N}_p(\beta, \sigma^2(X&#39;X)^{-1})\)</span>. Hence, we know that the standardized versions of the coefficients, i.e. <span class="math display">\[\frac{\hat{\beta}_j - \beta_j}{\sigma^2(X&#39;X)_{jj}} \sim \mathcal{N}_p(0, 1)\]</span></p>
+<p>We know that, if <span class="math inline">\(\epsilon \sim \mathcal{N}_p(0, \sigma^2)\)</span> the distribution of our coefficients is as follows: <span class="math inline">\(\hat{\beta} \sim \mathcal{N}_p(\beta, \sigma^2(X&#39;X)^{-1})\)</span>. Hence, we know that the standardized versions of the coefficients, i.e. <span class="math display">\[\frac{\hat{\beta}_j - \beta_j}{\sigma^2(X&#39;X)_{jj}} \sim \mathcal{N}_p(0, 1)\]</span></p>
 <p>If our Null Hypothesis is <span class="math inline">\(\beta_j = 0\)</span> the above becomes <span class="math display">\[\frac{\hat{\beta}_j}{\sigma^2(X&#39;X)_{jj}} \sim \mathcal{N}_p(0, 1)\]</span> We can plug in our estimate for <span class="math inline">\(\sigma^2\)</span>,</p>
 <p><span class="math display">\[\frac{\hat{\beta}_j}{\hat{\sigma}^2(X&#39;X)_{jj}} \sim \mathcal{t}_{n-p}(0, 1)\]</span></p>
 <p>Individual tests measure the significance of a variable given all the other variables in the model. If you want to look at whether a group of variables is significant, i.e. your Null Hypothesis is <span class="math inline">\(H_0: \beta_1 = ... = \beta_k = 0\)</span></p>
@@ -362,7 +367,55 @@ Cov(A \epsilon) &amp;:= \bf{1_{n \times n}} \\
 \arg\min\limits_{\beta} \sum w {(y_i - {x_i}&#39;\beta)}^2
 \end{split}
 \]</span> So <span class="math inline">\(w_i = \tilde{w_i}^2 = 1/ \sigma_i^2\)</span> is just a weighted regression.</p>
+</div>
+<div id="model-selection" class="section level2">
+<h2><span class="header-section-number">2.9</span> Model Selection</h2>
+<p>If we have a set of <span class="math inline">\(\mathcal{M}\)</span> predictors, which ones should we use in our model? Every variable we add to the model adds a bit of variability to the estimated hyper plane. Hence, having irrelevant predictors in the model is not desirable. In fact, we face a bias-variance trade-off, which we can derive more formally. The mean square error of a model is</p>
+<p><span class="math display">\[ 
+\begin{split}
+MSE(x) &amp;= n^{-1} \sum\limits_{i = 1}^n \mathbb{E}[(m(x_i) - \hat{m}(x_i))^2] \\
+&amp;= n^{-1} \sum\limits_{i = 1}^n \mathbb{E}[\hat{m}(x_i) - (m(x_i) )^2] \\
+\end{split}
+\]</span></p>
+<p>Due to the fundamental law <span class="math inline">\(Var(x) = \mathbb{E}[x^2] - \mathbb{E}[x]^2\)</span>, we can rewrite this as</p>
+<p><span class="math display">\[ 
+\begin{split}
+MSE(x) &amp;= n^{-1} \sum\limits_{i = 1}^n Var[\hat{m}(x_i) - m(x_i)] + n^{-1} \sum\limits_{i = 1}^n \mathbb{E}[\hat{m}(x_i) - m(x_i)]^2 \\
+\end{split}
+\]</span> Since <span class="math inline">\(m(x)\)</span> is constant but unknown, it drops out of the variance expression. The bias is the expected deviation of our estimate from the true value, so <span class="math inline">\(\mathbb{E}[(\hat{m}(x_i) - m(x_i))]^2\)</span> is the squared bias. We can plug in our the regression model for our estimator <span class="math inline">\(\hat{m}(x)\)</span> end we end up with</p>
+<p><span class="math display">\[ 
+\begin{split}
+MSE(x) &amp;= n^{-1} \sum\limits_{i = 1}^n Var[\sum\limits_{j = 1}^q \hat{\beta}_j x_{ij}] + n^{-1} \sum\limits_{i = 1}^n \mathbb{E}[\sum\limits_{j = 1}^q \hat{\beta}_j x_{ij} - m(x_i)]^2 \\
+&amp;= Var(\cdot) + bias(\cdot)^2
+\end{split}
+\]</span></p>
+<p>The bias is decreasing exponentially with growing <span class="math inline">\(q\)</span>, the variance decreases linearly. This means there will be a unique minimum.</p>
+<div id="mallows-cp-statistic" class="section level3">
+<h3><span class="header-section-number">2.9.1</span> Mallow’s cp statistic</h3>
+<p>The problem with the above equation is that since <span class="math inline">\(m(x)\)</span> is unknown, there is no way we can estimate (and hence optimize) the mean squared error. However, you can estimate the mean squared error indirectly by the following quantity</p>
+<p><span class="math display">\[ n^{-1} SSE(\mathcal{M}) - \hat{\sigma}^2 + 2 \hat{\sigma}^2|\mathcal{M}| / n\]</span></p>
+<p>Since <span class="math inline">\(\hat{\sigma}^2\)</span> and <span class="math inline">\(n\)</span> are constants for each sub-model, we can also optimize the well-known cp statistic <span class="math display">\[\mathcal{C}_p = \frac{SSE(\mathcal{M})}{\hat{\sigma}^2} - n + 2 |\mathcal{M}| \]</span></p>
+</div>
+<div id="search-strategies" class="section level3">
+<h3><span class="header-section-number">2.9.2</span> Search strategies</h3>
+<p>Note that there are <span class="math inline">\(2^p-1\)</span> possible models (every variable is in the model or not, and the empty model is not considered). You can use forward or backward search.</p>
+<p><strong>Forward Search</strong></p>
+<ol style="list-style-type: decimal">
+<li>Start with the model that contains only an intercept.</li>
+<li>Add the predictor variable to the model that decreases the residual sum of squares the most.</li>
+<li>Proceed until a <em>large</em> number of predictors is chosen.</li>
+<li>Select the model that has the lowest cp statistic.</li>
+</ol>
+<p><strong>Backward selection</strong></p>
+<ol style="list-style-type: decimal">
+<li>Start with the full model that contains all variables.</li>
+<li>Remove the variable from the model such that the residual sum of squares increases the least.</li>
+<li>Continue until you reached the empty model</li>
+<li>Among those models, select the one that has the smallest cp score.</li>
+</ol>
+<p>Note that the algorithm is <strong>greedy</strong> so it is for example not possible to add a variable to the model once it has been removed in the backward selection. Also, backward selection is typically a bit better, but also way more expensive. Note that for <span class="math inline">\(p&gt;n\)</span>, backward selection is not possible. Also, p-values are not honest anymore.</p>
 
+</div>
 </div>
 </div>
             </section>
