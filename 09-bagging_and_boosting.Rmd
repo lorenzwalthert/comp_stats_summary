@@ -74,7 +74,7 @@ The concrete implementation is:
   $\hat{f}_1(x) = \nu g_1(x)$
 
 * For m = 2, 3, ..., M: Fit the residuals to the data, i.e
-  $$ (U_i, X_i) \rightarrow \hat{g}(x)$$
+  $$ (X_i, U_i) \rightarrow \hat{g}(x)$$
   Set
   $$ \hat{f}_m(x) = \hat{f}_{m-1}(x) + \nu \hat{g}_m(x)$$
   Compute the current residuals: 

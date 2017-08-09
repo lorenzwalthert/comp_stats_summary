@@ -282,8 +282,7 @@ one_est &lt;-<span class="st"> </span><span class="kw">naive_density</span>(x, <
 <span class="kw">ggplot</span>(one_est, <span class="kw">aes</span>(<span class="dt">x =</span> x_eval, <span class="dt">y =</span> y_est)) +<span class="st"> </span><span class="kw">geom_path</span>()</code></pre></div>
 <p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <p>We don’t need to normalize anything since the area has size one already, which we need for it to be a density. However, if we use a larger <span class="math inline">\(h\)</span>, for example <span class="math inline">\(h = 1\)</span>, we need to divide by <span class="math inline">\(2\)</span> to get an area of size one since at all three points, the relative frequency is one and it becomes zero only when the absolute value of x is larger than 3/2. Hence, we found the formula to obtain densities. <span class="math display">\[ f(x) = \frac{1}{2h}\mathbb{P}[x-h&lt; X &lt; x+h] \;\;\; \text{for}\;\; h \rightarrow 0\]</span> Which translates into frequencies for our estimator <span class="math display">\[ \hat{f}(x) = \frac{1}{2hn}\#(X_i \in [x-h, x+h))\]</span> This is quite wrong, as we know the true distribution is uniform between minus one and one. However, as you can see by playing around with the shiny app further down the page, it seems that with <span class="math inline">\(h \rightarrow \infty\)</span>, we are approaching the true distribution. The nice thing about this estimator is that there is no need to set the tuning parameter <span class="math inline">\(x_0\)</span> anymore.</p>
-You can represent the naive kernel differently, namely as a kernel. We have
-<span class="math display">\[\begin{equation}
+<p>You can represent the naive kernel differently, namely as a kernel. We have <span class="math display">\[
 \begin{split}
 f(x) = &amp; \frac{1}{2nh}\#\{X_i \in [x- d, x+ d)\} \\
      = &amp; \frac{1}{2nh} \sum\limits_{i = 1}^n 1_{[x_i \in [x- d, x+ d)]} \\
@@ -291,27 +290,26 @@ f(x) = &amp; \frac{1}{2nh}\#\{X_i \in [x- d, x+ d)\} \\
      = &amp; \frac{1}{2nh} \sum\limits_{i = 1}^n 1_{[(x - x_i)/h \in [-1, 1)]} | \text{You can flip signs} \\
      = &amp; \frac{1}{2nh} \sum\limits_{i = 1}^n w&#39;\big(\frac{x -x_i}{h}\big) \\
 \end{split}
-\end{equation}\]</span>
-<span class="math display">\[\begin{equation}
+\]</span></p>
+<p><span class="math display">\[
 w&#39;\big(\frac{x - x_i}{h}\big) = \begin{cases}
       1 \;\;\ \text{if} \;\;\ | \frac{x - x_i}{h} | &gt; 1
       \\
       0 \;\;\ \text{else}.
       \end{cases}
-\end{equation}\]</span>
-<p>Where we can collapse <span class="math inline">\(2\)</span> and our weight function <span class="math inline">\(w&#39;(x)\)</span>, so we end up with the following.</p>
-<span class="math display">\[\begin{equation}
+\]</span> Where we can collapse <span class="math inline">\(2\)</span> and our weight function <span class="math inline">\(w&#39;(x)\)</span>, so we end up with the following.</p>
+<p><span class="math display">\[
 \begin{split}
 f(x) = &amp; \frac{1}{nh} \sum\limits_{i = 1}^n w\big(\frac{x - x_i}{h}\big) \\
 \end{split}
-\end{equation}\]</span>
-<span class="math display">\[\begin{equation}
+\]</span></p>
+<p><span class="math display">\[
 w\big(\frac{x - x_i}{h}\big) = \begin{cases}
       \frac{1}{2} \;\;\ \text{if} \;\;\ | \frac{x - x_i}{h} | &gt; 1
       \\
       0 \;\;\ \text{else}.
       \end{cases}
-\end{equation}\]</span>
+\]</span></p>
 </div>
 <div id="other-kernels" class="section level3">
 <h3><span class="header-section-number">3.2.2</span> Other Kernels</h3>

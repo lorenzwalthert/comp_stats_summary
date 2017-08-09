@@ -255,7 +255,7 @@ P[Y|X] &amp;=  \frac{\mathbb{P}[X|Y]}{\mathbb{P}[Y]}\mathbb{P}[Y] \\
 f_{Y|X} &amp; = \frac{f_{X|Y}}{f_X}f_Y \\
 f_{Y|X} &amp; = \frac{f_{X, Y}}{f_X}   \;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\; \text{|} \times y\\
 f_{Y|X}y &amp; = \frac{f_{X, Y}}{f_X}y \;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\; \text{| taking the integral}\\
-E[X|Y] &amp; = \int \frac{f_{X, Y}}{f_X}ydy
+E[Y|X] &amp; = \int \frac{f_{X, Y}}{f_X}ydy
 \end{split}
 \end{equation}\]</span>
 <p>Whereas for <span class="math inline">\(\hat{f}_{X, Y}\)</span>, we can use a product kernel. This formula simplifies quite a bit and yields the Nadaraja-Watson Kernel, which is essentially just a weighted mean of response values. <span class="math display">\[\hat{m}(x) = \frac{\sum\limits_{i = 1}^n K\Big(\frac{x-X_i}{h}\Big)Y_i}{\sum\limits_{i = 1}^nK\Big(\frac{x-X_i}{h}\Big)} = \frac{\sum\mathcal{w}(x)_i Y_i}{\sum\mathcal{w}(x)_i} = \sum\limits_{i = 1}^n \tilde{\mathcal{w}}(x)_i Y_i = \tilde{\mathbf{w}}(x)&#39;\mathbf{Y}\]</span> The weights <span class="math inline">\(\tilde{\mathcal{w}}_i\)</span> are normalized weights, i.e. <span class="math inline">\(\tilde{\mathcal{w}}_i = \mathcal{w}_i / \sum\limits_{k = 1}^n \mathcal{w}_k\)</span></p>
@@ -272,7 +272,7 @@ E[X|Y] &amp; = \int \frac{f_{X, Y}}{f_X}ydy
 </div>
 <div id="hat-matrix-1" class="section level2">
 <h2><span class="header-section-number">4.3</span> Hat Matrix</h2>
-<p>As in chapter 1, we can also obtain a smoother matrix <span class="math inline">\(S\)</span> that maps the observed response values to the fitted values. From above, we have: <span class="math display">\[\hat{y}_i = \tilde{\mathbf{w}}(x_i)&#39;\mathbf{Y}\]</span></p>
+<p>As in chapter 1, we can also obtain a smoother matrix <span class="math inline">\(S\)</span> that maps the observed response values to the fitted values. From above, we have: <span class="math display">\[\hat{y}_i = \tilde{\mathbf{w}}(x)&#39;\mathbf{Y}\]</span></p>
 <p><span class="math display">\[\mathbf{\hat{Y}} = \mathcal{S} \mathbf{Y} = 
 \begin{pmatrix}\hat{y}_1 \\\vdots\\\hat{y}_n\end{pmatrix} =
 \begin{pmatrix}\tilde{\mathbf{w}}(x_1)&#39;\\\vdots\\\tilde{\mathbf{w}}(x_n)&#39;\end{pmatrix} 
@@ -290,10 +290,11 @@ E[X|Y] &amp; = \int \frac{f_{X, Y}}{f_X}ydy
 </ul>
 <p><span class="math display">\[\hat{m}(x) = \bar{y} \]</span></p>
 <ul>
-<li><span class="math inline">\(h \rightarrow 0\)</span>. If we assume <span class="math inline">\(n\)</span> distinct, equi-spaced <span class="math inline">\(x_i\)</span> values, then the fitted values in the neighborhood of <span class="math inline">\(\hat{m}(x_i)\)</span> are just the observed response value <span class="math inline">\(y_i\)</span>, since all weights for points other than <span class="math inline">\(y_i\)</span> are zero. Or to be more precise: If the distance between neighboring points is <span class="math inline">\(\eta\)</span>, then, for <span class="math inline">\(h \leqslant \eta\)</span> : <span class="math display">\[ \hat{m}(x) = y_{i^*} \;\;\ \text{with} \;\; i^* =  
-  \arg\min\limits_{0 \leqslant i \leqslant n} |x - x_i| \]</span> This corresponds to <span class="math inline">\(n\)</span> degrees of freedom.</li>
-<li>We can interpolate between these two extreme cases in a monotone way.</li>
+<li><span class="math inline">\(h \rightarrow 0\)</span>. If we assume <span class="math inline">\(n\)</span> distinct, equi-spaced <span class="math inline">\(x_i\)</span> values, then the fitted values in the neighborhood of <span class="math inline">\(\hat{m}(x_i)\)</span> are just the observed response value <span class="math inline">\(y_i\)</span>, since all weights for points other than <span class="math inline">\(y_i\)</span> are zero. Or to be more precise: If the distance between neighboring points is <span class="math inline">\(\eta\)</span>, then, for <span class="math inline">\(h \leqslant \eta\)</span> :</li>
 </ul>
+<p><span class="math display">\[ \hat{m}(x) = y_{i^*} \;\;\ \text{with} \;\; i^* =  
+  \arg\min\limits_{0 \leqslant i \leqslant n} |x - x_i| \]</span> This corresponds to <span class="math inline">\(n\)</span> degrees of freedom. * We can interpolate between these two extreme cases in a monotone way.</p>
+<p>For non-parametric density estimation, this is very similar except that the esimates around a data point would not be constant for very small <span class="math inline">\(h\)</span>, but the weigth the kernel takes for that value of <span class="math inline">\(\frac{x-x_i}{h}\)</span> because all but one of the summands are zero in <span class="math inline">\(\sum\limits_{i = 1}^n K\Big(\frac{x -x_i}{h}\Big)\)</span>.</p>
 <div id="applications" class="section level3">
 <h3><span class="header-section-number">4.4.1</span> Applications</h3>
 <p>There are two main applications for the degree of freedom:</p>

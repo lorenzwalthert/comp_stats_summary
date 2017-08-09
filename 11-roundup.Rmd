@@ -144,3 +144,15 @@ functions until you are done with the whole exam. Examples are
 * The boostrapped confidence intrevals are 
 
 $$[2 \hat{\theta} - q_{1-\alpha/2}, 2\hat{\theta}- q_{\alpha/2}]$$
+* You can represent a matrix multiplication
+  as a sum of outer product multiplications whereas $x_i$ is one column
+  from the maxtix $X_{n \times p}$ and has dimensions $n \times 1$
+  $$ (X'X) = \sum\limits_{i = 1}^p x_i x_i'$$
+
+* Scalars can be moved out of a more complicated matrix multiplication.
+  $ab'A^{-1}ab'A^{-1} = (b'A^{-1}a)ab'A^{-1}$ 
+* $(X(X'X)^{-1}X')_{ii} = x_i'(X'X)^{-1}x_i$
+* $uDu'$ can be rewritten as $\sum\limits_{j = 1}^p d_j u_j u_j'$ if you 
+  think of the matrices a row vectors and each element of such a vector is 
+  a vector itself (Credits @NG).
+* Always sort the data when working with smoother matrices.

@@ -16,7 +16,7 @@ P[Y|X] &=  \frac{\mathbb{P}[X|Y]}{\mathbb{P}[Y]}\mathbb{P}[Y] \\
 f_{Y|X} & = \frac{f_{X|Y}}{f_X}f_Y \\
 f_{Y|X} & = \frac{f_{X, Y}}{f_X}   \;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\; \text{|} \times y\\
 f_{Y|X}y & = \frac{f_{X, Y}}{f_X}y \;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\; \text{| taking the integral}\\
-E[X|Y] & = \int \frac{f_{X, Y}}{f_X}ydy
+E[Y|X] & = \int \frac{f_{X, Y}}{f_X}ydy
 \end{split}
 \end{equation}
 Whereas for $\hat{f}_{X, Y}$, we can use a product kernel. This formula 
@@ -52,7 +52,7 @@ freedom (see below).
 As in chapter 1, we can also obtain a smoother matrix $S$ that maps the 
 observed response values to the fitted values.
 From above, we have:
-$$\hat{y}_i = \tilde{\mathbf{w}}(x_i)'\mathbf{Y}$$
+$$\hat{y}_i = \tilde{\mathbf{w}}(x)'\mathbf{Y}$$
 
 
 $$\mathbf{\hat{Y}} = \mathcal{S} \mathbf{Y} = 
@@ -97,10 +97,17 @@ $$\hat{m}(x) = \bar{y} $$
   observed response value $y_i$, since all weights for points other than $y_i$ 
   are zero. Or to be more precise: If the distance between
   neighboring points is $\eta$, then, for  $h \leqslant \eta$ :
+  
   $$ \hat{m}(x) = y_{i^*} \;\;\ \text{with} \;\; i^* =  
   \arg\min\limits_{0 \leqslant i \leqslant n} |x - x_i| $$
   This corresponds to $n$ degrees of freedom.
 * We can interpolate between these two extreme cases in a monotone way.
+
+For non-parametric density estimation, this is very similar except that the 
+esimates around a data point would not be constant for very small $h$, but the 
+weigth the kernel takes for that value of $\frac{x-x_i}{h}$
+because all but one of the summands are zero in 
+$\sum\limits_{i = 1}^n K\Big(\frac{x -x_i}{h}\Big)$.
 
 
 ### Applications

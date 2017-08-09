@@ -304,7 +304,13 @@ formula &lt;-<span class="st"> </span><span class="kw">wrapFormula</span>(
 <ul>
 <li>The boostrapped confidence intrevals are</li>
 </ul>
-<p><span class="math display">\[[2 \hat{\theta} - q_{1-\alpha/2}, 2\hat{\theta}- q_{\alpha/2}]\]</span></p>
+<p><span class="math display">\[[2 \hat{\theta} - q_{1-\alpha/2}, 2\hat{\theta}- q_{\alpha/2}]\]</span> * You can represent a matrix multiplication as a sum of outer product multiplications whereas <span class="math inline">\(x_i\)</span> is one column from the maxtix <span class="math inline">\(X_{n \times p}\)</span> and has dimensions <span class="math inline">\(n \times 1\)</span> <span class="math display">\[ (X&#39;X) = \sum\limits_{i = 1}^p x_i x_i&#39;\]</span></p>
+<ul>
+<li>Scalars can be moved out of a more complicated matrix multiplication. <span class="math inline">\(ab&#39;A^{-1}ab&#39;A^{-1} = (b&#39;A^{-1}a)ab&#39;A^{-1}\)</span></li>
+<li><span class="math inline">\((X(X&#39;X)^{-1}X&#39;)_{ii} = x_i&#39;(X&#39;X)^{-1}x_i\)</span></li>
+<li><span class="math inline">\(uDu&#39;\)</span> can be rewritten as <span class="math inline">\(\sum\limits_{j = 1}^p d_j u_j u_j&#39;\)</span> if you think of the matrices a row vectors and each element of such a vector is a vector itself (Credits <span class="citation">@NG</span>).</li>
+<li>Always sort the data when working with smoother matrices.</li>
+</ul>
 
 </div>
 </div>
