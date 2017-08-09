@@ -249,7 +249,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h1><span class="header-section-number">Chapter 4</span> Non-parametric Regression</h1>
 <p>We assume a model of the form</p>
 <p><span class="math display">\[ E[Y|X = x] = m(x)\]</span> which is more general than assuming <span class="math inline">\(Y_i = m(x_i) + \epsilon_i\)</span> since in the former, the noise does not have to be additive. We can use Bayes’ Theorem to deduce such an estimator <span class="math inline">\(\hat{m}\)</span> using density estimates of our predictor and response variable. In that sense, non-parametric regression really builds on top of non-parametric density estimation.</p>
-<span class="math display">\[\begin{equation}
+<p><span class="math display">\[
 \begin{split}
 P[Y|X] &amp;=  \frac{\mathbb{P}[X|Y]}{\mathbb{P}[Y]}\mathbb{P}[Y] \\ 
 f_{Y|X} &amp; = \frac{f_{X|Y}}{f_X}f_Y \\
@@ -257,8 +257,7 @@ f_{Y|X} &amp; = \frac{f_{X, Y}}{f_X}   \;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\
 f_{Y|X}y &amp; = \frac{f_{X, Y}}{f_X}y \;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\; \text{| taking the integral}\\
 E[Y|X] &amp; = \int \frac{f_{X, Y}}{f_X}ydy
 \end{split}
-\end{equation}\]</span>
-<p>Whereas for <span class="math inline">\(\hat{f}_{X, Y}\)</span>, we can use a product kernel. This formula simplifies quite a bit and yields the Nadaraja-Watson Kernel, which is essentially just a weighted mean of response values. <span class="math display">\[\hat{m}(x) = \frac{\sum\limits_{i = 1}^n K\Big(\frac{x-X_i}{h}\Big)Y_i}{\sum\limits_{i = 1}^nK\Big(\frac{x-X_i}{h}\Big)} = \frac{\sum\mathcal{w}(x)_i Y_i}{\sum\mathcal{w}(x)_i} = \sum\limits_{i = 1}^n \tilde{\mathcal{w}}(x)_i Y_i = \tilde{\mathbf{w}}(x)&#39;\mathbf{Y}\]</span> The weights <span class="math inline">\(\tilde{\mathcal{w}}_i\)</span> are normalized weights, i.e. <span class="math inline">\(\tilde{\mathcal{w}}_i = \mathcal{w}_i / \sum\limits_{k = 1}^n \mathcal{w}_k\)</span></p>
+\]</span> Whereas for <span class="math inline">\(\hat{f}_{X, Y}\)</span>, we can use a product kernel. This formula simplifies quite a bit and yields the Nadaraja-Watson Kernel, which is essentially just a weighted mean of response values. <span class="math display">\[\hat{m}(x) = \frac{\sum\limits_{i = 1}^n K\Big(\frac{x-X_i}{h}\Big)Y_i}{\sum\limits_{i = 1}^nK\Big(\frac{x-X_i}{h}\Big)} = \frac{\sum\mathcal{w}(x)_i Y_i}{\sum\mathcal{w}(x)_i} = \sum\limits_{i = 1}^n \tilde{\mathcal{w}}(x)_i Y_i = \tilde{\mathbf{w}}(x)&#39;\mathbf{Y}\]</span> The weights <span class="math inline">\(\tilde{\mathcal{w}}_i\)</span> are normalized weights, i.e. <span class="math inline">\(\tilde{\mathcal{w}}_i = \mathcal{w}_i / \sum\limits_{k = 1}^n \mathcal{w}_k\)</span></p>
 <div id="alternative-interpretation" class="section level2">
 <h2><span class="header-section-number">4.1</span> Alternative Interpretation</h2>
 <p>It can be easily shown that the solution corresponds to the following minimization problem:</p>
@@ -273,11 +272,33 @@ E[Y|X] &amp; = \int \frac{f_{X, Y}}{f_X}ydy
 <div id="hat-matrix-1" class="section level2">
 <h2><span class="header-section-number">4.3</span> Hat Matrix</h2>
 <p>As in chapter 1, we can also obtain a smoother matrix <span class="math inline">\(S\)</span> that maps the observed response values to the fitted values. From above, we have: <span class="math display">\[\hat{y}_i = \tilde{\mathbf{w}}(x)&#39;\mathbf{Y}\]</span></p>
-<p><span class="math display">\[\mathbf{\hat{Y}} = \mathcal{S} \mathbf{Y} = 
+<p><span class="math display">\[
+\mathbf{\hat{Y}} = \mathcal{S} \mathbf{Y} = 
 \begin{pmatrix}\hat{y}_1 \\\vdots\\\hat{y}_n\end{pmatrix} =
 \begin{pmatrix}\tilde{\mathbf{w}}(x_1)&#39;\\\vdots\\\tilde{\mathbf{w}}(x_n)&#39;\end{pmatrix} 
-\times \begin{pmatrix}y_1 \\\vdots\\y_n\end{pmatrix}\]</span> Where <span class="math inline">\(\tilde{\mathbf{w}}(x_1)&#39;\)</span> is a row vector of length <span class="math inline">\(n\)</span> with the normalized kernel weights.</p>
-<p>** here: How to compute S and why**</p>
+\times \begin{pmatrix}y_1 \\\vdots\\y_n\end{pmatrix}
+\]</span> Where <span class="math inline">\(\tilde{\mathbf{w}}(x_1)&#39;\)</span> is a row vector of length <span class="math inline">\(n\)</span> with the normalized kernel weights.</p>
+<p>Let us adopt the notation from the script (kind of) and denote the kernel weight for observation <span class="math inline">\(w_s\)</span> on observation <span class="math inline">\(x_r\)</span> with <span class="math inline">\(\tilde{w}_s(x_r)\)</span>, i.e. <span class="math display">\[ \tilde{w}_s(x_r) = \sum\limits_{s = 1} K\Big(\frac{x_r - x_s}{h}\Big) / \sum K(\cdot)\]</span> The smoother matrix from above can be rewritten as a matrix with scalar entries instead of vectors</p>
+<p><span class="math display">\[ 
+\begin{pmatrix}
+\tilde{w}_1(x_1) \;\; \tilde{w}_2(x_1) \;\; \dots \;\;\tilde{w}_n(x_1) \\
+\tilde{w}_1(x_2) \;\; \tilde{w}_2(x_2) \;\; \dots \;\;\tilde{w}_n(x_2)\\
+\tilde{w}_1(x_3) \;\;\tilde{w}_2(x_3) \;\; \dots \;\;\tilde{w}_n(x_n) \\
+\end{pmatrix} 
+\]</span> So <span class="math inline">\([S]_{r, s} = \tilde{w}_s(x_r)\)</span>.</p>
+<p>This matrix can be obtained easily by smoothing n unit vectors <span class="math inline">\(u_{n \times 1}\)</span>. To obtain the j-th column, smooth the unit vector that has in the j-th position a <span class="math inline">\(1\)</span> and all other positions <span class="math inline">\(0\)</span>. Let us assume equidistant x values. The following smoothed y values evaluated at all <span class="math inline">\(x \in \{1, ..., n\}\)</span> give the values for the first column of <span class="math inline">\(S\)</span>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">j &lt;-<span class="st"> </span><span class="dv">1</span>
+n &lt;-<span class="st"> </span><span class="dv">10</span>
+u &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>, n)
+u[j] &lt;-<span class="st"> </span><span class="dv">1</span>
+data &lt;-<span class="st"> </span><span class="kw">data_frame</span>(
+  <span class="dt">x =</span> <span class="dv">1</span>:n,
+  <span class="dt">y =</span> u
+)
+<span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y)) +<span class="st"> </span><span class="kw">geom_point</span>() +<span class="st"> </span><span class="kw">geom_smooth</span>(<span class="dt">se =</span> <span class="ot">FALSE</span>)</code></pre></div>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>But why? The trick is that, since all but the j-th y value are zero, the fitted value is just the noralized kernel weight.</p>
+<p><span class="math display">\[\hat{m}(x_r)^{(j)} =  \frac{K\Big(\frac{x_r - x_j}{h}\Big)}{\sum K(\cdot)} = \tilde{w}_j(x_r)\]</span></p>
 </div>
 <div id="degrees-of-freedom" class="section level2">
 <h2><span class="header-section-number">4.4</span> Degrees of Freedom</h2>

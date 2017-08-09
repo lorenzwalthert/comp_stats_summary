@@ -10,7 +10,7 @@ density estimates of our predictor and response variable. In that sense,
 non-parametric regression really builds on top of non-parametric density
 estimation.
 
-\begin{equation}
+$$
 \begin{split}
 P[Y|X] &=  \frac{\mathbb{P}[X|Y]}{\mathbb{P}[Y]}\mathbb{P}[Y] \\ 
 f_{Y|X} & = \frac{f_{X|Y}}{f_X}f_Y \\
@@ -18,7 +18,7 @@ f_{Y|X} & = \frac{f_{X, Y}}{f_X}   \;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\; \t
 f_{Y|X}y & = \frac{f_{X, Y}}{f_X}y \;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\; \text{| taking the integral}\\
 E[Y|X] & = \int \frac{f_{X, Y}}{f_X}ydy
 \end{split}
-\end{equation}
+$$
 Whereas for $\hat{f}_{X, Y}$, we can use a product kernel. This formula 
 simplifies quite a bit and yields the Nadaraja-Watson Kernel, which
 is essentially just a weighted mean of response values.
@@ -55,14 +55,52 @@ From above, we have:
 $$\hat{y}_i = \tilde{\mathbf{w}}(x)'\mathbf{Y}$$
 
 
-$$\mathbf{\hat{Y}} = \mathcal{S} \mathbf{Y} = 
+$$
+\mathbf{\hat{Y}} = \mathcal{S} \mathbf{Y} = 
 \begin{pmatrix}\hat{y}_1 \\\vdots\\\hat{y}_n\end{pmatrix} =
 \begin{pmatrix}\tilde{\mathbf{w}}(x_1)'\\\vdots\\\tilde{\mathbf{w}}(x_n)'\end{pmatrix} 
-\times \begin{pmatrix}y_1 \\\vdots\\y_n\end{pmatrix}$$
+\times \begin{pmatrix}y_1 \\\vdots\\y_n\end{pmatrix}
+$$
 Where $\tilde{\mathbf{w}}(x_1)'$ is a row vector of length $n$ with the
 normalized kernel weights.
 
-** here: How to compute S and why**
+Let us adopt the notation from the script (kind of) and denote the kernel 
+weight for observation $w_s$ on observation $x_r$ with $\tilde{w}_s(x_r)$, i.e.
+$$ \tilde{w}_s(x_r) = \sum\limits_{s = 1} K\Big(\frac{x_r - x_s}{h}\Big) / \sum K(\cdot)$$
+The smoother matrix from above can be rewritten as a matrix with scalar entries
+instead of vectors 
+
+$$ 
+\begin{pmatrix}
+\tilde{w}_1(x_1) \;\; \tilde{w}_2(x_1) \;\; \dots \;\;\tilde{w}_n(x_1) \\
+\tilde{w}_1(x_2) \;\; \tilde{w}_2(x_2) \;\; \dots \;\;\tilde{w}_n(x_2)\\
+\tilde{w}_1(x_3) \;\;\tilde{w}_2(x_3) \;\; \dots \;\;\tilde{w}_n(x_n) \\
+\end{pmatrix} 
+$$
+So $[S]_{r, s} = \tilde{w}_s(x_r)$.
+
+This matrix can be obtained easily by smoothing n unit vectors $u_{n \times 1}$. 
+To obtain the j-th column, smooth the unit vector that has in the j-th position
+a $1$ and all other positions $0$.
+Let us assume equidistant x values. The following smoothed y values evaluated 
+at all $x \in \{1, ..., n\}$ give the values for the first column of $S$.
+```{r}
+j <- 1
+n <- 10
+u <- rep(0, n)
+u[j] <- 1
+data <- data_frame(
+  x = 1:n,
+  y = u
+)
+ggplot(data, aes(x = x, y = y)) + geom_point() + geom_smooth(se = FALSE)
+```
+
+But why? The trick is that, since all but the j-th y value are zero, the fitted
+value is just the noralized kernel weight.
+
+$$\hat{m}(x_r)^{(j)} =  \frac{K\Big(\frac{x_r - x_j}{h}\Big)}{\sum K(\cdot)} = \tilde{w}_j(x_r)$$
+
 
 ## Degrees of Freedom
 Note that we need a different measurement of degrees of freedom than the one
