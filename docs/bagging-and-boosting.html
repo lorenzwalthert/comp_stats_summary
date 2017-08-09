@@ -295,14 +295,14 @@ mean_sim &lt;-<span class="st"> </span><span class="kw">rerun</span>(<span class
 
 <span class="kw">ggplot</span>(<span class="kw">data_frame</span>(<span class="dt">mean =</span> mean_sim), <span class="kw">aes</span>(<span class="dt">x =</span> mean)) +
 <span class="st">  </span><span class="kw">stat_ecdf</span>(<span class="dt">geom =</span> <span class="st">&quot;step&quot;</span>)</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-46-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-47-1.png" width="672" /></p>
 <p>Here you can see that if <span class="math inline">\(x \sim F\)</span>, <span class="math inline">\(F(X) \sim Unif\)</span>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">1000</span>)
 <span class="kw">plot.ecdf</span>(x)</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-47-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-48-1.png" width="672" /></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">y &lt;-<span class="st"> </span><span class="kw">pnorm</span>(x)
 <span class="kw">plot.ecdf</span>(y)</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-47-2.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-48-2.png" width="672" /></p>
 
 </div>
 </div>

@@ -96,11 +96,24 @@ data <- data_frame(
 ggplot(data, aes(x = x, y = y)) + geom_point() + geom_smooth(se = FALSE)
 ```
 
-But why? The trick is that, since all but the j-th y value are zero, the fitted
-value is just the noralized kernel weight.
+But why? The trick is that, since all but the j-th y value are zero and 
+therefore the sum is only taken over one element. For the non-zero element, 
+the $y_i$ is one, so the fitted value is just the normalized kernel weight.
 
 $$\hat{m}(x_r)^{(j)} =  \frac{K\Big(\frac{x_r - x_j}{h}\Big)}{\sum K(\cdot)} = \tilde{w}_j(x_r)$$
 
+Here is one way to implement that in R for the Nadaraya-Watson Kernel.
+
+```{r, eval = FALSE}
+n <- nrow(reg)
+Id <- diag(n)
+S <- matrix(0, n, n)
+h <- "your bandwidth"
+for (j in 1:n) {
+  S[, j] <- ksmooth(data$x, Id[, j], x.point = data$x, kernel = "normal", bandwidth = h)$y
+}
+
+```
 
 ## Degrees of Freedom
 Note that we need a different measurement of degrees of freedom than the one

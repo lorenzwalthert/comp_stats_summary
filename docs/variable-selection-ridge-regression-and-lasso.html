@@ -280,7 +280,7 @@ With all variables having a mean of zero. Hence we got rid of the intercept. In 
 )</code></pre></div>
 <p>We can plot the coefficients for different values of <span class="math inline">\(\lambda\)</span> in a so-called trace plot.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(fitted)</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-43-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-44-1.png" width="672" /></p>
 <p>We can also get the coeficients for each lamda we estimated and select the best model and get the usual <code>lm</code> summary for it.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">coef</span>(fitted) %&gt;%
 <span class="st">  </span><span class="kw">as_data_frame</span>()</code></pre></div>
