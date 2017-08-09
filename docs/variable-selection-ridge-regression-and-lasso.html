@@ -32,8 +32,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   
   
-<link rel="prev" href="intro.html">
-
+<link rel="prev" href="flexible-regression-and-classification-methods.html">
+<link rel="next" href="bagging-and-boosting.html">
 
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -245,23 +245,115 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="references" class="section level1 unnumbered">
-<h1>References</h1>
+<div id="variable-selection---ridge-regression-and-lasso" class="section level1">
+<h1><span class="header-section-number">Chapter 9</span> Variable Selection - Ridge Regression and Lasso</h1>
+<p>Except for trees, none of the techniques introduced so far perform variable selection. Variable selection is particularly important when working with high-dimensional data, namely for two reasons:</p>
+<ul>
+<li>In the case of highly correlated predictors, regression coefficient estimates become <strong>ill-determined</strong>, which means - loosly speaking - that there are a lot of different values for each predictor such that the model leads to the same prediction if the other coefficients are set wisely. This is undesirable. Note that the fitted values are not ill-determined since they don’t vary when changing the coefficients.</li>
+<li>In cases where we have <strong><span class="math inline">\(\mathbf{n}&gt; \mathbf{p}\)</span></strong>, we cannot estimate many models, so for example OLS. That means we first need to select some predictors before we can proceed.</li>
+</ul>
+<p>In addition, a model with few predictors is often easier to interpret than a model with many predictors.</p>
+<p><strong>Ride and Lasso - which is which?</strong> Ridge regression - two words, is the method with an L2-penalty. Lasso is just one word - and has an L1-penalty.</p>
+<div id="ridge-regression" class="section level2">
+<h2><span class="header-section-number">9.1</span> Ridge Regression</h2>
+<p>Consider the OLS Problem <span class="math display">\[y_i = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + ... + \beta_p x_p +  \epsilon\]</span> We can demean the predictors and obtain <span class="math display">\[y_i = \beta_0 + \beta_1(x_1 - \bar{x}_1) + \beta_2(x_2 - \bar{x}_2) + ... 
++ \beta_p(x_p - \bar{x}_p) + \epsilon\]</span> In which case $_0 = {Y} - _1{X} - … $ and can combine it with the other constants in the equation (which results in just <span class="math inline">\(\bar{Y}\)</span>) take it to the other side and end up with the model. <span class="math display">\[\tilde{y} = \hat{\beta}_1 \tilde{x}_1 + \hat{\beta}_2 \tilde{x}_2 + 
+... \hat{\beta}_p \tilde{x}_p +\epsilon\]</span></p>
+With all variables having a mean of zero. Hence we got rid of the intercept. In order to compare the different <span class="math inline">\(\beta\)</span>s, we should also scale the predictors. If there are two variables that are highly correlated, we can expres this part of the model equation as follows <span class="math display">\[ \beta_j x^{(j)} + \beta_k x^{(k)} \approx (\beta_j + c \beta_j ) x^{(j)}\]</span> You can see that for each <span class="math inline">\(\beta_j\)</span>, we can find an appropriate <span class="math inline">\(\beta_k\)</span> so that the sum does not change. That’s what we meant above when we said the coefficients are not stable but the sum is. One way to make the coefficients <em>better-determined</em> is to impose further conditions on them. For example, we can restrict <span class="math inline">\(\sum\limits_{j = 1}^p \beta_j^2 &lt; s\)</span>. The regression problem becomes <span class="math display">\[\beta = \arg\min\limits_{\|\beta\| &lt; s}\|X\beta\|\]</span> which is equivalent to the lagrangian problem <span class="math inline">\(\arg\min\limits_{\beta} \{ \|X \beta \|+ \lambda \| \beta \|_2^2 \}\)</span>. With a one-to-one mapping of <span class="math inline">\(s \rightarrow \lambda\)</span> Note that this is a generalization of the least square solution since it contains the least squares solution for <span class="math inline">\(\lambda = 0\)</span>. The resulting normal equations are <span class="math display">\[(X&#39;X + \lambda I)^{-1}\hat{\beta}^* = X&#39;Y\]</span> Where one can see that the matrix to invert will be non-singular <span class="math inline">\(\lambda &gt; 0\)</span>, even if <span class="math inline">\(X&#39;X\)</span> is singular. Due to this shrinking, it is intuitive that the <span class="math inline">\(E[\hat{\beta}] \neq \beta\)</span>, that is, the coefficient will be biased. That can be seen easily if we <em>sneak in</em> the ols solution for which we know it is unbiased.
+<span class="math display">\[\begin{equation}
+\begin{split}
+
+(E[\hat{\beta}] = &amp; E[(X&#39;X + \lambda I)^{-1}X&#39;y]) \\
+&amp; E[(X&#39;X + \lambda I)^{-1} (X&#39;X)(X&#39;X)^{-1}X&#39;y] \\
+&amp; E[(X&#39;X + \lambda I)^{-1} (X&#39;X)\beta^{ols}] \\
+&amp; (X&#39;X + \lambda I)^{-1} (X&#39;X)\beta^{ols}
+\end{split}
+\end{equation}\]</span>
+<p>Whereas <span class="math inline">\(E[\hat{\beta}] \neq \beta\)</span> for <span class="math inline">\(\lambda &gt; 0\)</span> Also, we can see that for <span class="math inline">\(\lambda \rightarrow \infty\)</span>, <span class="math inline">\(\beta \rightarrow 0\)</span>.</p>
+<p>However, since by introducing a bias, we at the same time decrease the variance of our estimator. Therefore, we can optimize the bias-variance trade-off by finding an appropriate <span class="math inline">\(\lambda\)</span>, e.g. by (generalized) cross-valdiation. The regularization parameter lamda here is similar to the one we saw in the chapter about smoothing splines.</p>
+<p>To estimate the model, we can use the <code>MASS</code> package.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fitted &lt;-<span class="st"> </span>MASS::<span class="kw">lm.ridge</span>(
+  GNP.deflator ~., 
+  <span class="co"># it&#39;s lamBda, not lamda! R won&#39;t complain due to ... !</span>
+  <span class="dt">lambda =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="fl">0.1</span>, <span class="dt">by =</span> <span class="fl">0.001</span>), 
+  <span class="dt">data =</span> longley
+)</code></pre></div>
+<p>We can plot the coefficients for different values of <span class="math inline">\(\lambda\)</span> in a so-called trace plot.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(fitted)</code></pre></div>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-42-1.png" width="672" /></p>
+<p>We can also get the coeficients for each lamda we estimated and select the best model and get the usual <code>lm</code> summary for it.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">coef</span>(fitted) %&gt;%
+<span class="st">  </span><span class="kw">as_data_frame</span>()</code></pre></div>
+<pre><code>## # A tibble: 101 x 7
+##            ``       GNP Unemployed Armed.Forces Population        Year
+##         &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;        &lt;dbl&gt;      &lt;dbl&gt;       &lt;dbl&gt;
+##  1 2946.85636 0.2635272 0.03648291  0.011161050  -1.737030 -1.41879853
+##  2 1895.97527 0.2392348 0.03100610  0.009372158  -1.643803 -0.87657471
+##  3 1166.33337 0.2209952 0.02719073  0.008243201  -1.565026 -0.50108472
+##  4  635.78843 0.2066111 0.02440554  0.007514565  -1.496246 -0.22885815
+##  5  236.65772 0.1948539 0.02230066  0.007043302  -1.434886 -0.02473192
+##  6  -71.53274 0.1849806 0.02066688  0.006744636  -1.379323  0.13231532
+##  7 -314.43247 0.1765137 0.01937157  0.006565392  -1.328460  0.25560068
+##  8 -509.05648 0.1691312 0.01832674  0.006470736  -1.281519  0.35395451
+##  9 -667.11647 0.1626072 0.01747181  0.006437042  -1.237922  0.43345188
+## 10 -796.92303 0.1567781 0.01676376  0.006447832  -1.197224  0.49840118
+## # ... with 91 more rows, and 1 more variables: Employed &lt;dbl&gt;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">MASS::<span class="kw">select</span>(fitted)</code></pre></div>
+<pre><code>## modified HKB estimator is 0.006836982 
+## modified L-W estimator is 0.05267247 
+## smallest value of GCV  at 0.006</code></pre>
+<p>As pointed out above, <span class="math inline">\(\lambda = 0\)</span> corresponds to the OLS solution.</p>
+</div>
+<div id="lasso" class="section level2">
+<h2><span class="header-section-number">9.2</span> Lasso</h2>
+<p>The Lasso is essentially just a variant of ridge regression whereas the penalty is the L1-norm instead of the <em>squared</em> L2 norm. <span class="math display">\[\arg\min\limits_{\beta} \{ \|X \beta \|+ \lambda \| \beta \|_1 \}\]</span> Where <span class="math inline">\(\| \beta \|_1 = \sum\limits_{j = 1}^p|\beta_j|\)</span>, i.e. the sum of the absolute values of the coefficients. The mathematical properties of the L1-norm imply that some coefficients actually will become exactly zero, which is not the case for ridge regression. In the latter case, a decrease of a coefficient from <span class="math inline">\(0.1\)</span> to <span class="math inline">\(0\)</span> will decrease the penalty from <span class="math inline">\(0.001\)</span> to <span class="math inline">\(0\)</span>, whereas a decrease from a coefficient of <span class="math inline">\(10\)</span> to <span class="math inline">\(9\)</span> wil decrease the penalty from <span class="math inline">\(100\)</span> to <span class="math inline">\(81\)</span>. Hence, Lasso will tend to shrink larger coefficients more since the loss function rewards this more.</p>
+<p><img src="figures/lasso_trace.png" width="580" /></p>
+<p>The above plot shows the Lasso traces for six coefficients. On the x-axis we don’t have lamda, but the norm of the Beta vector. <span class="math inline">\(max |\beta|\)</span> corresponds to the OLS solution with <span class="math inline">\(\lambda = 0\)</span> since for any other value of <span class="math inline">\(\lambda\)</span>, the norm is smaller. Hence, the value of the y-axis at <span class="math inline">\(x = 1\)</span> corresponds to the OLS solution. On the other hand, <span class="math inline">\(x = 0\)</span> corresponds to <span class="math inline">\(\lambda = \infty\)</span>, since <span class="math inline">\(\|\beta\|\)</span> equals zero. In this case, all coefficients are zero obviously.</p>
+<p>Note that both Lasso and Ridge regression have <em>worse</em> in-sample performance than OLS, since the coefficients are biased. However, the out-of-sample performance is better since the bias variance trade-off is optimized.</p>
+</div>
+<div id="extensions" class="section level2">
+<h2><span class="header-section-number">9.3</span> Extensions</h2>
+<div id="elastic-net" class="section level3">
+<h3><span class="header-section-number">9.3.1</span> Elastic Net</h3>
+<p>The elastic net combines the penalties used in ridge regression and lasso. <span class="math display">\[ \hat{\beta} =  \|Y- X\beta\|^2 \;\; \text{subject to}\; (1 - \alpha) \|\beta\|_1 + \alpha \|\beta\|^2 &lt;t\]</span> The lasso penalty <span class="math inline">\((1 - \alpha) \|\beta\|_1 + \alpha \|\beta\|^2\)</span> is a sum of a structky convex function and a convex function and hence strictly convex.</p>
+</div>
+<div id="adaptive-lasso" class="section level3">
+<h3><span class="header-section-number">9.3.2</span> Adaptive Lasso</h3>
+<p>The idea is to use a different weight for each coefficient in the penalty term: <span class="math display">\[ \hat{\beta} =  \arg\min\|Y- X\beta\|^2 \;\; + \lambda \sum\limits_{j = 1}^p w_j|\beta_j|\]</span> The idea is now to use consistent esitimates for all coefficients, e.g. through least squares. Then, do a lasso and set <span class="math inline">\(w_j = \frac{1}{\hat{\beta_j}}\)</span>. This means that we now penalize small coefficients more, so they get shrunken to zero more quickly, whereas large coefficients (which are clearly non-zero) are given a low weight so their bias after the shrinkage is small.</p>
+</div>
+<div id="relaxed-lasso" class="section level3">
+<h3><span class="header-section-number">9.3.3</span> Relaxed Lasso</h3>
+<p>The relaxed lasso is also based on the idea of doing variable shrinkage isolated from variable selection. Hence, the idea is doing a lasso first to obtain the relevant variables. Then, a combination between lasso and OLS is used to obtain the final model</p>
+<p><span class="math display">\[\hat{\beta}^{\lambda, \phi} = \arg\min\limits_{\beta} \sum\limits_{i = 1}^n(yi - 
+\sum\limits_{j \in \mathcal{M}_\lambda} \beta_j x_{i, j})^2 + 
+\lambda \phi \sum\limits_{j = 1}^p|\beta_j|\]</span></p>
+<p>For <span class="math inline">\(\phi = 0\)</span>, the final estimates are just the OLS estimates with <span class="math inline">\(\mathcal{M}_\lambda\)</span>, <span class="math inline">\(\phi = 1\)</span> just reproduces the lasso that was used for variable selection.</p>
+</div>
+<div id="sparse-group-lasso" class="section level3">
+<h3><span class="header-section-number">9.3.4</span> (Sparse) Group Lasso</h3>
+<p>When dealing with categorical data with <span class="math inline">\(J&gt;2\)</span>, the techniques introduced above have the drawback that they may select just a few of the dummy variables to be non-zero. However, for interpretability, we want to keep all or none of the dummies in the model instead of selecting each variable <em>independently</em>. This can be achieved with a group lasso. We first split the design matrix into <span class="math inline">\(L\)</span> design matrices where each of them contains a block of <span class="math inline">\(p_l\)</span> predictors and all observations and it holds that <span class="math inline">\(\sum\limits_{p = 1}^L p_l = p\)</span>. We also split the corresponding coefficient vector <span class="math inline">\(\beta\)</span> into pieces. Then, we group-wise scaled L2 penalties.</p>
+<p><span class="math display">\[ \|Y-\sum\limits_{l = 1}^L X_l\beta_l \|_2^2 + 
+\lambda \sum\limits_{l = 1}^L \sqrt{p_l} \|\beta_l\|_2\]</span> Each continuous predictor forms its own group, categorical predictors are put in one group. Note that for <span class="math inline">\(L = p\)</span>, the problem reduces to a Lasso.<br />
+although we have an L2-penalty. This is because the L2 norm and the L1 norm of a scalar concide, or mathematically speaking <span class="math inline">\(\||s\|_2 = \sqrt{s^2} = |s| = \|s\|_1\)</span>. This acts like a lasso on the group level, i.e. it sets all coefficients of a group to zero - or none of them.</p>
+<p>There is an extension called <em>sparse group lasso</em> which can bring sprasity within a group. This is not helpful for dummy variables, but for situations where you have predictors that form a group since they are highly correlated or otherwise connected. It also applies the idea of an elastic net penalty to the group lasso. The formula is</p>
+<p><span class="math display">\[ \|Y-\sum\limits_{l = 1}^L X_l\beta_l \|_2^2 + 
+\lambda_1 \sum\limits_{l = 1}^L \sqrt{p_l} \|\beta_l\|_2 + 
+\lambda_2 \|\beta_l \|_1\]</span></p>
+</div>
+<div id="oracle-properties" class="section level3">
+<h3><span class="header-section-number">9.3.5</span> Oracle Properties</h3>
+<p>The adaptive lasso (unlike all other lasso-related techniques presented here) posseses so-called oracle properties. Consider the set <span class="math inline">\(\mathcal{M}\)</span>, which contains the all non-zero perdictor variabiables from a large number of available predictors. <span class="math display">\[ \mathcal{M} = \{j \in \{1, ..., p\}; \; \beta_j \neq 0\}\]</span> The set <span class="math inline">\(\mathcal{M}_\lambda\)</span> contains all predictors that were estimated to be non-zero via a Lasso estimate <span class="math display">\[ \mathcal{M}_\lambda = \{j \in \{1, ..., p\}; \; \hat{\beta}_j \neq 0\}\]</span> An estimator has oracle properties if <span class="math display">\[ \mathcal{M}_\lambda =\mathcal{M} \; \text{for} \; n \rightarrow \infty\]</span> Lasso typically produces too large of non-zero predictors, but all non-zero predictors are in that set, that is <span class="math display">\[  \mathcal{M}_{\lambda}^{Lasso} \supset \mathcal{M} \]</span></p>
 
 </div>
-
-
-
-
-
-
+</div>
+</div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="intro.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="flexible-regression-and-classification-methods.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="bagging-and-boosting.html" class="navigation navigation-next " aria-label="Next page""><i class="fa fa-angle-right"></i></a>
 
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/lunr.js"></script>
