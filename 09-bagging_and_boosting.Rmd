@@ -8,7 +8,7 @@ Consider a base procedure
 $$ \hat{g}(\cdot): \mathbb{R}^p \rightarrow \mathbb{R}$$
 
 1. Draw a bootstrap sample $(Y_1^*, X_1^*), ..., (Y_1^*, X_n^*)$ and compute the 
-   bootstrap estimator $\hat{g(\cdot)}^*$.
+   bootstrap estimator $\hat{g}(\cdot)^*$.
 2. Repeat the above step $B$ times yielding 
    $\hat{g}(\cdot)^{*1}, ..., \hat{g}(\cdot)^{*B}$ bootstrap estimators
 3. Average the estimates to construct the bagged estimator:

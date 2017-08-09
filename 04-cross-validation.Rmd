@@ -209,12 +209,12 @@ get_complement <- function(mat, n){
 }
 
 get_k_fold_test <- function(k, n) {
-  step <- trunc(n/k)
+  step <- round(n/k)
   current <- list()
   for (i in (0:(k-1) * step + 1))  {
     current <- append(
       current, 
-      list(i:(i+step-1))
+      list(i:(min(i+step-1, n)))
     )
   }
   current

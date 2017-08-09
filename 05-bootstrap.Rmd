@@ -51,12 +51,12 @@ the large (absolute) values.
 ```{r, echo=TRUE, message=FALSE}
 library("tidyverse")
 pop <- data_frame(pop = rnorm(10000) * 1:10000) 
-iid <- sample(pop$pop, 1000) # sample iid
+iid <- sample(pop$pop, 1000, replace = TRUE) # sample iid
 
 # sample non-iid: sample is biased towards high absolute values
 ind <- rbinom(10000, size = 1, prob = seq(0, 1, length.out = 10000)) 
 not_iid <- pop$pop[as.logical(ind)] # get sample
-not_iid <- sample(not_iid, 1000) # reduce sample size to 1000
+not_iid <- sample(not_iid, 1000, replace = TRUE) # reduce sample size to 1000
 
 out <- data_frame(iid = iid, not_iid = not_iid) %>%
   gather(type, value, iid, not_iid)

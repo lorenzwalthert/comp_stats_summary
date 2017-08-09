@@ -224,6 +224,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="11" data-path="round-up.html"><a href="round-up.html"><i class="fa fa-check"></i><b>11</b> Round up</a><ul>
 <li class="chapter" data-level="11.1" data-path="round-up.html"><a href="round-up.html#comparing-models"><i class="fa fa-check"></i><b>11.1</b> Comparing models</a></li>
 <li class="chapter" data-level="11.2" data-path="round-up.html"><a href="round-up.html#exercises-take-aways"><i class="fa fa-check"></i><b>11.2</b> Exercises Take-aways</a></li>
+<li class="chapter" data-level="11.3" data-path="round-up.html"><a href="round-up.html#cheatsheet"><i class="fa fa-check"></i><b>11.3</b> Cheatsheet</a></li>
 </ul></li>
 <li class="chapter" data-level="12" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>12</b> Introduction</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
@@ -270,11 +271,11 @@ R&#39;c &amp; = X&#39;Y \\
 \]</span></p>
 <p>Since <span class="math inline">\(R&#39;\)</span> is a lower triangular matrix, you can now solve for <span class="math inline">\(c\)</span> recursively.</p>
 <p><span class="math display">\[\begin{pmatrix}
-\cdots  &amp; \cdots &amp; \cdots &amp; \cdots &amp; \cdots \\
-  &amp; \cdots &amp; \cdots &amp; \cdots &amp; \cdots \\
-  &amp; &amp; \cdots &amp; \cdots &amp; \cdots \\
-  &amp; &amp; &amp; \cdots &amp; \cdots \\
-  \large 0 &amp; &amp; &amp; &amp; r_{nn}
+r_{11}  &amp;  &amp; &amp;  &amp; \large 0 \\
+\cdots   &amp; \cdots &amp; &amp; &amp;  \\
+\cdots  &amp;\cdots &amp; \cdots &amp;  &amp; \\
+  \cdots &amp; \cdots &amp;\cdots  &amp; \cdots &amp; \\
+\cdots  &amp; \cdots &amp; \cdots &amp; \cdots &amp; \cdots
  \end{pmatrix} \times 
  \begin{pmatrix} 
  c_1 \\
@@ -283,7 +284,7 @@ R&#39;c &amp; = X&#39;Y \\
  c_n \\
  \end{pmatrix} 
  = (X&#39;Y)_{n \times 1}
- \]</span> First, solve <span class="math inline">\(c_n\)</span> using <span class="math inline">\(r_{nn} c_n = (X&#39;Y)_{n}\)</span>, then for <span class="math inline">\(c_{n-1}\)</span> etc. when <span class="math inline">\(c\)</span> is solved, solve <span class="math display">\[ R\beta = c\]</span></p>
+ \]</span> First, solve <span class="math inline">\(c_1\)</span> using <span class="math inline">\(r_{11} c_1 = (X&#39;Y)_{1}\)</span>, then for <span class="math inline">\(c_{2}\)</span> etc. when <span class="math inline">\(c\)</span> is solved, solve <span class="math display">\[ R\beta = c\]</span></p>
 <p>Which has the same structure.</p>
 <div id="assumptions-of-the-linear-model" class="section level2">
 <h2><span class="header-section-number">2.1</span> Assumptions of the linear model</h2>
@@ -395,6 +396,7 @@ MSE(x) &amp;= n^{-1} \sum\limits_{i = 1}^n Var[\sum\limits_{j = 1}^q \hat{\beta}
 <p>The problem with the above equation is that since <span class="math inline">\(m(x)\)</span> is unknown, there is no way we can estimate (and hence optimize) the mean squared error. However, you can estimate the mean squared error indirectly by the following quantity</p>
 <p><span class="math display">\[ n^{-1} SSE(\mathcal{M}) - \hat{\sigma}^2 + 2 \hat{\sigma}^2|\mathcal{M}| / n\]</span></p>
 <p>Since <span class="math inline">\(\hat{\sigma}^2\)</span> and <span class="math inline">\(n\)</span> are constants for each sub-model, we can also optimize the well-known cp statistic <span class="math display">\[\mathcal{C}_p = \frac{SSE(\mathcal{M})}{\hat{\sigma}^2} - n + 2 |\mathcal{M}| \]</span></p>
+<p>Hence, multiplying <span class="math inline">\(\mathcal{C}_p\)</span> by <span class="math inline">\(\frac{\hat{\sigma}^2}{n}\)</span>, you end up again with an estimate of the mean square error.</p>
 </div>
 <div id="search-strategies" class="section level3">
 <h3><span class="header-section-number">2.9.2</span> Search strategies</h3>

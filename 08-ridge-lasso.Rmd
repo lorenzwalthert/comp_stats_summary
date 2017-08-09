@@ -1,4 +1,4 @@
-# Variable Selection - Ridge Regression an Lasso
+# Variable Selection - Ridge Regression and Lasso
 
 Except for trees, none of the techniques introduced so far perform variable
 selection. Variable selection is particularly important when working with 
@@ -26,14 +26,14 @@ $$y_i = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + ... + \beta_p x_p +  \epsilon$$
 We can demean the predictors and obtain
 $$y_i = \beta_0 + \beta_1(x_1 - \bar{x}_1) + \beta_2(x_2 - \bar{x}_2) + ... 
 + \beta_p(x_p - \bar{x}_p) + \epsilon$$
-In which case $\hat{\beta}_0 = \bar{Y} - \hat{\beta}_1\bar{X} = \bar{Y}$ and can
+In which case $\hat{\beta}_0 = \bar{Y} - \hat{\beta}_1\bar{X} - ... $ and can combine it with the other constants in the equation (which results in just $\bar{Y}$)
 take it to the other side and end up with the model.
 $$\tilde{y} = \hat{\beta}_1 \tilde{x}_1 + \hat{\beta}_2 \tilde{x}_2 + 
 ... \hat{\beta}_p \tilde{x}_p +\epsilon$$ 
 
 With all variables having a mean of zero. Hence we got rid of the intercept. In
 order to compare the different $\beta$s, we should also scale the predictors.
-Hence, if there are two variables that are highly correlated, we can expres
+If there are two variables that are highly correlated, we can expres
 this part of the model equation as follows
 $$ \beta_j x^{(j)} + \beta_k x^{(k)} \approx (\beta_j + c \beta_j ) x^{(j)}$$
 You can see that for each $\beta_j$, we can find an appropriate $\beta_k$ so that 
@@ -41,10 +41,10 @@ the sum does not change. That's what we meant above when we said the
 coefficients are not stable but the sum is.
 One way to make the coefficients *better-determined* is to impose further 
 conditions on them. For example, we can restrict 
-$\sum\limits_{j = 1}^p \beta_j < s$. The regression problem becomes
+$\sum\limits_{j = 1}^p \beta_j^2 < s$. The regression problem becomes
 $$\beta = \arg\min\limits_{\|\beta\| < s}\|X\beta\|$$ 
 which is equivalent to the lagrangian problem
-$\arg\min\limits_{\beta} \{ \|X \beta \|+ \lambda \| \beta \|_2^2 \}$
+$\arg\min\limits_{\beta} \{ \|X \beta \|+ \lambda \| \beta \|_2^2 \}$.
 With a one-to-one mapping of $s \rightarrow \lambda$ Note that this is a 
 generalization of the least square solution since it contains the least squares
 solution for $\lambda = 0$. 
@@ -123,7 +123,7 @@ knitr::include_graphics("figures/lasso_trace.png")
 The above plot shows the Lasso traces for six coefficients. On the x-axis
 we don't have lamda, but the norm of the Beta vector. $max |\beta|$ corresponds
 to the OLS solution with $\lambda = 0$ since for any other value of $\lambda$,
-the norm is smaller. Hence, $x = 1$ corresponds to the OLS solution. On the
+the norm is smaller. Hence, the value of the y-axis at $x = 1$ corresponds to the OLS solution. On the
 other hand, $x = 0$ corresponds to $\lambda = \infty$, since $\|\beta\|$ equals
 zero. In this case, all coefficients are zero obviously. 
 
@@ -149,7 +149,7 @@ least squares. Then, do a
 lasso and set $w_j = \frac{1}{\hat{\beta_j}}$. This means that we now 
 penalize small coefficients more, so they get shrunken to zero more quickly,
 whereas large coefficients (which are clearly non-zero) are given a low 
-weight so their bias after the shrinkage is small 
+weight so their bias after the shrinkage is small.
 
 ### Relaxed Lasso
 
@@ -167,7 +167,7 @@ $\mathcal{M}_\lambda$, $\phi = 1$ just reproduces the lasso that was used
 for variable selection.
 
 ### (Sparse) Group Lasso
-When dealing with categorical data with $ J>2$, the techniques introduced
+When dealing with categorical data with $J>2$, the techniques introduced
 above have the drawback that they may select just a few of the dummy variables
 to be non-zero. However, for interpretability, we want to keep all or none
 of the dummies in the model instead of selecting each variable *independently*.
@@ -180,7 +180,7 @@ coefficient vector $\beta$ into pieces. Then, we group-wise scaled L2 penalties.
 $$ \|Y-\sum\limits_{l = 1}^L X_l\beta_l \|_2^2 + 
 \lambda \sum\limits_{l = 1}^L \sqrt{p_l} \|\beta_l\|_2$$
 Each continuous predictor forms its own group, categorical predictors are put
-in one group. Note that for $L = p$, the problem reduces to a lasso  
+in one group. Note that for $L = p$, the problem reduces to a Lasso.  
 although we have an L2-penalty. This is because the L2 norm and the L1 norm 
 of a scalar concide, or mathematically speaking
 $\||s\|_2 = \sqrt{s^2} = |s| = \|s\|_1$.
@@ -200,9 +200,9 @@ $$ \|Y-\sum\limits_{l = 1}^L X_l\beta_l \|_2^2 +
 
 
 ### Oracle Properties
-The adaptive lasso (unlike all other lasso-related techniques presented here
-posseses so-called oracle properties). 
-Consider the set $\mathcal{M}, which contains the all non-zero perdictor
+The adaptive lasso (unlike all other lasso-related techniques presented here)
+posseses so-called oracle properties. 
+Consider the set $\mathcal{M}$, which contains the all non-zero perdictor
 variabiables from a large number of available predictors.
 $$ \mathcal{M} = \{j \in \{1, ..., p\}; \; \beta_j \neq 0\}$$
 The set $\mathcal{M}_\lambda$ contains all predictors that were estimated 

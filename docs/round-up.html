@@ -224,6 +224,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="11" data-path="round-up.html"><a href="round-up.html"><i class="fa fa-check"></i><b>11</b> Round up</a><ul>
 <li class="chapter" data-level="11.1" data-path="round-up.html"><a href="round-up.html#comparing-models"><i class="fa fa-check"></i><b>11.1</b> Comparing models</a></li>
 <li class="chapter" data-level="11.2" data-path="round-up.html"><a href="round-up.html#exercises-take-aways"><i class="fa fa-check"></i><b>11.2</b> Exercises Take-aways</a></li>
+<li class="chapter" data-level="11.3" data-path="round-up.html"><a href="round-up.html#cheatsheet"><i class="fa fa-check"></i><b>11.3</b> Cheatsheet</a></li>
 </ul></li>
 <li class="chapter" data-level="12" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>12</b> Introduction</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
@@ -274,7 +275,7 @@ formula &lt;-<span class="st"> </span><span class="kw">wrapFormula</span>(
 <p><strong>Matrix Multiplication</strong></p>
 <ul>
 <li>You can’t multiply data frames. No way. Use <code>as.matrix</code> to convert.</li>
-<li>don’t forget the intercept in the model frame.</li>
+<li>Don’t forget the intercept in the model frame.</li>
 </ul>
 <p><strong>Other</strong></p>
 <ul>
@@ -285,8 +286,25 @@ formula &lt;-<span class="st"> </span><span class="kw">wrapFormula</span>(
 <p>When calculating the degrees of freedom, e.g. for the mallows cp, never use someghing like `length(coef(fit))`` as <span class="math inline">\(p\)</span>, since this will only work for linear models. For additive models for example, this will give you the number of soothing terms used, which is <strong>not</strong> equivalent to the degrees of freedom. Instead, use</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit$df.residual</code></pre></div>
 <p>Which is available for many classes of fitted models, i.e. also GAMs. Also, often it is not necessary to compute something like the residual standard error, since you can conveniently access it via</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit$sigma</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(fit)$sigma</code></pre></div>
 <p>Also, do sanity checks for your results. A qick <code>plot(unlist(cps))</code> for example can show you the various values cp takes for different model vs. their index. As with cross validation, you know that the curve must be somehow convex.</p>
+<p><strong>Inconsistent S3 generics</strong></p>
+<p>Unfortunately, not all S3 generics do feature the same argument names. This is particularly dangerous when using <code>...</code> to pass arguments. For example, different predict methods do not use the same argumet for new data. Some use <code>newdata</code>, others <code>data</code> etc.</p>
+<p><strong>Programming: Fail Fast and debug</strong></p>
+<p>Unit testing on the ways costs next to nothing. Don’t wait testing your functions until you are done with the whole exam. Examples are</p>
+<ul>
+<li>boostrapping: Test whether regression coefficients are exactly the <em>true</em> coefficients when no noise has been added. Otherwise, check whether they are reasonable.</li>
+<li>Test dimensions of matrices you use.</li>
+<li>Test whether values you obatain are plausible</li>
+<li>use <code>browser()</code> extensively, even when writing a function, not just to debug it.</li>
+</ul>
+</div>
+<div id="cheatsheet" class="section level2">
+<h2><span class="header-section-number">11.3</span> Cheatsheet</h2>
+<ul>
+<li>The boostrapped confidence intrevals are</li>
+</ul>
+<p><span class="math display">\[[2 \hat{\theta} - q_{1-\alpha/2}, 2\hat{\theta}- q_{\alpha/2}]\]</span></p>
 
 </div>
 </div>

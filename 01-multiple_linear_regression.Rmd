@@ -45,11 +45,11 @@ $$
 Since $R'$ is a lower triangular matrix, you can now solve for $c$ recursively. 
 
 $$\begin{pmatrix}
-\cdots  & \cdots & \cdots & \cdots & \cdots \\
-  & \cdots & \cdots & \cdots & \cdots \\
-  & & \cdots & \cdots & \cdots \\
-  & & & \cdots & \cdots \\
-  \large 0 & & & & r_{nn}
+r_{11}  &  & &  & \large 0 \\
+\cdots   & \cdots & & &  \\
+\cdots  &\cdots & \cdots &  & \\
+  \cdots & \cdots &\cdots  & \cdots & \\
+\cdots  & \cdots & \cdots & \cdots & \cdots
  \end{pmatrix} \times 
  \begin{pmatrix} 
  c_1 \\
@@ -59,7 +59,7 @@ $$\begin{pmatrix}
  \end{pmatrix} 
  = (X'Y)_{n \times 1}
  $$
-First, solve $c_n$ using $r_{nn} c_n = (X'Y)_{n}$, then for $c_{n-1}$ etc.
+First, solve $c_1$ using $r_{11} c_1 = (X'Y)_{1}$, then for $c_{2}$ etc.
 when $c$ is solved, solve 
 $$ R\beta = c$$
 
@@ -289,6 +289,9 @@ $$ n^{-1} SSE(\mathcal{M}) - \hat{\sigma}^2 + 2 \hat{\sigma}^2|\mathcal{M}| / n$
 Since $\hat{\sigma}^2$ and $n$ are constants for each sub-model, we can also 
 optimize the well-known cp statistic
 $$\mathcal{C}_p = \frac{SSE(\mathcal{M})}{\hat{\sigma}^2} - n + 2 |\mathcal{M}| $$
+
+Hence, multiplying $\mathcal{C}_p$ by $\frac{\hat{\sigma}^2}{n}$, you end up 
+again with an estimate of the mean square error.
 
 ### Search strategies
 

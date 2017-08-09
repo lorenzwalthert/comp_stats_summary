@@ -224,6 +224,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="11" data-path="round-up.html"><a href="round-up.html"><i class="fa fa-check"></i><b>11</b> Round up</a><ul>
 <li class="chapter" data-level="11.1" data-path="round-up.html"><a href="round-up.html#comparing-models"><i class="fa fa-check"></i><b>11.1</b> Comparing models</a></li>
 <li class="chapter" data-level="11.2" data-path="round-up.html"><a href="round-up.html#exercises-take-aways"><i class="fa fa-check"></i><b>11.2</b> Exercises Take-aways</a></li>
+<li class="chapter" data-level="11.3" data-path="round-up.html"><a href="round-up.html#cheatsheet"><i class="fa fa-check"></i><b>11.3</b> Cheatsheet</a></li>
 </ul></li>
 <li class="chapter" data-level="12" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>12</b> Introduction</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
@@ -257,12 +258,12 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>The problem is that we don’t know <span class="math inline">\(P\)</span>. But we have a data sample that was generated from <span class="math inline">\(P\)</span>. Hence, we can instead take the <strong>empirical</strong> distribution <span class="math inline">\(\hat{P}\)</span> that places probability mass of <span class="math inline">\(1/n\)</span> on each observation, draw a sample from this distribution (which is simply drawing uniformly at random from our sample with replacement) and compute our estimate of interest from this sample. <span class="math display">\[ \hat{\theta}^{*} = g({Z_1}^{*}, ..., {Z_{new}}^{*})\]</span> We can do that many times to get an approximate distribution for <span class="math inline">\(\hat{\theta}\)</span>. A crucial assumption is that <span class="math inline">\(\hat{P}\)</span> reassembles <span class="math inline">\(P\)</span>. If our data is not i.i.d, this may not be the case and hence bootstrapping might be misleading. Below, we can see that i.i.d. sampling (red line) reassembles the true distribution (black line) quite well, whereas biased sampling (blue line) obviously does not. We produce a sample that places higher probability mass on the large (absolute) values.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;tidyverse&quot;</span>)
 pop &lt;-<span class="st"> </span><span class="kw">data_frame</span>(<span class="dt">pop =</span> <span class="kw">rnorm</span>(<span class="dv">10000</span>) *<span class="st"> </span><span class="dv">1</span>:<span class="dv">10000</span>) 
-iid &lt;-<span class="st"> </span><span class="kw">sample</span>(pop$pop, <span class="dv">1000</span>) <span class="co"># sample iid</span>
+iid &lt;-<span class="st"> </span><span class="kw">sample</span>(pop$pop, <span class="dv">1000</span>, <span class="dt">replace =</span> <span class="ot">TRUE</span>) <span class="co"># sample iid</span>
 
 <span class="co"># sample non-iid: sample is biased towards high absolute values</span>
 ind &lt;-<span class="st"> </span><span class="kw">rbinom</span>(<span class="dv">10000</span>, <span class="dt">size =</span> <span class="dv">1</span>, <span class="dt">prob =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dt">length.out =</span> <span class="dv">10000</span>)) 
 not_iid &lt;-<span class="st"> </span>pop$pop[<span class="kw">as.logical</span>(ind)] <span class="co"># get sample</span>
-not_iid &lt;-<span class="st"> </span><span class="kw">sample</span>(not_iid, <span class="dv">1000</span>) <span class="co"># reduce sample size to 1000</span>
+not_iid &lt;-<span class="st"> </span><span class="kw">sample</span>(not_iid, <span class="dv">1000</span>, <span class="dt">replace =</span> <span class="ot">TRUE</span>) <span class="co"># reduce sample size to 1000</span>
 
 out &lt;-<span class="st"> </span><span class="kw">data_frame</span>(<span class="dt">iid =</span> iid, <span class="dt">not_iid =</span> not_iid) %&gt;%
 <span class="st">  </span><span class="kw">gather</span>(type, value, iid, not_iid)

@@ -84,7 +84,7 @@ update(formula, logO3 ~ .^3) # three way interaction
 **Matrix Multiplication**
 
 * You can't multiply data frames. No way. Use `as.matrix` to convert.
-* don't forget the intercept in the model frame.
+* Don't forget the intercept in the model frame.
 
 **Other**
 
@@ -113,9 +113,34 @@ Which is available for many classes of fitted models, i.e. also GAMs.  Also,
 often it is not necessary to compute something like the residual standard 
 error, since you can conveniently access it via
 ```{r, eval = FALSE}
-fit$sigma
+summary(fit)$sigma
 ```
 
 Also, do sanity checks for your results. A qick `plot(unlist(cps))` for example
 can show you the various values cp takes for different model vs. their index.
 As with cross validation, you know that the curve must be somehow convex.
+
+**Inconsistent S3 generics**
+
+Unfortunately, not all S3 generics do feature the same argument names. This 
+is particularly dangerous when using `...` to pass arguments. For example,
+different predict methods do not use the same argumet for new data. Some use
+`newdata`, others `data` etc.
+
+**Programming: Fail Fast and debug**
+
+Unit testing on the ways costs next to nothing. Don't wait testing your 
+functions until you are done with the whole exam. Examples are 
+
+* boostrapping: Test whether regression coefficients are exactly the 
+  *true* coefficients when no noise has been added. Otherwise, check whether 
+  they are reasonable.
+* Test dimensions of matrices you use.
+* Test whether values you obatain are plausible
+* use `browser()` extensively, even when writing a function, not just to debug 
+  it.
+
+## Cheatsheet
+* The boostrapped confidence intrevals are 
+
+$$[2 \hat{\theta} - q_{1-\alpha/2}, 2\hat{\theta}- q_{\alpha/2}]$$
