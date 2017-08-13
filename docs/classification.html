@@ -286,11 +286,11 @@ L(\beta, (x_1, Y_1), ..., (x_n, Y_n))&amp;  = \prod\limits_{i = 1}^n \mathbb{P}(
 \end{equation}\]</span>
 <p>There is no closed-form solution for the above problem, hence we need to rely on gradient descent to find the maximum likelihood solution. You can fit a logistic regression model in R as follows:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># fit the model</span>
-fit &lt;-<span class="st"> </span><span class="kw">glm</span>(response~predictors, <span class="dt">data =</span> my_data, <span class="dt">family =</span> <span class="st">&quot;binomial&quot;</span>)
+fit &lt;-<span class="st"> </span><span class="kw">glm</span>(response<span class="op">~</span>predictors, <span class="dt">data =</span> my_data, <span class="dt">family =</span> <span class="st">&quot;binomial&quot;</span>)
 <span class="co"># predict</span>
-prediction &lt;-<span class="st"> </span><span class="kw">predict</span>(fit, <span class="dt">newdata =</span> my_data, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>) &gt;<span class="st"> </span><span class="fl">0.5</span>
+prediction &lt;-<span class="st"> </span><span class="kw">predict</span>(fit, <span class="dt">newdata =</span> my_data, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>) <span class="op">&gt;</span><span class="st"> </span><span class="fl">0.5</span>
 <span class="co"># evaluate in-sample</span>
-<span class="kw">mean</span>(prediction ==<span class="st"> </span>my_data$response)</code></pre></div>
+<span class="kw">mean</span>(prediction <span class="op">==</span><span class="st"> </span>my_data<span class="op">$</span>response)</code></pre></div>
 </div>
 <div id="discriminant-analysis-or-logistic-regression" class="section level2">
 <h2><span class="header-section-number">7.4</span> Discriminant Analysis or Logistic Regression?</h2>

@@ -16,23 +16,26 @@ $\mathcal{B}$ and contains all variables with all potential knots, that is $$
 \{x_{1j}, ..., x_{nj}\}\}$$ The model then is $$ g(x)  = \mu + \sum\limits_{m =
 1}^M\beta_m h_m(x) = \sum\limits_{m = 0}^M\beta_m h_m(x)$$ The model uses
 forward selection and backward deletion and optimizes some (generalized)
-cross-validation criterion. Here is the receipt:
+cross-validation criterion. Here is the recipe:
 
 1. initialize $\mathcal{M} = \{h_0(\cdot) = 1\}$ and estimate $\beta_0$ as the 
    data average of the response $n^{-1}\sum\limits_{i = 1}^n Y_i$. 
 2. for $r = 1, 2, ...$ search for a new pair of function $(h_{2 r-1} \;\; 
-   h_{2 r})$ which are of the form $$h_{2 r-1} = (x_j -d)_+ \times h_l$$ $$h_{2 r} = (d -
-   x_j)_+ \times h_l$$ that reduce the residual sum of squares the most with some $h_l$ from 
+   h_{2 r})$ which are of the form 
+   $$h_{2 r-1} = (x_j -d)_+ \times h_l$$ 
+   $$h_{2 r} = (d - x_j)_+ \times h_l$$ 
+   that reduce the residual sum of squares the most with some $h_l$ from 
    $\mathcal{M}$ that some basis functions from $\mathcal{B}$ does *not* contain
-   $x_j$. The model becomes $$\hat{g}(x) = \sum\limits_{m = 0}^{2r}\hat{\beta}_m
-   h_m(x)$$ which can be estimated by least squares. Update the set $\mathcal{M}$
+   $x_j$. The model becomes 
+   $$\hat{g}(x) = \sum\limits_{m = 0}^{2r}\hat{\beta}_m h_m(x)$$
+   which can be estimated by least squares. Update the set $\mathcal{M}$
    to be $\mathcal{M} = \mathcal{M}_{old} \cup \{h_{2r-1}, h_{2r}\}$ 
 3. Iterate the above step until the set $\mathcal{M}$ becomes *large enough*. 
 4. Do backward deletion (*pruning*) by removing the *one* function from a reflected
    pair that increases the residual sum of squares the least. 
 5. Stop the pruning when some GCV score reaches its minimum.
 
-From the receipt above, we can see that $d$-way interactions are only possible 
+From the recipe above, we can see that $d$-way interactions are only possible 
 if a $d-1$-way interaction with a subset of the $d$-way interaction is already 
 in the model. For interpretability and other reasons, restricting the number of 
 interactions to three or two is beneficial. Restricting the degree of 

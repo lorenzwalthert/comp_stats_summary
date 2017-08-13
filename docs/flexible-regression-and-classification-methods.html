@@ -257,7 +257,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </div>
 <div id="fitting-procedure" class="section level3">
 <h3><span class="header-section-number">8.1.2</span> Fitting Procedure</h3>
-<p>Additive models can be estimated with a technique called back-fitting. However, the model can be estimated with any non-parametric method for one-dimensional smoothing. Here is the receipt:</p>
+<p>Additive models can be estimated with a technique called back-fitting. However, the model can be estimated with any non-parametric method for one-dimensional smoothing. Here is the recipe:</p>
 <ul>
 <li>since we assume an additive model, we need to initialize all <span class="math inline">\(p\)</span> components of it with zero, that is setting <span class="math inline">\(g_j(\cdot) = 0 \;\; j = 1,..., p\)</span> plus setting <span class="math inline">\(\mu = n^{-1}\sum Y_i\)</span>. * Then we fit one-dimensional smoother repeatedly, that is solving the one-dimensional smoothing problem <span class="math inline">\(Y - \mu - \sum\limits_{j \neq k}\hat{g}_j = \hat{g}_j(x_j)\)</span>, or put differently <span class="math inline">\(\hat{g}_j = S_j(Y - \mu1 - \sum\limits_{j \neq k}g_j)\)</span>. This has to be done repeatedly for <span class="math inline">\(j = 1, ..., p, 1, ..., p\)</span> etc.</li>
 <li>Stop iterating when functions don’t change much anymore, that is, when the following quantity is less than a certain tolerance. <span class="math display">\[\frac{|\hat{g}_{i, new} - \hat{g}_{i, old}|}{|\hat{g}_{i, old}|}\]</span></li>
@@ -270,11 +270,11 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h3><span class="header-section-number">8.1.3</span> Additive Models in R</h3>
 <p>You can use the package <strong>mgcv</strong></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;ozone&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;gss&quot;</span>) 
-fit &lt;-<span class="st"> </span>mgcv::<span class="kw">gam</span>(upo3 ~<span class="st"> </span><span class="kw">s</span>(vdht) +<span class="st"> </span><span class="kw">s</span>(wdsp) +<span class="st"> </span><span class="kw">s</span>(hmdt) +<span class="st"> </span><span class="kw">s</span>(sbtp), 
+fit &lt;-<span class="st"> </span>mgcv<span class="op">::</span><span class="kw">gam</span>(upo3 <span class="op">~</span><span class="st"> </span><span class="kw">s</span>(vdht) <span class="op">+</span><span class="st"> </span><span class="kw">s</span>(wdsp) <span class="op">+</span><span class="st"> </span><span class="kw">s</span>(hmdt) <span class="op">+</span><span class="st"> </span><span class="kw">s</span>(sbtp), 
            <span class="dt">data =</span> ozone) 
 
 <span class="kw">plot</span>(fit, <span class="dt">pages =</span> <span class="dv">1</span>) </code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
 <p>You can see that vdht enters the model almost linearly. That is, with an increase of one unit of vdht, the predicted 03 value increases linearly. sbtp is different. Depending on the value of sbtp, the increase in the predicted value is different. Low sbtp values hardly have an impact on the response, higher values do.</p>
 
 </div>
@@ -290,17 +290,15 @@ fit &lt;-<span class="st"> </span>mgcv::<span class="kw">gam</span>(upo3 ~<span 
 <p>and it counterpart <span class="math inline">\((d - x_j)_{+}\)</span>. The index <span class="math inline">\(j\)</span> refers to the j-th predictor variable, d is a knot at one of the <span class="math inline">\(x_js\)</span>. The pool of basis functions to consider is called <span class="math inline">\(\mathcal{B}\)</span> and contains all variables with all potential knots, that is <span class="math display">\[
 \mathcal{B} = \{(x_j - d)_+ \;\;\; (d - x_j)_+ \;\;\;j = \{1, ..., p\} \;\; d =
 \{x_{1j}, ..., x_{nj}\}\}\]</span> The model then is <span class="math display">\[ g(x)  = \mu + \sum\limits_{m =
-1}^M\beta_m h_m(x) = \sum\limits_{m = 0}^M\beta_m h_m(x)\]</span> The model uses forward selection and backward deletion and optimizes some (generalized) cross-validation criterion. Here is the receipt:</p>
+1}^M\beta_m h_m(x) = \sum\limits_{m = 0}^M\beta_m h_m(x)\]</span> The model uses forward selection and backward deletion and optimizes some (generalized) cross-validation criterion. Here is the recipe:</p>
 <ol style="list-style-type: decimal">
 <li>initialize <span class="math inline">\(\mathcal{M} = \{h_0(\cdot) = 1\}\)</span> and estimate <span class="math inline">\(\beta_0\)</span> as the data average of the response <span class="math inline">\(n^{-1}\sum\limits_{i = 1}^n Y_i\)</span>.</li>
-<li>for <span class="math inline">\(r = 1, 2, ...\)</span> search for a new pair of function <span class="math inline">\((h_{2 r-1} \;\;  h_{2 r})\)</span> which are of the form <span class="math display">\[h_{2 r-1} = (x_j -d)_+ \times h_l\]</span> <span class="math display">\[h_{2 r} = (d -
-   x_j)_+ \times h_l\]</span> that reduce the residual sum of squares the most with some <span class="math inline">\(h_l\)</span> from <span class="math inline">\(\mathcal{M}\)</span> that some basis functions from <span class="math inline">\(\mathcal{B}\)</span> does <em>not</em> contain <span class="math inline">\(x_j\)</span>. The model becomes <span class="math display">\[\hat{g}(x) = \sum\limits_{m = 0}^{2r}\hat{\beta}_m
-   h_m(x)\]</span> which can be estimated by least squares. Update the set <span class="math inline">\(\mathcal{M}\)</span> to be <span class="math inline">\(\mathcal{M} = \mathcal{M}_{old} \cup \{h_{2r-1}, h_{2r}\}\)</span></li>
+<li>for <span class="math inline">\(r = 1, 2, ...\)</span> search for a new pair of function <span class="math inline">\((h_{2 r-1} \;\;  h_{2 r})\)</span> which are of the form <span class="math display">\[h_{2 r-1} = (x_j -d)_+ \times h_l\]</span> <span class="math display">\[h_{2 r} = (d - x_j)_+ \times h_l\]</span> that reduce the residual sum of squares the most with some <span class="math inline">\(h_l\)</span> from <span class="math inline">\(\mathcal{M}\)</span> that some basis functions from <span class="math inline">\(\mathcal{B}\)</span> does <em>not</em> contain <span class="math inline">\(x_j\)</span>. The model becomes <span class="math display">\[\hat{g}(x) = \sum\limits_{m = 0}^{2r}\hat{\beta}_m h_m(x)\]</span> which can be estimated by least squares. Update the set <span class="math inline">\(\mathcal{M}\)</span> to be <span class="math inline">\(\mathcal{M} = \mathcal{M}_{old} \cup \{h_{2r-1}, h_{2r}\}\)</span></li>
 <li>Iterate the above step until the set <span class="math inline">\(\mathcal{M}\)</span> becomes <em>large enough</em>.</li>
 <li>Do backward deletion (<em>pruning</em>) by removing the <em>one</em> function from a reflected pair that increases the residual sum of squares the least.</li>
 <li>Stop the pruning when some GCV score reaches its minimum.</li>
 </ol>
-<p>From the receipt above, we can see that <span class="math inline">\(d\)</span>-way interactions are only possible if a <span class="math inline">\(d-1\)</span>-way interaction with a subset of the <span class="math inline">\(d\)</span>-way interaction is already in the model. For interpretability and other reasons, restricting the number of interactions to three or two is beneficial. Restricting the degree of interaction to one (which is actually no interaction) will yield an additive model.</p>
+<p>From the recipe above, we can see that <span class="math inline">\(d\)</span>-way interactions are only possible if a <span class="math inline">\(d-1\)</span>-way interaction with a subset of the <span class="math inline">\(d\)</span>-way interaction is already in the model. For interpretability and other reasons, restricting the number of interactions to three or two is beneficial. Restricting the degree of interaction to one (which is actually no interaction) will yield an additive model.</p>
 <div id="details-for-dummies" class="section level3">
 <h3><span class="header-section-number">8.2.1</span> Details for Dummies</h3>
 <p>Note that by using reflective pairs <span class="math inline">\(\big\{(x_j - d)_+ \;\;\; (d - x_j)_{+}\; \}\)</span>, we construct a piece-wise linear function with one knot at <span class="math inline">\(d\)</span>, since we sum the functions (which both a have a zero part that does not overlap) up. This hinge function (or better the two parts of individually) will be multiplied with a respective <span class="math inline">\(\beta\)</span>, so the slope is adaptive. Also, since each of the functions have its own <span class="math inline">\(d\)</span>, the kink of the function must not occur at <span class="math inline">\(y = 0\)</span> (this is wrong).</p>
@@ -309,27 +307,27 @@ fit &lt;-<span class="st"> </span>mgcv::<span class="kw">gam</span>(upo3 ~<span 
 <h3><span class="header-section-number">8.2.2</span> Example</h3>
 <p>Let us consider the simple case of a one dimensional predictor space. We add noise to data that is piece-wise linear up to <span class="math inline">\(x= 100\)</span> and then follows a sine-wave. We then fit three mars models with different number of maximal knots.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;earth&quot;</span>) 
-sim &lt;-<span class="st"> </span><span class="kw">data_frame</span>( <span class="dt">x =</span> -<span class="dv">25</span>:<span class="dv">75</span>, 
-                   <span class="dt">y =</span> <span class="kw">pmax</span>(<span class="dv">0</span>, x -<span class="st"> </span><span class="dv">40</span>) +<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">100</span>, <span class="dv">0</span>, <span class="dv">3</span>)) %&gt;%<span class="st"> </span>
-<span class="st">  </span><span class="kw">bind_rows</span>(<span class="kw">data_frame</span>( <span class="dt">x =</span> <span class="dv">75</span>:<span class="dv">100</span>, <span class="dt">y =</span> -<span class="dv">1</span>*<span class="kw">sqrt</span>(x)*<span class="st"> </span><span class="kw">sin</span>(x/<span class="dv">3</span>) +<span class="st"> </span><span class="dv">30</span>))
+sim &lt;-<span class="st"> </span><span class="kw">data_frame</span>( <span class="dt">x =</span> <span class="op">-</span><span class="dv">25</span><span class="op">:</span><span class="dv">75</span>, 
+                   <span class="dt">y =</span> <span class="kw">pmax</span>(<span class="dv">0</span>, x <span class="op">-</span><span class="st"> </span><span class="dv">40</span>) <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">100</span>, <span class="dv">0</span>, <span class="dv">3</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">bind_rows</span>(<span class="kw">data_frame</span>( <span class="dt">x =</span> <span class="dv">75</span><span class="op">:</span><span class="dv">100</span>, <span class="dt">y =</span> <span class="op">-</span><span class="dv">1</span><span class="op">*</span><span class="kw">sqrt</span>(x)<span class="op">*</span><span class="st"> </span><span class="kw">sin</span>(x<span class="op">/</span><span class="dv">3</span>) <span class="op">+</span><span class="st"> </span><span class="dv">30</span>))
 
 fitted &lt;-<span class="st"> </span><span class="kw">data_frame</span>( 
-  <span class="dt">nk3  =</span> <span class="kw">earth</span>(y~x, <span class="dt">data =</span> sim, <span class="dt">nk =</span> <span class="dv">3</span>), 
-  <span class="dt">nk5  =</span> <span class="kw">earth</span>(y~x, <span class="dt">data =</span> sim, <span class="dt">nk =</span> <span class="dv">5</span>), 
-  <span class="dt">nk100 =</span> <span class="kw">earth</span>(y~x, <span class="dt">data =</span> sim, <span class="dt">nk =</span> <span class="dv">100</span>)
+  <span class="dt">nk3  =</span> <span class="kw">earth</span>(y<span class="op">~</span>x, <span class="dt">data =</span> sim, <span class="dt">nk =</span> <span class="dv">3</span>), 
+  <span class="dt">nk5  =</span> <span class="kw">earth</span>(y<span class="op">~</span>x, <span class="dt">data =</span> sim, <span class="dt">nk =</span> <span class="dv">5</span>), 
+  <span class="dt">nk100 =</span> <span class="kw">earth</span>(y<span class="op">~</span>x, <span class="dt">data =</span> sim, <span class="dt">nk =</span> <span class="dv">100</span>)
 )
 
 
-sim2 &lt;-<span class="st"> </span>fitted %&gt;%<span class="st"> </span>
-<span class="st">  </span><span class="kw">map_df</span>(~<span class="kw">predict</span>(.x)) %&gt;%<span class="st"> </span>
-<span class="st">  </span><span class="kw">bind_cols</span>(sim) %&gt;%<span class="st"> </span><span class="kw">gather</span>(key, value, -x, -y)
+sim2 &lt;-<span class="st"> </span>fitted <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">map_df</span>(<span class="op">~</span><span class="kw">predict</span>(.x)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">bind_cols</span>(sim) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">gather</span>(key, value, <span class="op">-</span>x, <span class="op">-</span>y)
 
 
-<span class="kw">ggplot</span>(sim2) +<span class="st"> </span>
-<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y)) +<span class="st"> </span>
+<span class="kw">ggplot</span>(sim2) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y)) <span class="op">+</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> value, <span class="dt">color =</span> key)) </code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(fitted$nk3) </code></pre></div>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(fitted<span class="op">$</span>nk3) </code></pre></div>
 <pre><code>## Call: earth(formula=y~x, data=sim, nk=3)
 ## 
 ##             coefficients
@@ -358,13 +356,13 @@ w_{jh}x_j)\Big)\]</span> Where <span class="math inline">\(\phi(x)\)</span> is t
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">set.seed</span>(<span class="dv">22</span>) 
 <span class="kw">data</span>(<span class="st">&quot;ozone&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;gss&quot;</span>) 
 <span class="kw">unloadNamespace</span>(<span class="st">&quot;MASS&quot;</span>)
-scaled &lt;-<span class="st"> </span>ozone %&gt;%<span class="st"> </span>
-<span class="st">  </span><span class="kw">select</span>(-upo3) %&gt;%<span class="st"> </span>
-<span class="st">  </span><span class="kw">scale</span>() %&gt;%<span class="st"> </span>
-<span class="st">  </span><span class="kw">as_data_frame</span>() %&gt;%<span class="st"> </span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">log_upo3 =</span> <span class="kw">log</span>(ozone$upo3))
+scaled &lt;-<span class="st"> </span>ozone <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>upo3) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">scale</span>() <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">as_data_frame</span>() <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">log_upo3 =</span> <span class="kw">log</span>(ozone<span class="op">$</span>upo3))
 
-fit &lt;-<span class="st"> </span>nnet::<span class="kw">nnet</span>( log_upo3 ~., <span class="dt">data =</span> scaled, 
+fit &lt;-<span class="st"> </span>nnet<span class="op">::</span><span class="kw">nnet</span>( log_upo3 <span class="op">~</span>., <span class="dt">data =</span> scaled, 
                    <span class="dt">size =</span> <span class="dv">3</span>, <span class="co"># how many nodes in the *one* hidden layer. </span>
                    <span class="dt">decay =</span> <span class="fl">4e-4</span>, <span class="co"># regularization. Multiply weights by 1 - decay after </span>
                    <span class="co"># gradient step. </span>
@@ -386,7 +384,7 @@ fit &lt;-<span class="st"> </span>nnet::<span class="kw">nnet</span>( log_upo3 ~
 ##  i7-&gt;o  i8-&gt;o  i9-&gt;o 
 ##   0.04  -0.29  -0.15</code></pre>
 <p>The in-sample MSE for the regression case is</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mean</span>(<span class="kw">residuals</span>(fit)^<span class="dv">2</span>) </code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mean</span>(<span class="kw">residuals</span>(fit)<span class="op">^</span><span class="dv">2</span>) </code></pre></div>
 <pre><code>## [1] 0.1036706</code></pre>
 
 </div>
@@ -411,68 +409,68 @@ fit &lt;-<span class="st"> </span>nnet::<span class="kw">nnet</span>( log_upo3 ~
 <p>Where <span class="math inline">\(X \in \mathbb{R}^2\)</span>, i.e. a two-dimensional predictor space with the predictors <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span>. Using elementary calculus, this can be rewritten as <span class="math display">\[ Y = \frac{1}{4} (X_1 + X_2)^2  - \frac{1}{4}(X_1 - X_2)^2\]</span> Hence, we rewrote a multiplicative model as an additive model. As we are using arbitrary <em>smooth</em> functions <span class="math inline">\(f_k\)</span>, we can easily fit the quadratic terms in the equation above, so the problem to solve becomes <span class="math display">\[Y = \mu + f_1(X_1 + X_2) - f_2(X_1 - X_2)\]</span> Therefore, the remaining question is how can we choose the two vectors <span class="math inline">\(\mathbf{\alpha}_1\)</span> and <span class="math inline">\(\mathbf{\alpha}_2\)</span> such that the result of the projection is <span class="math inline">\(X_1 + X_2 \;\text{and}\;X_1 - X_2\)</span>. With the restriction <span class="math inline">\(|\alpha| = 1\)</span>, it turns out we can proceed as follows: We first project predictor onto <span class="math inline">\((\alpha_{11}, \alpha_{12}) = (0.7, 0.7)\)</span> and then onto <span class="math inline">\((\alpha_{11}, \alpha_{12}) = (0.7, -0.7)\)</span>. This yields <span class="math inline">\(0.7(X_1 + X_2)\)</span> and <span class="math inline">\(0.7(X_1 - X_2)\)</span>.</p>
 <p>Let’s implement that in R</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data &lt;-<span class="st"> </span><span class="kw">data_frame</span>(
-  <span class="dt">x1 =</span> <span class="kw">runif</span>(<span class="dv">500</span>, -<span class="dv">1</span>, <span class="dv">1</span>),
-  <span class="dt">x2 =</span> <span class="kw">runif</span>(<span class="dv">500</span>, -<span class="dv">1</span>, <span class="dv">1</span>),
-  <span class="dt">y =</span> x1*x2 +<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">500</span>, <span class="dv">0</span>, <span class="fl">0.005</span>)
+  <span class="dt">x1 =</span> <span class="kw">runif</span>(<span class="dv">500</span>, <span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>),
+  <span class="dt">x2 =</span> <span class="kw">runif</span>(<span class="dv">500</span>, <span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>),
+  <span class="dt">y =</span> x1<span class="op">*</span>x2 <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">500</span>, <span class="dv">0</span>, <span class="fl">0.005</span>)
 )
-all &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x =</span> x1, <span class="dt">y =</span> x2)) +<span class="st"> </span>
-<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color =</span> y), <span class="dt">size =</span> <span class="dv">3</span>) +<span class="st"> </span>
+all &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x =</span> x1, <span class="dt">y =</span> x2)) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color =</span> y), <span class="dt">size =</span> <span class="dv">3</span>) <span class="op">+</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">scale_color_gradient2</span>()</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x1y &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x =</span> x1, <span class="dt">y =</span> y)) +<span class="st"> </span>
-<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color =</span> y), <span class="dt">size =</span> <span class="dv">3</span>) +<span class="st"> </span>
-<span class="st">  </span><span class="kw">geom_smooth</span>() +<span class="st"> </span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x1y &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x =</span> x1, <span class="dt">y =</span> y)) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color =</span> y), <span class="dt">size =</span> <span class="dv">3</span>) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_smooth</span>() <span class="op">+</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">scale_color_gradient2</span>()
 
 
 <span class="kw">grid.arrange</span>(all, x1y)</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-33-1.png" width="672" /> We can see the obvious pattern, but we can also see that an additive model would not do well on that.</p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-34-1.png" width="672" /> We can see the obvious pattern, but we can also see that an additive model would not do well on that.</p>
 <p>How about using the aforementioned projection?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data &lt;-<span class="st"> </span>data %&gt;%
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">mutate</span>(
-    <span class="dt">projected_x1 =</span> <span class="fl">0.7</span>*(x1 +<span class="st"> </span>x2),
-    <span class="dt">projected_x2 =</span> -<span class="fl">0.7</span>*(x1 -<span class="st"> </span>x2)
+    <span class="dt">projected_x1 =</span> <span class="fl">0.7</span><span class="op">*</span>(x1 <span class="op">+</span><span class="st"> </span>x2),
+    <span class="dt">projected_x2 =</span> <span class="op">-</span><span class="fl">0.7</span><span class="op">*</span>(x1 <span class="op">-</span><span class="st"> </span>x2)
   )
 
-projected_all &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x =</span> projected_x1, <span class="dt">y =</span> projected_x2)) +<span class="st"> </span>
-<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color =</span> y), <span class="dt">size =</span> <span class="dv">3</span>) +<span class="st"> </span>
+projected_all &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x =</span> projected_x1, <span class="dt">y =</span> projected_x2)) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color =</span> y), <span class="dt">size =</span> <span class="dv">3</span>) <span class="op">+</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">scale_color_gradient2</span>()
 
-projected_x1 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x =</span> projected_x1, <span class="dt">y =</span> y)) +<span class="st"> </span>
-<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color =</span> y), <span class="dt">size =</span> <span class="dv">3</span>) +<span class="st"> </span>
-<span class="st">  </span><span class="kw">geom_smooth</span>() +<span class="st"> </span>
+projected_x1 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x =</span> projected_x1, <span class="dt">y =</span> y)) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color =</span> y), <span class="dt">size =</span> <span class="dv">3</span>) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_smooth</span>() <span class="op">+</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">scale_color_gradient2</span>()
 
-projected_x2 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x =</span> projected_x2, <span class="dt">y =</span> y)) +<span class="st"> </span>
-<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color =</span> y), <span class="dt">size =</span> <span class="dv">3</span>) +<span class="st"> </span>
-<span class="st">  </span><span class="kw">geom_smooth</span>() +<span class="st"> </span>
+projected_x2 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x =</span> projected_x2, <span class="dt">y =</span> y)) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color =</span> y), <span class="dt">size =</span> <span class="dv">3</span>) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_smooth</span>() <span class="op">+</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">scale_color_gradient2</span>()
 
-fitted_x1 &lt;-<span class="st"> </span>mgcv::<span class="kw">gam</span>(y~<span class="kw">s</span>(projected_x1), <span class="dt">data =</span> data)
-fitted_x2 &lt;-<span class="st"> </span>mgcv::<span class="kw">gam</span>(y~<span class="kw">s</span>(projected_x2), <span class="dt">data =</span> data)
+fitted_x1 &lt;-<span class="st"> </span>mgcv<span class="op">::</span><span class="kw">gam</span>(y<span class="op">~</span><span class="kw">s</span>(projected_x1), <span class="dt">data =</span> data)
+fitted_x2 &lt;-<span class="st"> </span>mgcv<span class="op">::</span><span class="kw">gam</span>(y<span class="op">~</span><span class="kw">s</span>(projected_x2), <span class="dt">data =</span> data)
 
-data &lt;-<span class="st"> </span>data %&gt;%
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">fitted =</span> <span class="kw">predict</span>(fitted_x1) +<span class="st"> </span><span class="kw">predict</span>(fitted_x2))
+data &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">fitted =</span> <span class="kw">predict</span>(fitted_x1) <span class="op">+</span><span class="st"> </span><span class="kw">predict</span>(fitted_x2))
 
-fitted &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x =</span> x1, <span class="dt">y =</span> x2)) +<span class="st"> </span>
-<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color =</span> fitted), <span class="dt">size =</span> <span class="dv">3</span>) +<span class="st"> </span>
+fitted &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x =</span> x1, <span class="dt">y =</span> x2)) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color =</span> fitted), <span class="dt">size =</span> <span class="dv">3</span>) <span class="op">+</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">scale_color_gradient2</span>()
 <span class="kw">grid.arrange</span>(projected_all, projected_x1, projected_x2, fitted, <span class="dt">nrow =</span> <span class="dv">2</span>)</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-34-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-35-1.png" width="672" /></p>
 <p>The bottom right picture shows the predictions with the projection pursuit approach, which resembles the original data pretty well. Again, the idea is to use an additive model to account for the interactions properly by first projecting the predictors optimally.</p>
 <p>Suppose we did not know the optimal projection. We could use the build-in <code>ppr()</code> command to fit a projection pursuit regression and then show us the projections used.</p>
 <p>First, we fit the model and check out the projections</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit &lt;-<span class="st"> </span><span class="kw">ppr</span>(y~<span class="st"> </span>x1+x2, <span class="dt">nterms =</span> <span class="dv">2</span>, <span class="dt">data =</span> data)
-sfsmisc::<span class="kw">mult.fig</span>(<span class="dv">2</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit &lt;-<span class="st"> </span><span class="kw">ppr</span>(y<span class="op">~</span><span class="st"> </span>x1<span class="op">+</span>x2, <span class="dt">nterms =</span> <span class="dv">2</span>, <span class="dt">data =</span> data)
+sfsmisc<span class="op">::</span><span class="kw">mult.fig</span>(<span class="dv">2</span>)
 <span class="kw">plot</span>(fit)</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-35-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
 <p>Now, let us look at the <span class="math inline">\(\alpha\)</span>s.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit$alpha</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit<span class="op">$</span>alpha</code></pre></div>
 <pre><code>##        term 1     term 2
 ## x1  0.7795395 -0.7788790
 ## x2 -0.6263530 -0.6271742</code></pre>
 <p>It’s pretty much the model we came up with before.</p>
 <p>There is also an interpretation of the projection vectors. Since the above example is not particularly interesting, we will look at the output of exercise series 9, problem 1g.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit_from_series9$alpha
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit_from_series9<span class="op">$</span>alpha
 ##          term 1 term 2 term 3 term 4
 ## vdht       0.48  -0.09  -0.06  -0.02
 ## wind      -0.25  -0.11   0.09   0.12
@@ -514,7 +512,7 @@ Figure 8.1: Partition with <code>rpart()</code>. Color indicate result of the ma
 <ul>
 <li>assume partitions that are <strong>axes parallel rectangles</strong>, just as depicted in the pictuer above. Note that this is a stronger limitation than just assuming linear (decision) boundaries since these boundaries also need to be parallel to the axis. For example, decision trees would not do well on a classification problem like this (unless there is a lot of data and we can have many splits:</li>
 </ul>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-39-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-40-1.png" width="672" /></p>
 <ul>
 <li>we use a <strong>greedy</strong> algorithm since the space of possible partitioning schemes is still huge.</li>
 </ul>
@@ -535,8 +533,8 @@ Figure 8.1: Partition with <code>rpart()</code>. Color indicate result of the ma
 <li>Prune the tree by reverting some of the partitioning steps above until the optimal size of the tree is found (e.g via cross-validation).</li>
 </ol>
 <p>You can fit a tree in R with the <code>rpart</code> package, which stands for recursive partitioning.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tree &lt;-<span class="st"> </span>rpart::<span class="kw">rpart</span>(
-  upo3~., 
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tree &lt;-<span class="st"> </span>rpart<span class="op">::</span><span class="kw">rpart</span>(
+  upo3<span class="op">~</span>., 
   <span class="dt">data =</span> ozone,
   <span class="dt">control =</span> <span class="kw">list</span>(
     <span class="dt">minsplit =</span> <span class="dv">20</span>,
@@ -547,10 +545,10 @@ Figure 8.1: Partition with <code>rpart()</code>. Color indicate result of the ma
 <div id="backward-deletion-pruning" class="section level3">
 <h3><span class="header-section-number">8.5.4</span> Backward Deletion / Pruning</h3>
 <p>After <span class="math inline">\(M\)</span> steps, there will be <span class="math inline">\(M + 1\)</span> partitions. This can also be visualized nicely in a tree structure.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rpart::<span class="kw">prune</span>(tree, <span class="dt">cp =</span> <span class="fl">0.05</span>) %&gt;%<span class="st"> </span><span class="co"># prune tree for illustrative purposes</span>
-rpart.plot::<span class="kw">prp</span>(<span class="dt">extra =</span> <span class="dv">1</span>,
-    <span class="dt">box.col=</span><span class="kw">c</span>(<span class="st">&#39;pink&#39;</span>, <span class="st">&#39;palegreen3&#39;</span>, <span class="st">&#39;lightsteelblue 2&#39;</span>,<span class="st">&#39;lightgoldenrod 1&#39;</span>)[tree$frame$yval])</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-41-1.png" width="650px" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rpart<span class="op">::</span><span class="kw">prune</span>(tree, <span class="dt">cp =</span> <span class="fl">0.05</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># prune tree for illustrative purposes</span>
+rpart.plot<span class="op">::</span><span class="kw">prp</span>(<span class="dt">extra =</span> <span class="dv">1</span>,
+    <span class="dt">box.col=</span><span class="kw">c</span>(<span class="st">&#39;pink&#39;</span>, <span class="st">&#39;palegreen3&#39;</span>, <span class="st">&#39;lightsteelblue 2&#39;</span>,<span class="st">&#39;lightgoldenrod 1&#39;</span>)[tree<span class="op">$</span>frame<span class="op">$</span>yval])</code></pre></div>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-42-1.png" width="650px" /></p>
 The idea is now to subsequently remove the leaves from the tree such that the negative log-likeihood increases the least. If we do that until no leaf is left, we end up with a sequence of trees.
 <span class="math display" id="eq:treeset">\[\begin{equation}
 \mathcal{T}_M \supset \mathcal{T}_{M-1} \;\;...\;\;\supset \mathcal{T}_{\emptyset}
@@ -559,8 +557,8 @@ The idea is now to subsequently remove the leaves from the tree such that the ne
 <p>Just as with Mallow’s <span class="math inline">\(C_p\)</span>, we can compute a score for every model that is increasing in the fit of the model but also has a complexity penality</p>
 <p><span class="math display">\[R_{\alpha}(\mathcal{T}) = R(\mathcal{T}) + \alpha \times \text{size}(\mathcal{T})\]</span></p>
 <p>Now, we only need to find the right alpha. We can set a few alpha values, then find the best tree for this alpha <span class="math inline">\(\mathcal{T}(\alpha) = \arg\min\limits_{\mathcal{T} \subset \mathcal{T}_M}R_{\alpha}(\mathcal{T})\)</span> and then do cross-validation for these alpha values to find the optimal alpha. It can be shown that the set <span class="math inline">\(\{\mathcal{T}(\alpha)| \alpha \in (0, \infty]\}\)</span> is <em>nested</em> and the same or a subeset of the set in equation <a href="flexible-regression-and-classification-methods.html#eq:treeset">(8.1)</a>. Use <code>rpart::plotcp()</code> to plot the size of the optimal trees for each alpha against the cross-validation score. Then, use the one-standard error rule to select the idal tree size. That is first find the tree with the lowest relative error. Then add one standard error to it’s error and find the smallest tree that does not execced this relative error. The idea behind this approach is to choose good model that performs similar to the best (and potentially complex) model but is as simple as possible.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rpart::<span class="kw">plotcp</span>(tree)</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-42-1.png" width="650px" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rpart<span class="op">::</span><span class="kw">plotcp</span>(tree)</code></pre></div>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-43-1.png" width="650px" /></p>
 </div>
 <div id="pros-and-cons-of-trees" class="section level3">
 <h3><span class="header-section-number">8.5.5</span> Pros and Cons of Trees</h3>

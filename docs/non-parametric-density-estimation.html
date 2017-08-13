@@ -250,8 +250,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="the-histogramm" class="section level2">
 <h2><span class="header-section-number">3.1</span> The Histogramm</h2>
 <p>The simplest density estimator is the histogram. The drawback is that we need to specify two parameters. The origin <span class="math inline">\(x_0\)</span> and the bandwidth <span class="math inline">\(h\)</span>. At least the former is highly arbitrary and both affect the resulting histogram remarkably.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data_frame</span>(<span class="dt">x =</span> <span class="kw">rnorm</span>(<span class="dv">1000</span>)) %&gt;%
-<span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> x)) +<span class="st"> </span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data_frame</span>(<span class="dt">x =</span> <span class="kw">rnorm</span>(<span class="dv">1000</span>)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> x)) <span class="op">+</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">geom_histogram</span>(<span class="dt">bins =</span> <span class="dv">30</span>, <span class="dt">center =</span> <span class="dv">0</span>) <span class="co"># center is what we called x_0</span></code></pre></div>
 <p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 </div>
@@ -261,15 +261,15 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h3><span class="header-section-number">3.2.1</span> The naive Estimator</h3>
 <p>We can compute the relative frequency of observations falling into some region and use these frequencies as estimators for the probabilities.</p>
 <p>Let’s consider some example data distributed uniformly at random between <span class="math inline">\(-0.5\)</span> and <span class="math inline">\(+0.5\)</span>. Let us try to estimate the densities via the relative frequencies. We consider three points in x: <span class="math inline">\(-0.5, 0\)</span> and <span class="math inline">\(+0.5\)</span>. We set <span class="math inline">\(h\)</span> to 1/2 for now. For x equal zero, we know that all points are comprised in the range, so the relative frequency is one, for the two other x values, it is a half each. We can interpolate and then the a triangle.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="dv">10000</span>, <span class="dt">min =</span> -<span class="dv">1</span>/<span class="dv">2</span>, <span class="dt">max =</span> <span class="dv">1</span>/<span class="dv">2</span>)
-dens &lt;-<span class="st"> </span><span class="kw">density</span>(x, <span class="dt">kernel =</span> <span class="st">&quot;rectangular&quot;</span>, <span class="dt">bw =</span> <span class="dv">1</span>/<span class="dv">2</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="dv">10000</span>, <span class="dt">min =</span> <span class="op">-</span><span class="dv">1</span><span class="op">/</span><span class="dv">2</span>, <span class="dt">max =</span> <span class="dv">1</span><span class="op">/</span><span class="dv">2</span>)
+dens &lt;-<span class="st"> </span><span class="kw">density</span>(x, <span class="dt">kernel =</span> <span class="st">&quot;rectangular&quot;</span>, <span class="dt">bw =</span> <span class="dv">1</span><span class="op">/</span><span class="dv">2</span>)
 
 
-eval_one &lt;-<span class="st"> </span>function(e_eval_one, x, h) {
-  <span class="dv">1</span>/(<span class="dv">2</span>*h)*<span class="st"> </span><span class="kw">mean</span>(e_eval_one +<span class="st"> </span>h &gt;<span class="st"> </span>x &amp;<span class="st"> </span>e_eval_one -<span class="st"> </span>h &lt;<span class="st"> </span>x)
+eval_one &lt;-<span class="st"> </span><span class="cf">function</span>(e_eval_one, x, h) {
+  <span class="dv">1</span><span class="op">/</span>(<span class="dv">2</span><span class="op">*</span>h)<span class="op">*</span><span class="st"> </span><span class="kw">mean</span>(e_eval_one <span class="op">+</span><span class="st"> </span>h <span class="op">&gt;</span><span class="st"> </span>x <span class="op">&amp;</span><span class="st"> </span>e_eval_one <span class="op">-</span><span class="st"> </span>h <span class="op">&lt;</span><span class="st"> </span>x)
 }
 
-naive_density &lt;-<span class="st"> </span>function(x, h, x_eval) {
+naive_density &lt;-<span class="st"> </span><span class="cf">function</span>(x, h, x_eval) {
   <span class="kw">data_frame</span>(
     <span class="dt">x_eval =</span> x_eval, 
     <span class="dt">y_est =</span> <span class="kw">map_dbl</span>(x_eval, eval_one, <span class="dt">x =</span> x, <span class="dt">h =</span> h),
@@ -277,9 +277,9 @@ naive_density &lt;-<span class="st"> </span>function(x, h, x_eval) {
   )
 }
 
-one_est &lt;-<span class="st"> </span><span class="kw">naive_density</span>(x, <span class="dv">1</span>/<span class="dv">2</span>, <span class="kw">seq</span>(-<span class="dv">1</span>, <span class="dv">1</span>, <span class="dt">length.out =</span> <span class="dv">3</span>))
+one_est &lt;-<span class="st"> </span><span class="kw">naive_density</span>(x, <span class="dv">1</span><span class="op">/</span><span class="dv">2</span>, <span class="kw">seq</span>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dt">length.out =</span> <span class="dv">3</span>))
 
-<span class="kw">ggplot</span>(one_est, <span class="kw">aes</span>(<span class="dt">x =</span> x_eval, <span class="dt">y =</span> y_est)) +<span class="st"> </span><span class="kw">geom_path</span>()</code></pre></div>
+<span class="kw">ggplot</span>(one_est, <span class="kw">aes</span>(<span class="dt">x =</span> x_eval, <span class="dt">y =</span> y_est)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_path</span>()</code></pre></div>
 <p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <p>We don’t need to normalize anything since the area has size one already, which we need for it to be a density. However, if we use a larger <span class="math inline">\(h\)</span>, for example <span class="math inline">\(h = 1\)</span>, we need to divide by <span class="math inline">\(2\)</span> to get an area of size one since at all three points, the relative frequency is one and it becomes zero only when the absolute value of x is larger than 3/2. Hence, we found the formula to obtain densities. <span class="math display">\[ f(x) = \frac{1}{2h}\mathbb{P}[x-h&lt; X &lt; x+h] \;\;\; \text{for}\;\; h \rightarrow 0\]</span> Which translates into frequencies for our estimator <span class="math display">\[ \hat{f}(x) = \frac{1}{2hn}\#(X_i \in [x-h, x+h))\]</span> This is quite wrong, as we know the true distribution is uniform between minus one and one. However, as you can see by playing around with the shiny app further down the page, it seems that with <span class="math inline">\(h \rightarrow \infty\)</span>, we are approaching the true distribution. The nice thing about this estimator is that there is no need to set the tuning parameter <span class="math inline">\(x_0\)</span> anymore.</p>
 <p>You can represent the naive kernel differently, namely as a kernel. We have <span class="math display">\[
@@ -320,23 +320,23 @@ w\big(\frac{x - x_i}{h}\big) = \begin{cases}
 <li>is strictly positive, <span class="math inline">\(K(X)\geqslant 0\)</span></li>
 </ul>
 <p><span class="math inline">\(w(\cdot)\)</span> is the rectangular kernel, which becomes obvious when plotting it.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rectangular &lt;-<span class="st"> </span>function(x) {
-  <span class="kw">if_else</span>(<span class="kw">abs</span>(x) &lt;<span class="st"> </span><span class="dv">1</span>/<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">0</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rectangular &lt;-<span class="st"> </span><span class="cf">function</span>(x) {
+  <span class="kw">if_else</span>(<span class="kw">abs</span>(x) <span class="op">&lt;</span><span class="st"> </span><span class="dv">1</span><span class="op">/</span><span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">0</span>)
 }
 
-normal &lt;-<span class="st"> </span>function(x) {
-  (<span class="dv">2</span>*pi)^(-<span class="dv">1</span>/<span class="dv">2</span>)*<span class="kw">exp</span>(-x^<span class="dv">2</span>/<span class="dv">2</span>)
+normal &lt;-<span class="st"> </span><span class="cf">function</span>(x) {
+  (<span class="dv">2</span><span class="op">*</span>pi)<span class="op">^</span>(<span class="op">-</span><span class="dv">1</span><span class="op">/</span><span class="dv">2</span>)<span class="op">*</span><span class="kw">exp</span>(<span class="op">-</span>x<span class="op">^</span><span class="dv">2</span><span class="op">/</span><span class="dv">2</span>)
 }
 
-cosine &lt;-<span class="st"> </span>function(x) {
-  <span class="kw">if_else</span>(<span class="kw">abs</span>(x) &lt;<span class="st"> </span><span class="dv">1</span>, pi /<span class="st"> </span><span class="dv">4</span> *<span class="st"> </span><span class="kw">cos</span>(pi /<span class="st"> </span><span class="dv">2</span> *<span class="st"> </span>x), <span class="dv">0</span>)
+cosine &lt;-<span class="st"> </span><span class="cf">function</span>(x) {
+  <span class="kw">if_else</span>(<span class="kw">abs</span>(x) <span class="op">&lt;</span><span class="st"> </span><span class="dv">1</span>, pi <span class="op">/</span><span class="st"> </span><span class="dv">4</span> <span class="op">*</span><span class="st"> </span><span class="kw">cos</span>(pi <span class="op">/</span><span class="st"> </span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span>x), <span class="dv">0</span>)
 }
 
-<span class="kw">ggplot</span>(<span class="kw">data_frame</span>(<span class="dt">x =</span> <span class="dv">0</span>), <span class="kw">aes</span>(<span class="dt">x =</span> x)) +
-<span class="st">  </span><span class="kw">stat_function</span>(<span class="dt">fun =</span> rectangular, <span class="kw">aes</span>(<span class="dt">color =</span> <span class="st">&quot;rectangular&quot;</span>)) +
-<span class="st">  </span><span class="kw">stat_function</span>(<span class="dt">fun =</span> normal, <span class="kw">aes</span>(<span class="dt">color =</span> <span class="st">&quot;normal&quot;</span>)) +
-<span class="st">  </span><span class="kw">stat_function</span>(<span class="dt">fun =</span> cosine, <span class="kw">aes</span>(<span class="dt">color =</span> <span class="st">&quot;cosine&quot;</span>)) +
-<span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">limits =</span> <span class="kw">c</span>(-<span class="dv">2</span>, <span class="dv">2</span>))</code></pre></div>
+<span class="kw">ggplot</span>(<span class="kw">data_frame</span>(<span class="dt">x =</span> <span class="dv">0</span>), <span class="kw">aes</span>(<span class="dt">x =</span> x)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">stat_function</span>(<span class="dt">fun =</span> rectangular, <span class="kw">aes</span>(<span class="dt">color =</span> <span class="st">&quot;rectangular&quot;</span>)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">stat_function</span>(<span class="dt">fun =</span> normal, <span class="kw">aes</span>(<span class="dt">color =</span> <span class="st">&quot;normal&quot;</span>)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">stat_function</span>(<span class="dt">fun =</span> cosine, <span class="kw">aes</span>(<span class="dt">color =</span> <span class="st">&quot;cosine&quot;</span>)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">limits =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">2</span>, <span class="dv">2</span>))</code></pre></div>
 <p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <p>It is <em>piece-wise</em> constant, since every point is either in or out of the interval. The density estimate is not smooth since the kernel is not smooth. <span class="math inline">\(\hat{f}(x)\)</span> inherits also other properties from the kernel, e.g. it is strictly positive if the kernel is strictly positive and it integrates to one if the kernel does so. Therefore, to obtain a smooth density estimate, we need to choose a smooth kernel. The Gaussian kernel seems to be a natural choice. Instead of giving an observation a weight of either one or zero, values in between are also possible, depending on the distance of the point relative to the point for which we want to obtain a density estimate and depending on <span class="math inline">\(h\)</span>. Some kernels such as the normal kernel have the drawback that they their weights are never getting to zero, which implies computational cost at limited gain. We can instead choose a kernel like the cosine kernel, which also smooth but reaches zero relatively quickly, which speeds up calculations.</p>
 </div>

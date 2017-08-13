@@ -298,7 +298,12 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="shortcuts-for-some-linear-fitting-operators" class="section level2">
 <h2><span class="header-section-number">5.6</span> Shortcuts for (some) linear fitting operators</h2>
 <p>Leave-one-out cv score for some linear fitting procedures such as least squares or smoothing spline can be computed via a shortcut when our loss function is <span class="math inline">\(\rho(y, \hat{y}) = |y-\hat{y}|^2\)</span>. In particular, we can compute the estimator for such a linear fitting procedure <strong>once</strong>, compute the linear fitting operator <span class="math inline">\(S\)</span>, which satisfies <span class="math inline">\(\mathbf{\hat{Y}} = \mathbf{SY}\)</span> and plug it in this formula: <span class="math display">\[n^{-1}\sum\limits_{i = 1}^n \Bigg(\frac{Y_i - \hat{m}(X_i)}{1-S_{ii}}\Bigg)^2\]</span> Computing <span class="math inline">\(\mathbf{S}\)</span> requires <span class="math inline">\(O(n)\)</span> operations (see exercises).</p>
-<p>Historically, it has been computationally easier to compute the trace of <span class="math inline">\(\mathbf{S}\)</span> so there is also a quantity called generalized cross validation (which is a misleading terminology), which coincides with the formula above in certain cases.</p>
+<p>You can implement that easily in R without a loop or anything - because the functions are vectorized:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cv_short_cut &lt;-<span class="st"> </span><span class="cf">function</span>(x, y, df, S, <span class="dt">fit_fun =</span> reg.fcn.loess) {
+  fit &lt;-<span class="st"> </span><span class="kw">fit_fun</span>(x, y, x, <span class="dt">df =</span> df.nw)
+  <span class="kw">mean</span>(((y<span class="op">-</span>fit)<span class="op">/</span>(<span class="dv">1</span> <span class="op">-</span><span class="st"> </span><span class="kw">diag</span>(S)))<span class="op">^</span><span class="dv">2</span>)
+}</code></pre></div>
+<p>As simple as that. Historically, it has been computationally easier to compute the trace of <span class="math inline">\(\mathbf{S}\)</span> so there is also a quantity called generalized cross validation (which is a misleading terminology), which coincides with the formula above in certain cases.</p>
 </div>
 <div id="isolation-of-each-cross-validation-sample" class="section level2">
 <h2><span class="header-section-number">5.7</span> Isolation of each cross validation sample</h2>
@@ -328,12 +333,12 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <span class="co">#&#39; @param train Train indices.</span>
 <span class="co">#&#39; @param .data The data.</span>
 <span class="co">#&#39; @param lamda The lamda parameter for the ridge regression.</span>
-ge_ridge &lt;-<span class="st"> </span>function(test, train, .data, lambda) {
-  fit &lt;-<span class="st"> </span>MASS::<span class="kw">lm.ridge</span>(upo3~., 
+ge_ridge &lt;-<span class="st"> </span><span class="cf">function</span>(test, train, .data, lambda) {
+  fit &lt;-<span class="st"> </span>MASS<span class="op">::</span><span class="kw">lm.ridge</span>(upo3<span class="op">~</span>., 
                   <span class="dt">lambda =</span> lambda,
                   <span class="dt">data =</span> .data[train,])
-  pred &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(<span class="kw">cbind</span>(<span class="dv">1</span>, .data[test, -<span class="dv">1</span>])) %*%<span class="st"> </span><span class="kw">coef</span>(fit)
-  <span class="kw">mean</span>((pred -<span class="st"> </span>.data[test,]$upo3)^<span class="dv">2</span>)
+  pred &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(<span class="kw">cbind</span>(<span class="dv">1</span>, .data[test, <span class="op">-</span><span class="dv">1</span>])) <span class="op">%*%</span><span class="st"> </span><span class="kw">coef</span>(fit)
+  <span class="kw">mean</span>((pred <span class="op">-</span><span class="st"> </span>.data[test,]<span class="op">$</span>upo3)<span class="op">^</span><span class="dv">2</span>)
 }
 
 
@@ -341,26 +346,26 @@ ge_ridge &lt;-<span class="st"> </span>function(test, train, .data, lambda) {
 ##  functions to return list with indices                                   ####
 
 
-get_boostrap_mat &lt;-<span class="st"> </span>function(B, n) {
+get_boostrap_mat &lt;-<span class="st"> </span><span class="cf">function</span>(B, n) {
   <span class="kw">rerun</span>(B, <span class="kw">sample</span>(n, n, <span class="dt">replace =</span> <span class="ot">TRUE</span>))
   
 }
 
-get_all_mat &lt;-<span class="st"> </span>function(B, n) {
-  <span class="kw">rerun</span>(B, <span class="dv">1</span>:n)
+get_all_mat &lt;-<span class="st"> </span><span class="cf">function</span>(B, n) {
+  <span class="kw">rerun</span>(B, <span class="dv">1</span><span class="op">:</span>n)
 }
 
-get_complement &lt;-<span class="st"> </span>function(mat, n){
-  <span class="kw">map</span>(mat, ~<span class="kw">setdiff</span>(<span class="dv">1</span>:n, .x))
+get_complement &lt;-<span class="st"> </span><span class="cf">function</span>(mat, n){
+  <span class="kw">map</span>(mat, <span class="op">~</span><span class="kw">setdiff</span>(<span class="dv">1</span><span class="op">:</span>n, .x))
 }
 
-get_k_fold_test &lt;-<span class="st"> </span>function(k, n) {
-  step &lt;-<span class="st"> </span><span class="kw">round</span>(n/k)
+get_k_fold_test &lt;-<span class="st"> </span><span class="cf">function</span>(k, n) {
+  step &lt;-<span class="st"> </span><span class="kw">round</span>(n<span class="op">/</span>k)
   current &lt;-<span class="st"> </span><span class="kw">list</span>()
-  for (i in (<span class="dv">0</span>:(k<span class="dv">-1</span>) *<span class="st"> </span>step +<span class="st"> </span><span class="dv">1</span>))  {
+  <span class="cf">for</span> (i <span class="cf">in</span> (<span class="dv">0</span><span class="op">:</span>(k<span class="op">-</span><span class="dv">1</span>) <span class="op">*</span><span class="st"> </span>step <span class="op">+</span><span class="st"> </span><span class="dv">1</span>))  {
     current &lt;-<span class="st"> </span><span class="kw">append</span>(
       current, 
-      <span class="kw">list</span>(i:(<span class="kw">min</span>(i+step<span class="dv">-1</span>, n)))
+      <span class="kw">list</span>(i<span class="op">:</span>(<span class="kw">min</span>(i<span class="op">+</span>step<span class="op">-</span><span class="dv">1</span>, n)))
     )
   }
   current
@@ -379,22 +384,22 @@ bs &lt;-<span class="st"> </span><span class="kw">map2_dbl</span>(test, train, g
 ##  ............................................................................
 ##  10-fold                                                                 ####
 test &lt;-<span class="st"> </span><span class="kw">get_k_fold_test</span>(<span class="dv">10</span>, n)
-train &lt;-<span class="st"> </span><span class="kw">map</span>(test, ~<span class="kw">setdiff</span>(<span class="dv">1</span>:n, .x))
+train &lt;-<span class="st"> </span><span class="kw">map</span>(test, <span class="op">~</span><span class="kw">setdiff</span>(<span class="dv">1</span><span class="op">:</span>n, .x))
 kfold &lt;-<span class="st"> </span><span class="kw">map2_dbl</span>(test, train, ge_ridge, <span class="dt">.data =</span> ozone, <span class="dt">lambda =</span> <span class="dv">5</span>)
 
 ##  ............................................................................
 ##  out-of-boostrap                                                         ####
 train &lt;-<span class="st"> </span><span class="kw">get_boostrap_mat</span>(<span class="dv">10</span>, n)
-test &lt;-<span class="st"> </span><span class="kw">map</span>(test, ~<span class="kw">setdiff</span>(<span class="dv">1</span>:n, .x))
+test &lt;-<span class="st"> </span><span class="kw">map</span>(test, <span class="op">~</span><span class="kw">setdiff</span>(<span class="dv">1</span><span class="op">:</span>n, .x))
 oob &lt;-<span class="st"> </span><span class="kw">map2_dbl</span>(test, train, ge_ridge, <span class="dt">.data =</span> ozone, <span class="dt">lambda =</span> <span class="dv">5</span>)</code></pre></div>
 <p>The results are as follows:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">out &lt;-<span class="st"> </span><span class="kw">cbind</span>(bs, kfold, oob) %&gt;%
-<span class="st">  </span><span class="kw">as_data_frame</span>() %&gt;%
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">out &lt;-<span class="st"> </span><span class="kw">cbind</span>(bs, kfold, oob) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">as_data_frame</span>() <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">gather</span>(key, value)
 
-<span class="kw">ggplot</span>(out, <span class="kw">aes</span>(<span class="dt">y =</span> value, <span class="dt">x =</span> key)) +<span class="st"> </span>
+<span class="kw">ggplot</span>(out, <span class="kw">aes</span>(<span class="dt">y =</span> value, <span class="dt">x =</span> key)) <span class="op">+</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">geom_boxplot</span>()</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 </div>
 <div id="application-2-parameter-tuning" class="section level3">
 <h3><span class="header-section-number">5.8.2</span> Application 2: Parameter Tuning</h3>
@@ -402,25 +407,25 @@ oob &lt;-<span class="st"> </span><span class="kw">map2_dbl</span>(test, train, 
 <p><img src="figures/lasso_cv.png" width="650px" /></p>
 <p>Then pick an optimal lamda, e.g. the one with the lowest test error (a bit arbitrary) or one according to some other rule (e.g. pick the least complex model that is within one standard error of the best model).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#&#39; Given lambda, compute the test set error with k folds</span>
-find_lambda_kfold_one &lt;-<span class="st"> </span>function(lambda, k, n, .data, ...) {
+find_lambda_kfold_one &lt;-<span class="st"> </span><span class="cf">function</span>(lambda, k, n, .data, ...) {
   x_test &lt;-<span class="st"> </span><span class="kw">get_k_fold_test</span>(k, n)
   x_train  &lt;-<span class="st"> </span><span class="kw">get_complement</span>(x_test, n)
-  <span class="kw">map2_dbl</span>(x_test, x_train, ge_ridge, <span class="dt">lambda =</span> lambda, <span class="dt">.data =</span> .data, ...) %&gt;%
+  <span class="kw">map2_dbl</span>(x_test, x_train, ge_ridge, <span class="dt">lambda =</span> lambda, <span class="dt">.data =</span> .data, ...) <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">mean</span>()
 }
 
 <span class="co">#&#39; Given a sequence of lambdas, return the corresponding test set errors</span>
-find_lambda_kfold &lt;-<span class="st"> </span>function(seq, k, .data) {
+find_lambda_kfold &lt;-<span class="st"> </span><span class="cf">function</span>(seq, k, .data) {
   cv &lt;-<span class="st"> </span><span class="kw">map_dbl</span>(seq, find_lambda_kfold_one, 
                 <span class="dt">k =</span> k, <span class="dt">n =</span> <span class="kw">nrow</span>(.data), <span class="dt">.data =</span> .data)
   results &lt;-<span class="st"> </span><span class="kw">data_frame</span>(<span class="dt">lambda =</span> seq, <span class="dt">cv_score =</span> cv)
   results
 }</code></pre></div>
 <p>We are almost done. Let us now compute the test set error that we use as an approximation of the generalization error and plot it against different values of lamda.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">find_lambda_kfold</span>(<span class="dt">seq =</span> <span class="kw">seq</span>(<span class="dv">5</span>, <span class="dv">30</span>, <span class="dt">by =</span> <span class="dv">3</span>), <span class="dv">100</span>, ozone) %&gt;%
-<span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> lambda, <span class="dt">y =</span> cv_score)) +<span class="st"> </span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">find_lambda_kfold</span>(<span class="dt">seq =</span> <span class="kw">seq</span>(<span class="dv">5</span>, <span class="dv">30</span>, <span class="dt">by =</span> <span class="dv">3</span>), <span class="dv">100</span>, ozone) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> lambda, <span class="dt">y =</span> cv_score)) <span class="op">+</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">geom_line</span>()</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
 <p>That looks reasonable. We could improve on that by also showing the distribution of the test set error at various lambadas. This could by done by altering <code>find_lambda_kfold_one()</code> to not return the mean, but also the upper and lower 95% confidence interval.</p>
 
 </div>

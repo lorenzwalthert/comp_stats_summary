@@ -156,3 +156,7 @@ $$[2 \hat{\theta} - q_{1-\alpha/2}, 2\hat{\theta}- q_{\alpha/2}]$$
   think of the matrices a row vectors and each element of such a vector is 
   a vector itself (Credits @NG).
 * Always sort the data when working with smoother matrices.
+
+* The short cut for leave one out CV with linear fitting operators is
+
+$$ n^{-1} \sum\limits_{i = 1}^n \Big(\frac{y_i - \hat{m}(x_i)}{1-S_{ii}}\Big)^2$$ 

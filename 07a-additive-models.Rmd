@@ -13,7 +13,7 @@ effects**.
 ### Fitting Procedure 
 Additive models can be estimated with a technique called back-fitting.
 However, the model can be estimated with any non-parametric method for
-one-dimensional smoothing. Here is the receipt:
+one-dimensional smoothing. Here is the recipe:
 
 * since we assume an additive model, we need to initialize all $p$ components of
   it with zero, that is setting $g_j(\cdot) = 0 \;\; j = 1,..., p$ plus setting 

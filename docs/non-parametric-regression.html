@@ -292,10 +292,10 @@ n &lt;-<span class="st"> </span><span class="dv">10</span>
 u &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>, n)
 u[j] &lt;-<span class="st"> </span><span class="dv">1</span>
 data &lt;-<span class="st"> </span><span class="kw">data_frame</span>(
-  <span class="dt">x =</span> <span class="dv">1</span>:n,
+  <span class="dt">x =</span> <span class="dv">1</span><span class="op">:</span>n,
   <span class="dt">y =</span> u
 )
-<span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y)) +<span class="st"> </span><span class="kw">geom_point</span>() +<span class="st"> </span><span class="kw">geom_smooth</span>(<span class="dt">se =</span> <span class="ot">FALSE</span>)</code></pre></div>
+<span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_smooth</span>(<span class="dt">se =</span> <span class="ot">FALSE</span>)</code></pre></div>
 <p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p>But why? The trick is that, since all but the j-th y value are zero and therefore the sum is only taken over one element. For the non-zero element, the <span class="math inline">\(y_i\)</span> is one, so the fitted value is just the normalized kernel weight.</p>
 <p><span class="math display">\[\hat{m}(x_r)^{(j)} =  \frac{K\Big(\frac{x_r - x_j}{h}\Big)}{\sum K(\cdot)} = \tilde{w}_j(x_r)\]</span></p>
@@ -304,8 +304,8 @@ data &lt;-<span class="st"> </span><span class="kw">data_frame</span>(
 Id &lt;-<span class="st"> </span><span class="kw">diag</span>(n)
 S &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>, n, n)
 h &lt;-<span class="st"> &quot;your bandwidth&quot;</span>
-for (j in <span class="dv">1</span>:n) {
-  S[, j] &lt;-<span class="st"> </span><span class="kw">ksmooth</span>(data$x, Id[, j], <span class="dt">x.point =</span> data$x, <span class="dt">kernel =</span> <span class="st">&quot;normal&quot;</span>, <span class="dt">bandwidth =</span> h)$y
+<span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>n) {
+  S[, j] &lt;-<span class="st"> </span><span class="kw">ksmooth</span>(data<span class="op">$</span>x, Id[, j], <span class="dt">x.point =</span> data<span class="op">$</span>x, <span class="dt">kernel =</span> <span class="st">&quot;normal&quot;</span>, <span class="dt">bandwidth =</span> h)<span class="op">$</span>y
 }</code></pre></div>
 </div>
 <div id="degrees-of-freedom" class="section level2">

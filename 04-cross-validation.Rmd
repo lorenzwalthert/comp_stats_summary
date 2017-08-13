@@ -125,10 +125,21 @@ $S$, which satisfies $\mathbf{\hat{Y}} = \mathbf{SY}$ and plug it in this formul
 $$n^{-1}\sum\limits_{i = 1}^n \Bigg(\frac{Y_i - \hat{m}(X_i)}{1-S_{ii}}\Bigg)^2$$
 Computing $\mathbf{S}$ requires $O(n)$ operations (see exercises).
 
+You can implement that easily in R without a loop or anything - because the 
+functions are vectorized:
+
+```{r, eval = FALSE}
+cv_short_cut <- function(x, y, df, S, fit_fun = reg.fcn.loess) {
+  fit <- fit_fun(x, y, x, df = df.nw)
+  mean(((y-fit)/(1 - diag(S)))^2)
+}
+```
+
+As simple as that.
 Historically, it has been computationally easier to compute the trace of 
 $\mathbf{S}$ so there is also a quantity called generalized cross validation
-(which is a misleading terminology), 
-which coincides with the formula above in certain cases.
+(which is a misleading terminology), which coincides with the formula above in 
+certain cases.
 
 
 ## Isolation of each cross validation sample

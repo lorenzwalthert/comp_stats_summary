@@ -272,17 +272,17 @@ With all variables having a mean of zero. Hence we got rid of the intercept. In 
 <p>Whereas <span class="math inline">\(E[\hat{\beta}] \neq \beta\)</span> for <span class="math inline">\(\lambda &gt; 0\)</span> Also, we can see that for <span class="math inline">\(\lambda \rightarrow \infty\)</span>, <span class="math inline">\(\beta \rightarrow 0\)</span>.</p>
 <p>However, since by introducing a bias, we at the same time decrease the variance of our estimator. Therefore, we can optimize the bias-variance trade-off by finding an appropriate <span class="math inline">\(\lambda\)</span>, e.g. by (generalized) cross-valdiation. The regularization parameter lamda here is similar to the one we saw in the chapter about smoothing splines.</p>
 <p>To estimate the model, we can use the <code>MASS</code> package.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fitted &lt;-<span class="st"> </span>MASS::<span class="kw">lm.ridge</span>(
-  GNP.deflator ~., 
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fitted &lt;-<span class="st"> </span>MASS<span class="op">::</span><span class="kw">lm.ridge</span>(
+  GNP.deflator <span class="op">~</span>., 
   <span class="co"># it&#39;s lamBda, not lamda! R won&#39;t complain due to ... !</span>
   <span class="dt">lambda =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="fl">0.1</span>, <span class="dt">by =</span> <span class="fl">0.001</span>), 
   <span class="dt">data =</span> longley
 )</code></pre></div>
 <p>We can plot the coefficients for different values of <span class="math inline">\(\lambda\)</span> in a so-called trace plot.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(fitted)</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-44-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-45-1.png" width="672" /></p>
 <p>We can also get the coeficients for each lamda we estimated and select the best model and get the usual <code>lm</code> summary for it.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">coef</span>(fitted) %&gt;%
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">coef</span>(fitted) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">as_data_frame</span>()</code></pre></div>
 <pre><code>## # A tibble: 101 x 7
 ##            ``       GNP Unemployed Armed.Forces Population        Year
@@ -298,7 +298,7 @@ With all variables having a mean of zero. Hence we got rid of the intercept. In 
 ##  9 -667.11647 0.1626072 0.01747181  0.006437042  -1.237922  0.43345188
 ## 10 -796.92303 0.1567781 0.01676376  0.006447832  -1.197224  0.49840118
 ## # ... with 91 more rows, and 1 more variables: Employed &lt;dbl&gt;</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">MASS::<span class="kw">select</span>(fitted)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">MASS<span class="op">::</span><span class="kw">select</span>(fitted)</code></pre></div>
 <pre><code>## modified HKB estimator is 0.006836982 
 ## modified L-W estimator is 0.05267247 
 ## smallest value of GCV  at 0.006</code></pre>
