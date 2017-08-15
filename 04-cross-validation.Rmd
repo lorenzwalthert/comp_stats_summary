@@ -103,60 +103,6 @@ leave-d-out can be even smaller than for leave-one-out if $B < n$.
 
 **R Example: Implementing stochastic approximation for leave d out**
 
-In this example, we are going to implement the stochastic approximation above
-for various values of `choose`. We want to show that the variance of the GE 
-estimate is higher if we only select few of the `nchoose(nrow(data), choose)`
-values for the approximation.
-```{r}
-#' Approximate leave d out 
-#'
-#' Approximates leave d out by randomly selecting a subset of all choose(n, k) 
-#' possible test sets with leave d out.
-#' @param data The data.
-#' @param d Which leave d out should be approximated.
-#' @param choose How many of the choose(n, d) paris should be selected at random.
-approx_leave_d_out <- function(data, d, choose) {
-  n <- nrow(data)
-  if (is.null(choose)) {
-    choose <- choose(n, d) # choose all
-  }
-  if (choose > choose(n, d)) stop("choose subset of possible combinations")
-  ordered_folds <- combn(n, d)
-  folds <- ordered_folds[, sample(ncol(ordered_folds))]
-  random_subset_test_indices <- sample(choose(n, d), choose)
-  random_subset_test <- folds[, random_subset_test_indices]
-  random_subset_train <- sapply(as.data.frame(random_subset_test),
-                                function(x) setdiff(1:n, x))
-  cv_score_one <- mapply(cv_one,
-                         as.data.frame(random_subset_train), data.frame(random_subset_test),
-                         MoreArgs = list(data = data))
-  mean(cv_score_one)
-  
-}
-
-#' CV helper function
-cv_one <- function(train, test, data, fit_fun = lm, response = "mpg", formula = "mpg~disp") {
-  fit <- fit_fun(formula = as.formula(formula), data = data[train, ])
-  test_data <- data[test,]
-  mean((predict(fit, newdata = data[test, ]) - test_data[,, drop = FALSE][, response])^2)
-}
-
-```
-
-Let's apply these functions
-```{r}
-approx_leave_d_out(mtcars, 3, 100)
-# d = 5, choose = 10 -> choose(nrow(mtcars), 3)
-seq <- rep(seq(10, 480, by = 100), each = 10) * 10
-score <- lapply(seq, approx_leave_d_out, data = mtcars, d = 3)
-cv_multiple <- data.frame(
-  seq = seq,
-  score = unlist(score)
-)
-library("ggplot2")
-ggplot(cv_multiple, aes(x = factor(seq), y = score)) + geom_boxplot()
-
-```
 
 
 ## Properties of the different schemes
@@ -218,7 +164,8 @@ sample to estimate the performance of a model.
 ## Examples with R
 
 In the remainder of this chapter, we will discuss the two important applications
-of cross validation: Estimation of the GE and parameter tuning.
+of cross validation: Estimation of the GE and parameter tuning. We also show
+how you can calculate the random approximation for leave d out.
 
 ### Application 1: Estimating the generalization error
 
@@ -377,3 +324,64 @@ That looks reasonable. We could improve on that by also showing the distribution
 of the test set error at various lambadas. This could by done by altering 
 `find_lambda_kfold_one()` to not return the mean, but also the upper and lower 
 95% confidence interval.
+
+
+### Application 3: Stochastic approximation for leave d out
+
+In this example, we are going to implement the stochastic approximation above
+for various values of `choose`. We want to show that the variance of the GE 
+estimate is higher if we only select few of the `nchoose(nrow(data), choose)`
+values for the approximation.
+
+```{r}
+#' Approximate leave d out 
+#'
+#' Approximates leave d out by randomly selecting a subset of all choose(n, k) 
+#' possible test sets with leave d out.
+#' @param data The data.
+#' @param d Which leave d out should be approximated.
+#' @param choose How many of the choose(n, d) paris should be selected at random.
+approx_leave_d_out <- function(data, d, choose) {
+  n <- nrow(data)
+  if (is.null(choose)) {
+    choose <- choose(n, d) # choose all
+  }
+  if (choose > choose(n, d)) stop("choose subset of possible combinations")
+  ordered_folds <- combn(n, d)
+  folds <- ordered_folds[, sample(ncol(ordered_folds))]
+  random_subset_test_indices <- sample(choose(n, d), choose)
+  random_subset_test <- folds[, random_subset_test_indices]
+  random_subset_train <- sapply(as.data.frame(random_subset_test),
+                                function(x) setdiff(1:n, x))
+  cv_score_one <- mapply(cv_one,
+                         as.data.frame(random_subset_train), data.frame(random_subset_test),
+                         MoreArgs = list(data = data))
+  mean(cv_score_one)
+  
+}
+
+#' CV helper function
+cv_one <- function(train, test, data, fit_fun = lm, response = "mpg", formula = "mpg~disp") {
+  fit <- fit_fun(formula = as.formula(formula), data = data[train, ])
+  test_data <- data[test,]
+  mean((predict(fit, newdata = data[test, ]) - test_data[,, drop = FALSE][, response])^2)
+}
+
+```
+
+Let's apply these functions.
+
+```{r}
+approx_leave_d_out(mtcars, 3, 100)
+# d = 3, choose = 10 -> choose(nrow(mtcars), 3)
+seq <- rep(seq(10, 480, by = 100), each = 10) * 10
+score <- sapply(seq, approx_leave_d_out, data = mtcars, d = 3)
+cv_multiple <- data.frame(
+  seq = seq,
+  score = score
+)
+library("ggplot2")
+ggplot(cv_multiple, aes(x = factor(seq), y = score)) + geom_boxplot()
+
+```
+

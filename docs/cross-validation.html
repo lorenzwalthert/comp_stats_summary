@@ -153,6 +153,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="5.8" data-path="cross-validation.html"><a href="cross-validation.html#examples-with-r"><i class="fa fa-check"></i><b>5.8</b> Examples with R</a><ul>
 <li class="chapter" data-level="5.8.1" data-path="cross-validation.html"><a href="cross-validation.html#application-1-estimating-the-generalization-error"><i class="fa fa-check"></i><b>5.8.1</b> Application 1: Estimating the generalization error</a></li>
 <li class="chapter" data-level="5.8.2" data-path="cross-validation.html"><a href="cross-validation.html#application-2-parameter-tuning"><i class="fa fa-check"></i><b>5.8.2</b> Application 2: Parameter Tuning</a></li>
+<li class="chapter" data-level="5.8.3" data-path="cross-validation.html"><a href="cross-validation.html#application-3-stochastic-approximation-for-leave-d-out"><i class="fa fa-check"></i><b>5.8.3</b> Application 3: Stochastic approximation for leave d out</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="6" data-path="bootstrap.html"><a href="bootstrap.html"><i class="fa fa-check"></i><b>6</b> Bootstrap</a><ul>
@@ -286,52 +287,6 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h3><span class="header-section-number">5.4.1</span> Random Division into test and training data set</h3>
 <p>The problem of K-fold cross-validation is that it depends on <strong>one realization</strong> of the split into k folds. Instead, we can generalize leave-one-out to leave-d-out. That means, we remove <span class="math inline">\(d\)</span> observations from our initial data, apply our estimation procedure and evaluate on the <span class="math inline">\(d\)</span> observations. <span class="math display">\[\hat{\theta}^{-C_k}_{n-k} \;\;\; \text{for all possible subsets}\;\; C_k, \;\; k=1, ..., {\binom{n}{d}}\]</span> The generalization error can be estimated with <span class="math display">\[{\binom{n}{d}}^{-1}\sum\limits_{k = 1}^{\binom{n}{d}} d^{-1}\sum\limits_{i \in C_k} \rho(Y_i, \hat{m}^{-C_k}_{n-d}(X_i))\]</span> For <span class="math inline">\(d &gt; 3\)</span>, the computational burden becomes immense. For that reason, instead of considering all <span class="math inline">\({\binom{n}{d}}\)</span> sets, we can uniformly draw <span class="math inline">\(B\)</span> sets (<span class="math inline">\(C_1^*, ... C_B^*\)</span>) from <span class="math inline">\(C_1, ..., C_{\binom{n}{d}}\)</span> <em>without replacement</em>. For <span class="math inline">\(B=\binom{n}{d}\)</span>, we obviously get the full leave-d-out solution. The <strong>computational cost</strong> for computing such an approximation to the leave-d-out is linear in <span class="math inline">\(B\)</span> (since evaluating is almost for free). For leave-one-out, the cost is linear in <span class="math inline">\(n\)</span> in the same way. Hence, the stochastic approximation for leave-d-out can be even smaller than for leave-one-out if <span class="math inline">\(B &lt; n\)</span>.</p>
 <p><strong>R Example: Implementing stochastic approximation for leave d out</strong></p>
-<p>In this example, we are going to implement the stochastic approximation above for various values of <code>choose</code>. We want to show that the variance of the GE estimate is higher if we only select few of the <code>nchoose(nrow(data), choose)</code> values for the approximation.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#&#39; Approximate leave d out </span>
-<span class="co">#&#39;</span>
-<span class="co">#&#39; Approximates leave d out by randomly selecting a subset of all choose(n, k) </span>
-<span class="co">#&#39; possible test sets with leave d out.</span>
-<span class="co">#&#39; @param data The data.</span>
-<span class="co">#&#39; @param d Which leave d out should be approximated.</span>
-<span class="co">#&#39; @param choose How many of the choose(n, d) paris should be selected at random.</span>
-approx_leave_d_out &lt;-<span class="st"> </span><span class="cf">function</span>(data, d, choose) {
-  n &lt;-<span class="st"> </span><span class="kw">nrow</span>(data)
-  <span class="cf">if</span> (<span class="kw">is.null</span>(choose)) {
-    choose &lt;-<span class="st"> </span><span class="kw">choose</span>(n, d) <span class="co"># choose all</span>
-  }
-  <span class="cf">if</span> (choose <span class="op">&gt;</span><span class="st"> </span><span class="kw">choose</span>(n, d)) <span class="kw">stop</span>(<span class="st">&quot;choose subset of possible combinations&quot;</span>)
-  ordered_folds &lt;-<span class="st"> </span><span class="kw">combn</span>(n, d)
-  folds &lt;-<span class="st"> </span>ordered_folds[, <span class="kw">sample</span>(<span class="kw">ncol</span>(ordered_folds))]
-  random_subset_test_indices &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="kw">choose</span>(n, d), choose)
-  random_subset_test &lt;-<span class="st"> </span>folds[, random_subset_test_indices]
-  random_subset_train &lt;-<span class="st"> </span><span class="kw">sapply</span>(<span class="kw">as.data.frame</span>(random_subset_test),
-                                <span class="cf">function</span>(x) <span class="kw">setdiff</span>(<span class="dv">1</span><span class="op">:</span>n, x))
-  cv_score_one &lt;-<span class="st"> </span><span class="kw">mapply</span>(cv_one,
-                         <span class="kw">as.data.frame</span>(random_subset_train), <span class="kw">data.frame</span>(random_subset_test),
-                         <span class="dt">MoreArgs =</span> <span class="kw">list</span>(<span class="dt">data =</span> data))
-  <span class="kw">mean</span>(cv_score_one)
-  
-}
-
-<span class="co">#&#39; CV helper function</span>
-cv_one &lt;-<span class="st"> </span><span class="cf">function</span>(train, test, data, <span class="dt">fit_fun =</span> lm, <span class="dt">response =</span> <span class="st">&quot;mpg&quot;</span>, <span class="dt">formula =</span> <span class="st">&quot;mpg~disp&quot;</span>) {
-  fit &lt;-<span class="st"> </span><span class="kw">fit_fun</span>(<span class="dt">formula =</span> <span class="kw">as.formula</span>(formula), <span class="dt">data =</span> data[train, ])
-  test_data &lt;-<span class="st"> </span>data[test,]
-  <span class="kw">mean</span>((<span class="kw">predict</span>(fit, <span class="dt">newdata =</span> data[test, ]) <span class="op">-</span><span class="st"> </span>test_data[,, <span class="dt">drop =</span> <span class="ot">FALSE</span>][, response])<span class="op">^</span><span class="dv">2</span>)
-}</code></pre></div>
-<p>Let’s apply these functions</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">approx_leave_d_out</span>(mtcars, <span class="dv">3</span>, <span class="dv">100</span>)</code></pre></div>
-<pre><code>## [1] 13.75279</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># d = 5, choose = 10 -&gt; choose(nrow(mtcars), 3)</span>
-seq &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">seq</span>(<span class="dv">10</span>, <span class="dv">480</span>, <span class="dt">by =</span> <span class="dv">100</span>), <span class="dt">each =</span> <span class="dv">10</span>) <span class="op">*</span><span class="st"> </span><span class="dv">10</span>
-score &lt;-<span class="st"> </span><span class="kw">lapply</span>(seq, approx_leave_d_out, <span class="dt">data =</span> mtcars, <span class="dt">d =</span> <span class="dv">3</span>)
-cv_multiple &lt;-<span class="st"> </span><span class="kw">data.frame</span>(
-  <span class="dt">seq =</span> seq,
-  <span class="dt">score =</span> <span class="kw">unlist</span>(score)
-)
-<span class="kw">library</span>(<span class="st">&quot;ggplot2&quot;</span>)
-<span class="kw">ggplot</span>(cv_multiple, <span class="kw">aes</span>(<span class="dt">x =</span> <span class="kw">factor</span>(seq), <span class="dt">y =</span> score)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_boxplot</span>()</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 </div>
 </div>
 <div id="properties-of-the-different-schemes" class="section level2">
@@ -359,7 +314,7 @@ cv_multiple &lt;-<span class="st"> </span><span class="kw">data.frame</span>(
 </div>
 <div id="examples-with-r" class="section level2">
 <h2><span class="header-section-number">5.8</span> Examples with R</h2>
-<p>In the remainder of this chapter, we will discuss the two important applications of cross validation: Estimation of the GE and parameter tuning.</p>
+<p>In the remainder of this chapter, we will discuss the two important applications of cross validation: Estimation of the GE and parameter tuning. We also show how you can calculate the random approximation for leave d out.</p>
 <div id="application-1-estimating-the-generalization-error" class="section level3">
 <h3><span class="header-section-number">5.8.1</span> Application 1: Estimating the generalization error</h3>
 <p>Key concepts to do CV are</p>
@@ -447,7 +402,7 @@ oob &lt;-<span class="st"> </span><span class="kw">map2_dbl</span>(test, train, 
 
 <span class="kw">ggplot</span>(out, <span class="kw">aes</span>(<span class="dt">y =</span> value, <span class="dt">x =</span> key)) <span class="op">+</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">geom_boxplot</span>()</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 </div>
 <div id="application-2-parameter-tuning" class="section level3">
 <h3><span class="header-section-number">5.8.2</span> Application 2: Parameter Tuning</h3>
@@ -473,8 +428,57 @@ find_lambda_kfold &lt;-<span class="st"> </span><span class="cf">function</span>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">find_lambda_kfold</span>(<span class="dt">seq =</span> <span class="kw">seq</span>(<span class="dv">5</span>, <span class="dv">30</span>, <span class="dt">by =</span> <span class="dv">3</span>), <span class="dv">100</span>, ozone) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> lambda, <span class="dt">y =</span> cv_score)) <span class="op">+</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">geom_line</span>()</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
 <p>That looks reasonable. We could improve on that by also showing the distribution of the test set error at various lambadas. This could by done by altering <code>find_lambda_kfold_one()</code> to not return the mean, but also the upper and lower 95% confidence interval.</p>
+</div>
+<div id="application-3-stochastic-approximation-for-leave-d-out" class="section level3">
+<h3><span class="header-section-number">5.8.3</span> Application 3: Stochastic approximation for leave d out</h3>
+<p>In this example, we are going to implement the stochastic approximation above for various values of <code>choose</code>. We want to show that the variance of the GE estimate is higher if we only select few of the <code>nchoose(nrow(data), choose)</code> values for the approximation.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#&#39; Approximate leave d out </span>
+<span class="co">#&#39;</span>
+<span class="co">#&#39; Approximates leave d out by randomly selecting a subset of all choose(n, k) </span>
+<span class="co">#&#39; possible test sets with leave d out.</span>
+<span class="co">#&#39; @param data The data.</span>
+<span class="co">#&#39; @param d Which leave d out should be approximated.</span>
+<span class="co">#&#39; @param choose How many of the choose(n, d) paris should be selected at random.</span>
+approx_leave_d_out &lt;-<span class="st"> </span><span class="cf">function</span>(data, d, choose) {
+  n &lt;-<span class="st"> </span><span class="kw">nrow</span>(data)
+  <span class="cf">if</span> (<span class="kw">is.null</span>(choose)) {
+    choose &lt;-<span class="st"> </span><span class="kw">choose</span>(n, d) <span class="co"># choose all</span>
+  }
+  <span class="cf">if</span> (choose <span class="op">&gt;</span><span class="st"> </span><span class="kw">choose</span>(n, d)) <span class="kw">stop</span>(<span class="st">&quot;choose subset of possible combinations&quot;</span>)
+  ordered_folds &lt;-<span class="st"> </span><span class="kw">combn</span>(n, d)
+  folds &lt;-<span class="st"> </span>ordered_folds[, <span class="kw">sample</span>(<span class="kw">ncol</span>(ordered_folds))]
+  random_subset_test_indices &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="kw">choose</span>(n, d), choose)
+  random_subset_test &lt;-<span class="st"> </span>folds[, random_subset_test_indices]
+  random_subset_train &lt;-<span class="st"> </span><span class="kw">sapply</span>(<span class="kw">as.data.frame</span>(random_subset_test),
+                                <span class="cf">function</span>(x) <span class="kw">setdiff</span>(<span class="dv">1</span><span class="op">:</span>n, x))
+  cv_score_one &lt;-<span class="st"> </span><span class="kw">mapply</span>(cv_one,
+                         <span class="kw">as.data.frame</span>(random_subset_train), <span class="kw">data.frame</span>(random_subset_test),
+                         <span class="dt">MoreArgs =</span> <span class="kw">list</span>(<span class="dt">data =</span> data))
+  <span class="kw">mean</span>(cv_score_one)
+  
+}
+
+<span class="co">#&#39; CV helper function</span>
+cv_one &lt;-<span class="st"> </span><span class="cf">function</span>(train, test, data, <span class="dt">fit_fun =</span> lm, <span class="dt">response =</span> <span class="st">&quot;mpg&quot;</span>, <span class="dt">formula =</span> <span class="st">&quot;mpg~disp&quot;</span>) {
+  fit &lt;-<span class="st"> </span><span class="kw">fit_fun</span>(<span class="dt">formula =</span> <span class="kw">as.formula</span>(formula), <span class="dt">data =</span> data[train, ])
+  test_data &lt;-<span class="st"> </span>data[test,]
+  <span class="kw">mean</span>((<span class="kw">predict</span>(fit, <span class="dt">newdata =</span> data[test, ]) <span class="op">-</span><span class="st"> </span>test_data[,, <span class="dt">drop =</span> <span class="ot">FALSE</span>][, response])<span class="op">^</span><span class="dv">2</span>)
+}</code></pre></div>
+<p>Let’s apply these functions.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">approx_leave_d_out</span>(mtcars, <span class="dv">3</span>, <span class="dv">100</span>)</code></pre></div>
+<pre><code>## [1] 10.92736</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># d = 3, choose = 10 -&gt; choose(nrow(mtcars), 3)</span>
+seq &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">seq</span>(<span class="dv">10</span>, <span class="dv">480</span>, <span class="dt">by =</span> <span class="dv">100</span>), <span class="dt">each =</span> <span class="dv">10</span>) <span class="op">*</span><span class="st"> </span><span class="dv">10</span>
+score &lt;-<span class="st"> </span><span class="kw">sapply</span>(seq, approx_leave_d_out, <span class="dt">data =</span> mtcars, <span class="dt">d =</span> <span class="dv">3</span>)
+cv_multiple &lt;-<span class="st"> </span><span class="kw">data.frame</span>(
+  <span class="dt">seq =</span> seq,
+  <span class="dt">score =</span> score
+)
+<span class="kw">library</span>(<span class="st">&quot;ggplot2&quot;</span>)
+<span class="kw">ggplot</span>(cv_multiple, <span class="kw">aes</span>(<span class="dt">x =</span> <span class="kw">factor</span>(seq), <span class="dt">y =</span> score)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_boxplot</span>()</code></pre></div>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
 
 </div>
 </div>
