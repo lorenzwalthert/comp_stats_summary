@@ -433,7 +433,7 @@ find_lambda_kfold &lt;-<span class="st"> </span><span class="cf">function</span>
 </div>
 <div id="application-3-stochastic-approximation-for-leave-d-out" class="section level3">
 <h3><span class="header-section-number">5.8.3</span> Application 3: Stochastic approximation for leave d out</h3>
-<p>In this example, we are going to implement the stochastic approximation above for various values of <code>choose</code>. We want to show that the variance of the GE estimate is higher if we only select few of the <code>nchoose(nrow(data), choose)</code> values for the approximation.</p>
+<p>In this example, we are going to implement the stochastic approximation above for various values of <code>choose</code>. We want to show that the variance of the GE estimate is higher if we only select few of the <span class="math inline">\(\binom{n}{d}\)</span> values for the approximation.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#&#39; Approximate leave d out </span>
 <span class="co">#&#39;</span>
 <span class="co">#&#39; Approximates leave d out by randomly selecting a subset of all choose(n, k) </span>

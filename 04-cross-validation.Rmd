@@ -330,7 +330,7 @@ of the test set error at various lambadas. This could by done by altering
 
 In this example, we are going to implement the stochastic approximation above
 for various values of `choose`. We want to show that the variance of the GE 
-estimate is higher if we only select few of the `nchoose(nrow(data), choose)`
+estimate is higher if we only select few of the $\binom{n}{d}$
 values for the approximation.
 
 ```{r}
