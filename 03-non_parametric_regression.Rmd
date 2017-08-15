@@ -192,7 +192,7 @@ $$ \text{Cov}(\hat{m}(x)) = \text{Cov}(\mathcal{S}\mathbf{y}) =
 \mathcal{S} \text{Cov}(y) \mathcal{S}' = \sigma_\epsilon^2\mathcal{SS}'
 \;\;\;\;\;|\;\; \text{since Cov}(y) = \text{Cov}(\epsilon)$$ 
 Which is a $p\times p$ matrix. For a specific data point $x_i$, we have
-$$ \text{Var}(\hat{m}(x_i))= \text{Cov}(\hat{m}(x_i),  \hat{m}(x_i)) = \sigma_\epsilon^2 (\mathcal{S} \mathcal{S}')_{ii} $$
+$$ \text{Var}(\hat{m}(x_i))= \text{Cov}(\hat{m}(x_i),  \hat{m}(x_i)) = \hat{\sigma}_\epsilon^2 (\mathcal{S} \mathcal{S}')_{ii} $$
 
 Now, we only need to estimate $\sigma^2_\epsilon$. Using the generalized 
 method to compute degrees of freedom, we can use the following estimator:
@@ -217,3 +217,21 @@ account).
 
 Another advantage is that we can find derivaties of the regression estimate at
 each point easily.
+
+## Smoothing splines
+
+$$\sum\limits_{i = 1}^n (Y_i - \hat{m}(x_i))^2 + \lambda\int{m''(z)^2dz} $$
+Where $\lambda$ is a smoothing parameter. There are two extreme cases:
+
+* $\lambda  = 0$, Any perfectly interpolating function $m$ is possible.
+* $\lambda \rightarrow \infty$. The ols solution with $m''(x) = 0$.
+
+At every distinct $x_i$, there is a knot. The function $\hat{m}(x)$ is a piecwise
+polynomial function where at each knot, the left and the right polynomial 
+agree in their valued $\hat{m}$ and the first and second derivative.
+For the $n-1$ polynomials, you have $4$ parameters each, so $(n-1)*4$ parameters
+to estimate. The constraints are $(n-2)*3 + 2$ conditions, leaving exactly
+$n$ free parameters.
+
+There is a kernel estimator which approximately corresponds to the smoothing
+spline solution. Interestingly, this solution has a locally varying bandwidth.

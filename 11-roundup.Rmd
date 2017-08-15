@@ -139,6 +139,51 @@ functions until you are done with the whole exam. Examples are
 * Test whether values you obatain are plausible
 * use `browser()` extensively, even when writing a function, not just to debug 
   it.
+  
+**Do not assign fitted values to initial data frame**
+This is dangerous since you are probably doing something like
+```{r, eval = FALSE}
+fit <- lm(y~., data = data)
+data$yhat <- predict(fit, data)
+# you may do next
+glm(y~., data = data, family = binomial) # yhat will be predictor now
+```
+
+** Series 3 - Non-parametric Regression**
+- The smoother matrix $S$ does not change if the x values are fix.
+- The bias is $E[f(x) - \hat{f}(x)]$, so use the *true* values without the 
+  added noise for $f(x)$.
+- `diag()`, `t()` and `%*%`.
+- Be careful with formulas and write them first donw on paper. E.g. $\hat{sd(\hat{m}(x))}$.
+- Don't confuse variance and standard error.
+- Simultanous coverage calculations of many simulations can be done simpler than 
+  `true > lower_ci & true > upper_ci`, namely via 
+  `abs(m(x) - m_hat(x)) <= 1.96 * sd(m_hat)`, which can be vectorised with 
+  matrices. To be verbose, use `replicate(nrep, m(x))` to create a matrix with 
+  `nrep` columns, which all just contain `m(x)`.
+  
+```{r}
+#' Estimate the coverage
+#'
+#' Estimates how many times a confidence interval over all x contains the 
+#' true value.
+#' @param est A matrix with nrep predictions for each observed x
+#' @param se A matrix with the corresponding to `est` with standard deviations 
+#'   at each x.
+#' @param true A vector with the n true values (no noise added).
+est_coverage <- function(est, se, true = m(x)) {
+  inside <- sum(
+    apply(abs(est - replicate(ncol(est), true)) <= 1.96 * se, 2, all)
+  )
+  inside
+}
+```
+  
+**Series 5**
+
+Only because there is no exported S3 generic (e.g. for `predict()`), it does 
+not mean there is none!
+
 
 ## Cheatsheet
 * The boostrapped confidence intrevals are 
@@ -160,3 +205,10 @@ $$[2 \hat{\theta} - q_{1-\alpha/2}, 2\hat{\theta}- q_{\alpha/2}]$$
 * The short cut for leave one out CV with linear fitting operators is
 
 $$ n^{-1} \sum\limits_{i = 1}^n \Big(\frac{y_i - \hat{m}(x_i)}{1-S_{ii}}\Big)^2$$ 
+
+* use roxygen comemnts instead of normal comments since the propagate to new line
+* You can do k-fold CV with `i in 0:kfold-1`, where M is the size of the fold. 
+```{r, eval = FALSE}
+test_ind <- (i * M + 1):((i + 1) * M)
+```
+

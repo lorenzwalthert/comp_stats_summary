@@ -136,6 +136,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul></li>
 <li class="chapter" data-level="4.5" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#inference"><i class="fa fa-check"></i><b>4.5</b> Inference</a></li>
 <li class="chapter" data-level="4.6" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#local-polynomial-estimator"><i class="fa fa-check"></i><b>4.6</b> Local Polynomial Estimator</a></li>
+<li class="chapter" data-level="4.7" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#smoothing-splines"><i class="fa fa-check"></i><b>4.7</b> Smoothing splines</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="cross-validation.html"><a href="cross-validation.html"><i class="fa fa-check"></i><b>5</b> Cross Validation</a><ul>
 <li class="chapter" data-level="5.1" data-path="cross-validation.html"><a href="cross-validation.html#motivation-and-core-idea"><i class="fa fa-check"></i><b>5.1</b> Motivation and Core Idea</a></li>
@@ -298,6 +299,28 @@ formula &lt;-<span class="st"> </span><span class="kw">wrapFormula</span>(
 <li>Test whether values you obatain are plausible</li>
 <li>use <code>browser()</code> extensively, even when writing a function, not just to debug it.</li>
 </ul>
+<p><strong>Do not assign fitted values to initial data frame</strong> This is dangerous since you are probably doing something like</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit &lt;-<span class="st"> </span><span class="kw">lm</span>(y<span class="op">~</span>., <span class="dt">data =</span> data)
+data<span class="op">$</span>yhat &lt;-<span class="st"> </span><span class="kw">predict</span>(fit, data)
+<span class="co"># you may do next</span>
+<span class="kw">glm</span>(y<span class="op">~</span>., <span class="dt">data =</span> data, <span class="dt">family =</span> binomial) <span class="co"># yhat will be predictor now</span></code></pre></div>
+<p>** Series 3 - Non-parametric Regression** - The smoother matrix <span class="math inline">\(S\)</span> does not change if the x values are fix. - The bias is <span class="math inline">\(E[f(x) - \hat{f}(x)]\)</span>, so use the <em>true</em> values without the added noise for <span class="math inline">\(f(x)\)</span>. - <code>diag()</code>, <code>t()</code> and <code>%*%</code>. - Be careful with formulas and write them first donw on paper. E.g. <span class="math inline">\(\hat{sd(\hat{m}(x))}\)</span>. - Don’t confuse variance and standard error. - Simultanous coverage calculations of many simulations can be done simpler than <code>true &gt; lower_ci &amp; true &gt; upper_ci</code>, namely via <code>abs(m(x) - m_hat(x)) &lt;= 1.96 * sd(m_hat)</code>, which can be vectorised with matrices. To be verbose, use <code>replicate(nrep, m(x))</code> to create a matrix with <code>nrep</code> columns, which all just contain <code>m(x)</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#&#39; Estimate the coverage</span>
+<span class="co">#&#39;</span>
+<span class="co">#&#39; Estimates how many times a confidence interval over all x contains the </span>
+<span class="co">#&#39; true value.</span>
+<span class="co">#&#39; @param est A matrix with nrep predictions for each observed x</span>
+<span class="co">#&#39; @param se A matrix with the corresponding to `est` with standard deviations </span>
+<span class="co">#&#39;   at each x.</span>
+<span class="co">#&#39; @param true A vector with the n true values (no noise added).</span>
+est_coverage &lt;-<span class="st"> </span><span class="cf">function</span>(est, se, <span class="dt">true =</span> <span class="kw">m</span>(x)) {
+  inside &lt;-<span class="st"> </span><span class="kw">sum</span>(
+    <span class="kw">apply</span>(<span class="kw">abs</span>(est <span class="op">-</span><span class="st"> </span><span class="kw">replicate</span>(<span class="kw">ncol</span>(est), true)) <span class="op">&lt;=</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span>se, <span class="dv">2</span>, all)
+  )
+  inside
+}</code></pre></div>
+<p><strong>Series 5</strong></p>
+<p>Only because there is no exported S3 generic (e.g. for <code>predict()</code>), it does not mean there is none!</p>
 </div>
 <div id="cheatsheet" class="section level2">
 <h2><span class="header-section-number">11.3</span> Cheatsheet</h2>
@@ -313,6 +336,11 @@ formula &lt;-<span class="st"> </span><span class="kw">wrapFormula</span>(
 <li><p>The short cut for leave one out CV with linear fitting operators is</p></li>
 </ul>
 <p><span class="math display">\[ n^{-1} \sum\limits_{i = 1}^n \Big(\frac{y_i - \hat{m}(x_i)}{1-S_{ii}}\Big)^2\]</span></p>
+<ul>
+<li>use roxygen comemnts instead of normal comments since the propagate to new line</li>
+<li>You can do k-fold CV with <code>i in 0:kfold-1</code>, where M is the size of the fold.</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">test_ind &lt;-<span class="st"> </span>(i <span class="op">*</span><span class="st"> </span>M <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)<span class="op">:</span>((i <span class="op">+</span><span class="st"> </span><span class="dv">1</span>) <span class="op">*</span><span class="st"> </span>M)</code></pre></div>
 
 </div>
 </div>

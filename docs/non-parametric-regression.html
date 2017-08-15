@@ -136,6 +136,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul></li>
 <li class="chapter" data-level="4.5" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#inference"><i class="fa fa-check"></i><b>4.5</b> Inference</a></li>
 <li class="chapter" data-level="4.6" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#local-polynomial-estimator"><i class="fa fa-check"></i><b>4.6</b> Local Polynomial Estimator</a></li>
+<li class="chapter" data-level="4.7" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#smoothing-splines"><i class="fa fa-check"></i><b>4.7</b> Smoothing splines</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="cross-validation.html"><a href="cross-validation.html"><i class="fa fa-check"></i><b>5</b> Cross Validation</a><ul>
 <li class="chapter" data-level="5.1" data-path="cross-validation.html"><a href="cross-validation.html#motivation-and-core-idea"><i class="fa fa-check"></i><b>5.1</b> Motivation and Core Idea</a></li>
@@ -338,7 +339,7 @@ h &lt;-<span class="st"> &quot;your bandwidth&quot;</span>
 <p>As with parametric regression, we want to do inference. Not on any parameters (since there are none), but on the fitted values. First and foremost, we want to obtain confidence intervals for the regression line, that is, obtaining point-wise lower and upper bounds of the confidence internal <span class="math display">\[ I_i = \hat{m}(x_i) ± 1.96 *\hat{sd}(\hat{m}(x)) \]</span> Which holds because the fitted value is asymtotically normally distributed. We know already how to obtain <span class="math inline">\(\hat{m}(x)\)</span>, now we need to find the standard deviation of the fitted values.</p>
 <p>From the fundamental equation <span class="math inline">\(Cov(\mathbf{A}x) = \mathbf{A} Cov(x) \mathbf{A}&#39;\)</span>, we get <span class="math display">\[ \text{Cov}(\hat{m}(x)) = \text{Cov}(\mathcal{S}\mathbf{y}) = 
 \mathcal{S} \text{Cov}(y) \mathcal{S}&#39; = \sigma_\epsilon^2\mathcal{SS}&#39;
-\;\;\;\;\;|\;\; \text{since Cov}(y) = \text{Cov}(\epsilon)\]</span> Which is a <span class="math inline">\(p\times p\)</span> matrix. For a specific data point <span class="math inline">\(x_i\)</span>, we have <span class="math display">\[ \text{Var}(\hat{m}(x_i))= \text{Cov}(\hat{m}(x_i),  \hat{m}(x_i)) = \sigma_\epsilon^2 (\mathcal{S} \mathcal{S}&#39;)_{ii} \]</span></p>
+\;\;\;\;\;|\;\; \text{since Cov}(y) = \text{Cov}(\epsilon)\]</span> Which is a <span class="math inline">\(p\times p\)</span> matrix. For a specific data point <span class="math inline">\(x_i\)</span>, we have <span class="math display">\[ \text{Var}(\hat{m}(x_i))= \text{Cov}(\hat{m}(x_i),  \hat{m}(x_i)) = \hat{\sigma}_\epsilon^2 (\mathcal{S} \mathcal{S}&#39;)_{ii} \]</span></p>
 <p>Now, we only need to estimate <span class="math inline">\(\sigma^2_\epsilon\)</span>. Using the generalized method to compute degrees of freedom, we can use the following estimator:</p>
 <p><span class="math display">\[ \hat{\sigma}_\epsilon^2 = \frac{1}{n-\textbf{tr}(\mathcal{S})}
 \sum\limits_{i = 1}^n (Y_i - \hat{m}(x_i))^2\]</span></p>
@@ -350,6 +351,16 @@ h &lt;-<span class="st"> &quot;your bandwidth&quot;</span>
 \big(Y_i-\beta_0 + \beta_1 (x_i -x) + ... \beta_{p-1} (x_i-x)^{p-1}\big)^2 \]</span></p>
 <p>This has the advantage of yielding a <em>lolcal linear</em> regression curve at the borders, whereas the Nadaraya-Watson Kernel yields <em>local constant</em> regression curves in these regions (since at the border, no new points are are taken into account).</p>
 <p>Another advantage is that we can find derivaties of the regression estimate at each point easily.</p>
+</div>
+<div id="smoothing-splines" class="section level2">
+<h2><span class="header-section-number">4.7</span> Smoothing splines</h2>
+<p><span class="math display">\[\sum\limits_{i = 1}^n (Y_i - \hat{m}(x_i))^2 + \lambda\int{m&#39;&#39;(z)^2dz} \]</span> Where <span class="math inline">\(\lambda\)</span> is a smoothing parameter. There are two extreme cases:</p>
+<ul>
+<li><span class="math inline">\(\lambda = 0\)</span>, Any perfectly interpolating function <span class="math inline">\(m\)</span> is possible.</li>
+<li><span class="math inline">\(\lambda \rightarrow \infty\)</span>. The ols solution with <span class="math inline">\(m&#39;&#39;(x) = 0\)</span>.</li>
+</ul>
+<p>At every distinct <span class="math inline">\(x_i\)</span>, there is a knot. The function <span class="math inline">\(\hat{m}(x)\)</span> is a piecwise polynomial function where at each knot, the left and the right polynomial agree in their valued <span class="math inline">\(\hat{m}\)</span> and the first and second derivative. For the <span class="math inline">\(n-1\)</span> polynomials, you have <span class="math inline">\(4\)</span> parameters each, so <span class="math inline">\((n-1)*4\)</span> parameters to estimate. The constraints are <span class="math inline">\((n-2)*3 + 2\)</span> conditions, leaving exactly <span class="math inline">\(n\)</span> free parameters.</p>
+<p>There is a kernel estimator which approximately corresponds to the smoothing spline solution. Interestingly, this solution has a locally varying bandwidth.</p>
 
 </div>
 </div>

@@ -48,7 +48,8 @@ data("ozone", package = "gss")
 fit <- mgcv::gam(upo3 ~ s(vdht) + s(wdsp) + s(hmdt) + s(sbtp), 
            data = ozone) 
 
-plot(fit, pages = 1) 
+plot(fit) 
+# plot(fit, pages = 1) 
 ``` 
 
 You can see

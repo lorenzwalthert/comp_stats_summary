@@ -136,6 +136,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul></li>
 <li class="chapter" data-level="4.5" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#inference"><i class="fa fa-check"></i><b>4.5</b> Inference</a></li>
 <li class="chapter" data-level="4.6" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#local-polynomial-estimator"><i class="fa fa-check"></i><b>4.6</b> Local Polynomial Estimator</a></li>
+<li class="chapter" data-level="4.7" data-path="non-parametric-regression.html"><a href="non-parametric-regression.html#smoothing-splines"><i class="fa fa-check"></i><b>4.7</b> Smoothing splines</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="cross-validation.html"><a href="cross-validation.html"><i class="fa fa-check"></i><b>5</b> Cross Validation</a><ul>
 <li class="chapter" data-level="5.1" data-path="cross-validation.html"><a href="cross-validation.html#motivation-and-core-idea"><i class="fa fa-check"></i><b>5.1</b> Motivation and Core Idea</a></li>
@@ -295,14 +296,14 @@ mean_sim &lt;-<span class="st"> </span><span class="kw">rerun</span>(<span class
 
 <span class="kw">ggplot</span>(<span class="kw">data_frame</span>(<span class="dt">mean =</span> mean_sim), <span class="kw">aes</span>(<span class="dt">x =</span> mean)) <span class="op">+</span>
 <span class="st">  </span><span class="kw">stat_ecdf</span>(<span class="dt">geom =</span> <span class="st">&quot;step&quot;</span>)</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-48-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-50-1.png" width="672" /></p>
 <p>Here you can see that if <span class="math inline">\(x \sim F\)</span>, <span class="math inline">\(F(X) \sim Unif\)</span>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">1000</span>)
 <span class="kw">plot.ecdf</span>(x)</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-49-1.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-51-1.png" width="672" /></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">y &lt;-<span class="st"> </span><span class="kw">pnorm</span>(x)
 <span class="kw">plot.ecdf</span>(y)</code></pre></div>
-<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-49-2.png" width="672" /></p>
+<p><img src="comp_stats_summary_files/figure-html/unnamed-chunk-51-2.png" width="672" /></p>
 
 </div>
 </div>
