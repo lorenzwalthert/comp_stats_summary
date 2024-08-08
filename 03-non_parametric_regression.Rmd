@@ -208,7 +208,7 @@ least square problem, we can use centered polynomials to approximate $y_i$
 instead of a local constant $\hat{m}_x$. That is, computing our estimator as
 
 $$\hat{m}(x) = \arg\min\limits_{m_x} \sum\limits_{i = 1}^nK\Big(\frac{x-X_i}{h}\Big)
-\big(Y_i-\beta_0 + \beta_1 (x_i -x) + ... \beta_{p-1} (x_i-x)^{p-1}\big)^2 $$ 
+\big(Y_i-(\beta_0 + \beta_1 (x_i -x) + ... \beta_{p-1} (x_i-x)^{p-1})\big)^2 $$ 
 
 This has the advantage of yielding a *lolcal linear* regression curve at the
 borders, whereas the Nadaraya-Watson Kernel yields *local constant* regression
